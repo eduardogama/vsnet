@@ -1,0 +1,56 @@
+version 2
+run General-0-20190320-13:04:41-23875
+attr configname General
+attr datetime 20190320-13:04:41
+attr experiment General
+attr inifile VoDTraffic.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network VoDTraffic
+attr processid 23875
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param **.client.numApps 1
+param **.client.app[*].typename "\"TCPAdaptiveVideoClientApp\""
+param **.client.app[*].localPort 1000
+param **.client.app[*].resultFile "\"results/results.wav\""
+param **.server.numApps 1
+param **.server.app[*].typename "\"VoipStreamSender\""
+param **.server.app[0].packetTimeLength 20ms
+param **.server.app[0].voipHeaderSize 4B
+param **.server.app[0].samplingRate 8000Hz
+param **.server.app[0].compressedBitRate 40000bps
+param **.server.app[0].voipSilenceThreshold 100
+param **.server.app[0].repeatCount 1
+param **.server.app[0].traceFileName "\"results/VoIPtrace.wav\""
+param **.server.app[0].soundFile "\"../../soundFiles/husten.mp3\""
+param **.server.app[0].localPort 1000
+param **.server.app[0].destPort 1000
+param **.server.app[0].srcAddress "\"\""
+param **.server.app[0].destAddress "\"client\""
+param **.host1.numApps 1
+param **.host1.app[0].typename "\"TcpSessionApp\""
+param **.host1.app[0].active true
+param **.host1.app[0].localPort -1
+param **.host1.app[0].connectAddress "\"host2\""
+param **.host1.app[0].connectPort 1000
+param **.host1.app[0].tOpen 0.2s
+param **.host1.app[0].tSend 0.4s
+param **.host1.app[0].sendBytes 10000000B
+param **.host1.app[0].sendScript "\"\""
+param **.host1.app[0].tClose 100s
+param **.host2.numApps 1
+param **.host2.app[0].typename "\"TcpEchoApp\""
+param **.host2.app[0].localPort 1000
+param **.host2.app[0].echoFactor 2.0
+param **.host2.app[0].echoDelay 0s
+param **.tcp.mss 1024
+param **.tcp.advertisedWindow 14336
+param **.tcp.recordStats true
+
+scalar VoDTraffic.server.app[0] hackForCreateResultsFolder 0
+

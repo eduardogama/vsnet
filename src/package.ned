@@ -1,0 +1,3 @@
+package vsnet;
+
+@license(LGPL);
