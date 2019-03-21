@@ -273,6 +273,7 @@ void DASHApp::socketClosed(TcpSocket *socket) {
 
 void DASHApp::socketFailure(TcpSocket *socket, int code) {
     TcpAppBase::socketFailure(socket, code);
+    // TODO
 }
 
 }

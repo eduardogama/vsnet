@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)vsnet
 #
 # This file was generated with the command:
-#  opp_makemake --make-so -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -I. -I. -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake --make-so -f --deep -KINET_PROJ=/home/futebol/omnetpp-5.4.1/samples/inet -DINET_IMPORT -I/home/futebol/omnetpp-5.4.1/samples/vsnet/src -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
 #
 
 # Name of target to be created (-o option)
@@ -10,7 +10,7 @@ TARGET = $(LIB_PREFIX)vsnet$(D)$(SHARED_LIB_SUFFIX)
 TARGET_DIR = .
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I. -I. -I$(INET_PROJ)/src
+INCLUDE_PATH = -I/home/futebol/omnetpp-5.4.1/samples/vsnet/src -I$(INET_PROJ)/src
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -33,7 +33,7 @@ MSGFILES =
 SMFILES =
 
 # Other makefile variables (-K)
-INET_PROJ=../../inet
+INET_PROJ=/home/futebol/omnetpp-5.4.1/samples/inet
 
 #------------------------------------------------------------------------------
 

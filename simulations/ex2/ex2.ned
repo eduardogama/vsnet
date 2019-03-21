@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package vsnet.simulations.ex1;
+package vsnet.simulations.ex2;
 
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.ethernet.EtherSwitch;
@@ -24,7 +24,7 @@ import ned.DatarateChannel;
 //
 // TODO auto-generated type
 //
-network ex1
+network ex2
 {
     @display("bgb=750,447");
     types:
@@ -46,6 +46,10 @@ network ex1
             parameters:
                 @display("p=44,225;i=device/laptop_l");
         }
+        switch: EtherSwitch {
+            parameters:
+                @display("p=190,224;i=device/switch");
+        }
         router1: Router {
             parameters:
                 @display("p=334,227;i=abstract/router");
@@ -59,7 +63,12 @@ network ex1
                 config = xml("<config><interface hosts='*' address='10.0.x.x' netmask='255.255.x.x'/></config>");
                 @display("p=44,19;i=block/cogwheel_s");
         }
+        switch2: EtherSwitch {
+            @display("p=473,224");
+        }
     connections:
-        client.ethg++ <--> line1 <--> router1.ethg++;
-        router1.ethg++ <--> line1 <--> server.ethg++;
+        client.ethg++ <--> line1 <--> switch.ethg++;
+        router1.ethg++ <--> line1 <--> switch.ethg++;
+        switch2.ethg++ <--> line2 <--> router1.ethg++;
+        switch2.ethg++ <--> line1 <--> server.ethg++;
 }

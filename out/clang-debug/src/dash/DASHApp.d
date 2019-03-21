@@ -1,5 +1,4 @@
-../out/clang-debug/src/TCPAdaptiveVideoClientApp.o: \
-  TCPAdaptiveVideoClientApp.cc TCPAdaptiveVideoClientApp.h \
+../out/clang-debug/src/dash/DASHApp.o: dash/DASHApp.cc dash/DASHApp.h \
   /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/common/INETDefs.h \
   /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/common/precompiled_debug.h \
   /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/common/precompiled.h \
@@ -41,7 +40,7 @@
   /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/networklayer/common/IpProtocolId_m.h \
   /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/networklayer/common/L3Address_m.h
 
-TCPAdaptiveVideoClientApp.h:
+dash/DASHApp.h:
 
 /home/futebol/omnetpp-5.4.1/samples/inet/src/inet/common/INETDefs.h:
 

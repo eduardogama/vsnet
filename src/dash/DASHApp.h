@@ -25,7 +25,7 @@ class DASHApp: public  TcpAppBase {
         /** Redefined **/
         virtual void initialize(int stage) override;
         /** Redefined **/
-        virtual void handleMessage(cMessage);
+//        void handleMessage(cMessage);
         /** Redefined. **/
         void handleTimer(cMessage *msg) override;
         /** Redefined. **/
