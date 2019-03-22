@@ -26,7 +26,7 @@ import ned.DatarateChannel;
 //
 network ex1
 {
-    @display("bgb=750,447");
+    @display("bgb=405,204");
     types:
         channel line1 extends DatarateChannel
         {
@@ -44,15 +44,15 @@ network ex1
     submodules:
         client: StandardHost {
             parameters:
-                @display("p=44,225;i=device/laptop_l");
+                @display("p=56,117;i=device/laptop_l");
         }
         router1: Router {
             parameters:
-                @display("p=334,227;i=abstract/router");
+                @display("p=196,117;i=abstract/router");
         }
         server: StandardHost {
             parameters:
-                @display("p=628,227;i=device/server_l");
+                @display("p=339,117;i=device/server_l");
         }
         configurator: Ipv4NetworkConfigurator {
             parameters:
@@ -60,6 +60,6 @@ network ex1
                 @display("p=44,19;i=block/cogwheel_s");
         }
     connections:
-        client.ethg++ <--> line1 <--> router1.ethg++;
+        client.ethg++  <--> line1 <--> router1.ethg++;
         router1.ethg++ <--> line1 <--> server.ethg++;
 }

@@ -1,4 +1,4 @@
-file 2236 1553098173                                            
+file 2236 1553263367                                            
 version 2
 run General-0-20190320-13:04:41-23875
 attr configname General
@@ -55,11 +55,10 @@ param **.tcp.recordStats true
 
 vector 0 VoDTraffic.client.app[0] DASHBufferLength:vector ETV
 attr title "Video buffer length (in seconds), vector"
+0	2211 8 0 0 0 0 1 0 0 0 0
 vector 1 VoDTraffic.client.app[0] DASHVideoPlaybackPointer:vector ETV
 attr title "Video playback pointer, vector"
+1	2219 8 0 0 0 0 1 0 0 0 0
 vector 2 VoDTraffic.client.app[0] DASHQualityLevel:vector ETV
 attr title "Requested quality level, vector"
-0	2211 8 0 0 0 0 1 0 0 0 0
-1	2219 8 0 0 0 0 1 0 0 0 0
-2	2227 8 0 0 0 0 1 0 0 0 0
-
+2	2227 9 0 0 0 0 1 0 0 0 0

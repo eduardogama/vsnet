@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)vsnet
 #
 # This file was generated with the command:
-#  opp_makemake --make-so -f --deep -KINET_PROJ=/home/futebol/omnetpp-5.4.1/samples/inet -DINET_IMPORT -I/home/futebol/omnetpp-5.4.1/samples/vsnet/src -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake --make-so -f --deep -KINET_PROJ=../../inet4 -DINET_IMPORT -I/home/futebol/omnetpp-5.4.1/samples/vsnet/src -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
 #
 
 # Name of target to be created (-o option)
@@ -33,7 +33,7 @@ MSGFILES =
 SMFILES =
 
 # Other makefile variables (-K)
-INET_PROJ=/home/futebol/omnetpp-5.4.1/samples/inet
+INET_PROJ=../../inet4
 
 #------------------------------------------------------------------------------
 
