@@ -14,7 +14,7 @@
 #include "inet/applications/tcpapp/TcpAppBase.h"
 
 
-namespace inet {
+using namespace inet;
 
 class DASHApp: public  TcpAppBase {
     public:
@@ -86,8 +86,6 @@ class DASHApp: public  TcpAppBase {
         simtime_t tLastPacketRequested;
 
 };
-
-}
 
 
 #endif /* DASH_DASHAPP_H_ */

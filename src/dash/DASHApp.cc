@@ -13,15 +13,15 @@
 #define MSGKIND_VIDEO_PLAY  2
 
 
-namespace inet {
-
 Define_Module(DASHApp);
 
 DASHApp::DASHApp() {
+    timeoutMsg = NULL;
     // TODO Auto-generated constructor stub
 }
 
 DASHApp::~DASHApp() {
+    cancelAndDelete(timeoutMsg);
     // TODO Auto-generated destructor stub
 }
 
@@ -276,4 +276,17 @@ void DASHApp::socketFailure(TcpSocket *socket, int code) {
     // TODO
 }
 
+void DASHApp::handleStartOperation(LifecycleOperation *operation)
+{
+    // TODO
+}
+
+void DASHApp::handleStopOperation(LifecycleOperation *operation)
+{
+    // TODO
+}
+
+void DASHApp::handleCrashOperation(LifecycleOperation *operation)
+{
+    // TODO
 }

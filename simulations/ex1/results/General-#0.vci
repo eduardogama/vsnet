@@ -1,0 +1,52 @@
+file 1847 1553491191                                            
+version 2
+run General-0-20190325-02:19:44-19293
+attr configname General
+attr datetime 20190325-02:19:44
+attr experiment General
+attr inifile ex1.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network ex1
+attr processid 19293
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param **.client.ipv4.routingTable.routingFile "\"client.mrt\""
+param **.router.ipv4.routingTable.routingFile "\"router.mrt\""
+param **.server.ipv4.routingTable.routingFile "\"server.mrt\""
+param **.client.numApps 1
+param **.client.app[*].typename "\"DASHApp\""
+param **.client.app[*].localAddress "\"172.0.0.1\""
+param **.client.app[*].localPort 1000
+param **.client.app[*].connectAddress "\"192.168.0.111\""
+param **.client.app[*].connectPort 10021
+param **.client.app[*].resultFile "\"results/results.wav\""
+param **.server.numApps 1
+param **.server.app[*].typename "\"TCPAdaptiveVideoClientApp\""
+param **.server.app[0].packetTimeLength 20ms
+param **.server.app[0].voipHeaderSize 4B
+param **.server.app[0].samplingRate 8000Hz
+param **.server.app[0].compressedBitRate 40000bps
+param **.server.app[0].voipSilenceThreshold 100
+param **.server.app[0].repeatCount 1
+param **.server.app[0].traceFileName "\"results/VoIPtrace.wav\""
+param **.server.app[0].soundFile "\"../../soundFiles/husten.mp3\""
+param **.server.app[0].localPort 1000
+param **.server.app[0].destPort 1000
+param **.server.app[0].srcAddress "\"\""
+param **.server.app[0].destAddress "\"client\""
+
+vector 0 ex1.client.app[0] DASHBufferLength:vector ETV
+attr title "Video buffer length (in seconds), vector"
+vector 1 ex1.client.app[0] DASHVideoPlaybackPointer:vector ETV
+attr title "Video playback pointer, vector"
+vector 2 ex1.client.app[0] DASHQualityLevel:vector ETV
+attr title "Requested quality level, vector"
+0	1822 8 0 0 0 0 1 0 0 0 0
+1	1830 8 0 0 0 0 1 0 0 0 0
+2	1838 8 0 0 0 0 1 0 0 0 0
+

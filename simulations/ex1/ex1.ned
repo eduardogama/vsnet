@@ -16,6 +16,7 @@
 package vsnet.simulations.ex1;
 
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
+import inet.visualizer.integrated.IntegratedCanvasVisualizer;
 import inet.node.ethernet.EtherSwitch;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
@@ -26,7 +27,7 @@ import ned.DatarateChannel;
 //
 network ex1
 {
-    @display("bgb=405,204");
+    @display("bgb=547,204");
     types:
         channel line1 extends DatarateChannel
         {
@@ -44,22 +45,25 @@ network ex1
     submodules:
         client: StandardHost {
             parameters:
-                @display("p=56,117;i=device/laptop_l");
+                @display("p=70,116;i=device/laptop_l");
         }
         router1: Router {
             parameters:
-                @display("p=196,117;i=abstract/router");
+                @display("p=274,116;i=abstract/router");
         }
         server: StandardHost {
             parameters:
-                @display("p=339,117;i=device/server_l");
+                @display("p=475,116;i=device/server_l");
         }
         configurator: Ipv4NetworkConfigurator {
             parameters:
                 config = xml("<config><interface hosts='*' address='10.0.x.x' netmask='255.255.x.x'/></config>");
                 @display("p=44,19;i=block/cogwheel_s");
         }
+        visualizer: IntegratedCanvasVisualizer {
+            @display("p=125,19;is=s");
+        }
     connections:
-        client.ethg++  <--> line1 <--> router1.ethg++;
+        client.ethg++ <--> line1 <--> router1.ethg++;
         router1.ethg++ <--> line1 <--> server.ethg++;
 }
