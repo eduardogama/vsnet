@@ -1,14 +1,14 @@
 version 2
-run dash1-0-20190325-17:08:25-7746
+run dash1-0-20190325-18:45:00-21145
 attr configname dash1
-attr datetime 20190325-17:08:25
+attr datetime 20190325-18:45:00
 attr experiment dash1
 attr inifile omnetpp.ini
 attr iterationvars "$c0ber=1e-7, $c2ber=1e-7, $c1ber=1e-7"
 attr iterationvarsf c0ber=1e-7,c2ber=1e-7,c1ber=1e-7-
 attr measurement "$c0ber=1e-7, $c2ber=1e-7, $c1ber=1e-7"
 attr network scenario
-attr processid 7746
+attr processid 21145
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -41,15 +41,6 @@ param **.C2_ber 1e-7
 param **.C0_datarate 1Gbps
 param **.C1_datarate 500Mbps
 param **.C2_datarate 10Mbps
-param *.configurator.dumpAddresses true
-param *.configurator.dumpTopology true
-param *.configurator.dumpLinks true
-param *.configurator.dumpRoutes true
-param *.*.ipv4.arp.typename "\"GlobalArp\""
-param *.*.ipv4.routingTable.netmaskRoutes "\"\""
-param *.*.wlan[*].bitrate 54Mbps
-param *.visualizer.interfaceTableVisualizer.displayInterfaceTables true
-param *.visualizer.interfaceTableVisualizer.nodeFilter "\"not (*switch* or *Switch* or *AP*)\""
 
 vector 0 scenario.client.ppp[0].queue queueLength:vector ETV
 attr interpolationmode sample-hold

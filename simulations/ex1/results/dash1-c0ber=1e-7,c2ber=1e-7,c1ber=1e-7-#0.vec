@@ -1,14 +1,14 @@
 version 2
-run dash1-0-20190325-17:25:46-8312
+run dash1-0-20190325-18:30:03-20040
 attr configname dash1
-attr datetime 20190325-17:25:46
+attr datetime 20190325-18:30:03
 attr experiment dash1
 attr inifile ex1.ini
 attr iterationvars "$c0ber=1e-7, $c2ber=1e-7, $c1ber=1e-7"
 attr iterationvarsf c0ber=1e-7,c2ber=1e-7,c1ber=1e-7-
 attr measurement "$c0ber=1e-7, $c2ber=1e-7, $c1ber=1e-7"
 attr network ex1
-attr processid 8312
+attr processid 20040
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -24,6 +24,10 @@ param **.client.app[*].srcAddr "\"172.0.0.1\""
 param **.client.app[*].srcPort 1000
 param **.client.app[*].destAddr "\"server\""
 param **.client.app[*].destPort 10021
+param **.server.numApps 1
+param **.server.app[*].typename "\"TcpGenericServerApp\""
+param **.server.app[*].localAddress "\"server\""
+param **.server.app[*].localPort 1021
 param **.tcp.advertisedWindow 65535
 param **.tcp.delayedAcksEnabled false
 param **.tcp.nagleEnabled true
