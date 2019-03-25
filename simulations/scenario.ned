@@ -2,6 +2,7 @@ package vsnet.simulations;
 
 import inet.node.inet.StandardHost;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
+import inet.visualizer.integrated.IntegratedCanvasVisualizer;
 
 network scenario
 {
@@ -22,7 +23,10 @@ network scenario
                 pppg[1];
         }
         configurator: Ipv4NetworkConfigurator {
-            @display("p=199,34");
+            @display("p=58,19;is=s");
+        }
+        visualizer: IntegratedCanvasVisualizer {
+            @display("p=157,19;is=s");
         }
     connections:
         client.pppg[0] <--> {  datarate = 0.8Mbps; delay = 0.565us; per = 0; ber = n; } <--> server.pppg[0];

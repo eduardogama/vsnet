@@ -1,0 +1,743 @@
+version 2
+run ping1-0-20190325-12:27:07-19821
+attr configname ping1
+attr datetime 20190325-12:27:07
+attr experiment ping1
+attr inifile ex1.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network ex1
+attr processid 19821
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param *.client.numApps 1
+param *.client.app[0].typename "\"PingApp\""
+param *.client.app[0].destAddr "\"server\""
+param *.visualizer.routingTableVisualizer.displayRoutingTables true
+param *.visualizer.routingTableVisualizer.destinationFilter "\"server\""
+param *.configurator.dumpAddresses true
+param *.configurator.dumpTopology true
+param *.configurator.dumpLinks true
+param *.configurator.dumpRoutes true
+param *.*.ipv4.arp.typename "\"GlobalArp\""
+param *.*.ipv4.routingTable.netmaskRoutes "\"\""
+param *.*.wlan[*].bitrate 54Mbps
+param *.visualizer.interfaceTableVisualizer.displayInterfaceTables true
+param *.visualizer.interfaceTableVisualizer.nodeFilter "\"not (*switch* or *Switch* or *AP*)\""
+
+scalar ex1.client.lo[0].lo rcvdPkFromHl:count 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar ex1.client.lo[0].lo rcvdPkFromHl:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar ex1.client.lo[0].lo passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.client.lo[0].lo passedUpPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.client.eth[0].mac "simulated time" 100
+scalar ex1.client.eth[0].mac full-duplex 1
+scalar ex1.client.eth[0].mac "frames/sec sent" 1
+scalar ex1.client.eth[0].mac "frames/sec rcvd" 1
+scalar ex1.client.eth[0].mac "bits/sec sent" 816
+scalar ex1.client.eth[0].mac "bits/sec rcvd" 816
+scalar ex1.client.eth[0].mac "rx channel idle (%)" 100
+scalar ex1.client.eth[0].mac "rx channel utilization (%)" 0
+scalar ex1.client.eth[0].mac rxPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units received, count"
+scalar ex1.client.eth[0].mac rxPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units received, sum"
+scalar ex1.client.eth[0].mac txPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units sent, count"
+scalar ex1.client.eth[0].mac txPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units sent, sum"
+scalar ex1.client.eth[0].mac rxPkOk:count 100
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar ex1.client.eth[0].mac rxPkOk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar ex1.client.eth[0].mac txPk:count 100
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar ex1.client.eth[0].mac txPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar ex1.client.eth[0].mac packetReceivedFromUpper:count 100
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, count"
+scalar ex1.client.eth[0].mac packetReceivedFromUpper:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, sum(packetBytes)"
+scalar ex1.client.eth[0].mac passedUpPk:count 100
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.client.eth[0].mac passedUpPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.client.eth[0].mac packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar ex1.client.eth[0].mac packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar ex1.client.eth[0].mac packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar ex1.client.eth[0].mac packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar ex1.client.eth[0].mac packetDropNotAddressedToUs:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, count"
+scalar ex1.client.eth[0].mac packetDropNotAddressedToUs:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, sum(packetBytes)"
+scalar ex1.client.eth[0].encap pauseSent:count 0
+attr title "pause sent, count"
+scalar ex1.client.eth[0].encap pauseSent:sum 0
+attr title "pause sent, sum"
+scalar ex1.client.eth[0].encap decapPk:count 100
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, count"
+scalar ex1.client.eth[0].encap decapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, sum(packetBytes)"
+scalar ex1.client.eth[0].encap encapPk:count 100
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, count"
+scalar ex1.client.eth[0].encap encapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropAddressResolutionFailed:count 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, count"
+scalar ex1.client.ipv4.ip packetDropAddressResolutionFailed:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropHopLimitReached:count 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, count"
+scalar ex1.client.ipv4.ip packetDropHopLimitReached:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropForwardingDisabled:count 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, count"
+scalar ex1.client.ipv4.ip packetDropForwardingDisabled:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropNoInterfaceFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, count"
+scalar ex1.client.ipv4.ip packetDropNoInterfaceFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropNoRouteFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, count"
+scalar ex1.client.ipv4.ip packetDropNoRouteFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, sum(packetBytes)"
+scalar ex1.client.ipv4.ip packetDropUndefined:count 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, count"
+scalar ex1.client.ipv4.ip packetDropUndefined:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, sum(packetBytes)"
+scalar ex1.client.udp packetReceived:count 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, count"
+scalar ex1.client.udp packetReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, sum(packetBytes)"
+scalar ex1.client.udp packetSent:count 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, count"
+scalar ex1.client.udp packetSent:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, sum(packetBytes)"
+scalar ex1.client.udp passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, count"
+scalar ex1.client.udp droppedPkWrongPort:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+scalar ex1.client.udp droppedPkBadChecksum:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+scalar ex1.client.app[0] "Pings sent" 100
+scalar ex1.client.app[0] "ping loss rate (%)" 0
+scalar ex1.client.app[0] "ping out-of-order rate (%)" 0
+scalar ex1.client.app[0] pingRxSeq:count 100
+attr interpolationmode none
+attr title "ping rx seq, count"
+scalar ex1.client.app[0] pingTxSeq:count 100
+attr interpolationmode none
+attr title "ping tx seq, count"
+scalar ex1.client.app[0] numOutOfOrderArrivals:last nan
+attr interpolationmode none
+attr title "ping out-of-order arrivals, last"
+scalar ex1.client.app[0] numLost:last nan
+attr interpolationmode none
+attr title "pings lost, last"
+statistic ex1.client.app[0] rtt:histogram
+field count 100
+field mean 0.0004352
+field stddev 2.3400360142328e-11
+field min 0.0004352
+field max 0.0004352
+field sum 0.04352
+field sqrsum 1.8939904e-05
+attr interpolationmode none
+attr title "ping round-trip time, histogram"
+attr unit s
+bin	-inf	0
+bin	0	100
+bin	0.01	0
+bin	0.02	0
+bin	0.03	0
+bin	0.04	0
+bin	0.05	0
+bin	0.06	0
+bin	0.07	0
+bin	0.08	0
+bin	0.09	0
+bin	0.1	0
+bin	0.11	0
+bin	0.12	0
+bin	0.13	0
+bin	0.14	0
+bin	0.15	0
+bin	0.16	0
+bin	0.17	0
+bin	0.18	0
+bin	0.19	0
+bin	0.2	0
+bin	0.21	0
+bin	0.22	0
+bin	0.23	0
+bin	0.24	0
+bin	0.25	0
+bin	0.26	0
+bin	0.27	0
+bin	0.28	0
+bin	0.29	0
+bin	0.3	0
+bin	0.31	0
+bin	0.32	0
+bin	0.33	0
+bin	0.34	0
+bin	0.35	0
+bin	0.36	0
+bin	0.37	0
+bin	0.38	0
+bin	0.39	0
+bin	0.4	0
+bin	0.41	0
+bin	0.42	0
+bin	0.43	0
+bin	0.44	0
+bin	0.45	0
+bin	0.46	0
+bin	0.47	0
+bin	0.48	0
+bin	0.49	0
+bin	0.5	0
+bin	0.51	0
+scalar ex1.router1.lo[0].lo rcvdPkFromHl:count 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar ex1.router1.lo[0].lo rcvdPkFromHl:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar ex1.router1.lo[0].lo passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.router1.lo[0].lo passedUpPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac "simulated time" 100
+scalar ex1.router1.eth[0].mac full-duplex 1
+scalar ex1.router1.eth[0].mac "frames/sec sent" 1
+scalar ex1.router1.eth[0].mac "frames/sec rcvd" 1
+scalar ex1.router1.eth[0].mac "bits/sec sent" 816
+scalar ex1.router1.eth[0].mac "bits/sec rcvd" 816
+scalar ex1.router1.eth[0].mac "rx channel idle (%)" 100
+scalar ex1.router1.eth[0].mac "rx channel utilization (%)" 0
+scalar ex1.router1.eth[0].mac rxPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units received, count"
+scalar ex1.router1.eth[0].mac rxPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units received, sum"
+scalar ex1.router1.eth[0].mac txPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units sent, count"
+scalar ex1.router1.eth[0].mac txPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units sent, sum"
+scalar ex1.router1.eth[0].mac rxPkOk:count 100
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar ex1.router1.eth[0].mac rxPkOk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac txPk:count 100
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar ex1.router1.eth[0].mac txPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac packetReceivedFromUpper:count 100
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, count"
+scalar ex1.router1.eth[0].mac packetReceivedFromUpper:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac passedUpPk:count 100
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.router1.eth[0].mac passedUpPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar ex1.router1.eth[0].mac packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar ex1.router1.eth[0].mac packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar ex1.router1.eth[0].mac packetDropNotAddressedToUs:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, count"
+scalar ex1.router1.eth[0].mac packetDropNotAddressedToUs:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, sum(packetBytes)"
+scalar ex1.router1.eth[0].encap pauseSent:count 0
+attr title "pause sent, count"
+scalar ex1.router1.eth[0].encap pauseSent:sum 0
+attr title "pause sent, sum"
+scalar ex1.router1.eth[0].encap decapPk:count 100
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, count"
+scalar ex1.router1.eth[0].encap decapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, sum(packetBytes)"
+scalar ex1.router1.eth[0].encap encapPk:count 100
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, count"
+scalar ex1.router1.eth[0].encap encapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac "simulated time" 100
+scalar ex1.router1.eth[1].mac full-duplex 1
+scalar ex1.router1.eth[1].mac "frames/sec sent" 1
+scalar ex1.router1.eth[1].mac "frames/sec rcvd" 1
+scalar ex1.router1.eth[1].mac "bits/sec sent" 816
+scalar ex1.router1.eth[1].mac "bits/sec rcvd" 816
+scalar ex1.router1.eth[1].mac "rx channel idle (%)" 100
+scalar ex1.router1.eth[1].mac "rx channel utilization (%)" 0
+scalar ex1.router1.eth[1].mac rxPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units received, count"
+scalar ex1.router1.eth[1].mac rxPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units received, sum"
+scalar ex1.router1.eth[1].mac txPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units sent, count"
+scalar ex1.router1.eth[1].mac txPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units sent, sum"
+scalar ex1.router1.eth[1].mac rxPkOk:count 100
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar ex1.router1.eth[1].mac rxPkOk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac txPk:count 100
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar ex1.router1.eth[1].mac txPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac packetReceivedFromUpper:count 100
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, count"
+scalar ex1.router1.eth[1].mac packetReceivedFromUpper:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac passedUpPk:count 100
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.router1.eth[1].mac passedUpPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar ex1.router1.eth[1].mac packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar ex1.router1.eth[1].mac packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar ex1.router1.eth[1].mac packetDropNotAddressedToUs:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, count"
+scalar ex1.router1.eth[1].mac packetDropNotAddressedToUs:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, sum(packetBytes)"
+scalar ex1.router1.eth[1].encap pauseSent:count 0
+attr title "pause sent, count"
+scalar ex1.router1.eth[1].encap pauseSent:sum 0
+attr title "pause sent, sum"
+scalar ex1.router1.eth[1].encap decapPk:count 100
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, count"
+scalar ex1.router1.eth[1].encap decapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, sum(packetBytes)"
+scalar ex1.router1.eth[1].encap encapPk:count 100
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, count"
+scalar ex1.router1.eth[1].encap encapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropAddressResolutionFailed:count 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, count"
+scalar ex1.router1.ipv4.ip packetDropAddressResolutionFailed:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropHopLimitReached:count 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, count"
+scalar ex1.router1.ipv4.ip packetDropHopLimitReached:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropForwardingDisabled:count 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, count"
+scalar ex1.router1.ipv4.ip packetDropForwardingDisabled:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropNoInterfaceFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, count"
+scalar ex1.router1.ipv4.ip packetDropNoInterfaceFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropNoRouteFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, count"
+scalar ex1.router1.ipv4.ip packetDropNoRouteFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, sum(packetBytes)"
+scalar ex1.router1.ipv4.ip packetDropUndefined:count 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, count"
+scalar ex1.router1.ipv4.ip packetDropUndefined:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, sum(packetBytes)"
+scalar ex1.server.lo[0].lo rcvdPkFromHl:count 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar ex1.server.lo[0].lo rcvdPkFromHl:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar ex1.server.lo[0].lo passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.server.lo[0].lo passedUpPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.server.eth[0].mac "simulated time" 100
+scalar ex1.server.eth[0].mac full-duplex 1
+scalar ex1.server.eth[0].mac "frames/sec sent" 1
+scalar ex1.server.eth[0].mac "frames/sec rcvd" 1
+scalar ex1.server.eth[0].mac "bits/sec sent" 816
+scalar ex1.server.eth[0].mac "bits/sec rcvd" 816
+scalar ex1.server.eth[0].mac "rx channel idle (%)" 100
+scalar ex1.server.eth[0].mac "rx channel utilization (%)" 0
+scalar ex1.server.eth[0].mac rxPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units received, count"
+scalar ex1.server.eth[0].mac rxPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units received, sum"
+scalar ex1.server.eth[0].mac txPausePkUnits:count 0
+attr interpolationmode none
+attr title "pause units sent, count"
+scalar ex1.server.eth[0].mac txPausePkUnits:sum 0
+attr interpolationmode none
+attr title "pause units sent, sum"
+scalar ex1.server.eth[0].mac rxPkOk:count 100
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar ex1.server.eth[0].mac rxPkOk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar ex1.server.eth[0].mac txPk:count 100
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar ex1.server.eth[0].mac txPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar ex1.server.eth[0].mac packetReceivedFromUpper:count 100
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, count"
+scalar ex1.server.eth[0].mac packetReceivedFromUpper:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packet bytes from higher layer, sum(packetBytes)"
+scalar ex1.server.eth[0].mac passedUpPk:count 100
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar ex1.server.eth[0].mac passedUpPk:sum(packetBytes) 10200
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar ex1.server.eth[0].mac packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar ex1.server.eth[0].mac packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar ex1.server.eth[0].mac packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar ex1.server.eth[0].mac packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar ex1.server.eth[0].mac packetDropNotAddressedToUs:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, count"
+scalar ex1.server.eth[0].mac packetDropNotAddressedToUs:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNotAddressedToUs(packetDropped)
+attr title "packet drop: not addressed to us, sum(packetBytes)"
+scalar ex1.server.eth[0].encap pauseSent:count 0
+attr title "pause sent, count"
+scalar ex1.server.eth[0].encap pauseSent:sum 0
+attr title "pause sent, sum"
+scalar ex1.server.eth[0].encap decapPk:count 100
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, count"
+scalar ex1.server.eth[0].encap decapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source decapPk
+attr title "packets decapsulated, sum(packetBytes)"
+scalar ex1.server.eth[0].encap encapPk:count 100
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, count"
+scalar ex1.server.eth[0].encap encapPk:sum(packetBytes) 8400
+attr interpolationmode none
+attr source encapPk
+attr title "packets encapsulated, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropAddressResolutionFailed:count 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, count"
+scalar ex1.server.ipv4.ip packetDropAddressResolutionFailed:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropHopLimitReached:count 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, count"
+scalar ex1.server.ipv4.ip packetDropHopLimitReached:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropForwardingDisabled:count 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, count"
+scalar ex1.server.ipv4.ip packetDropForwardingDisabled:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropNoInterfaceFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, count"
+scalar ex1.server.ipv4.ip packetDropNoInterfaceFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropNoRouteFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, count"
+scalar ex1.server.ipv4.ip packetDropNoRouteFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, sum(packetBytes)"
+scalar ex1.server.ipv4.ip packetDropUndefined:count 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, count"
+scalar ex1.server.ipv4.ip packetDropUndefined:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, sum(packetBytes)"
+scalar ex1.server.udp packetReceived:count 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, count"
+scalar ex1.server.udp packetReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, sum(packetBytes)"
+scalar ex1.server.udp packetSent:count 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, count"
+scalar ex1.server.udp packetSent:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, sum(packetBytes)"
+scalar ex1.server.udp passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, count"
+scalar ex1.server.udp droppedPkWrongPort:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+scalar ex1.server.udp droppedPkBadChecksum:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+
