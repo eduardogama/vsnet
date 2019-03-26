@@ -32,11 +32,11 @@ void DASHApp::initialize(int stage) {
 
     // read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
-    video_packet_size_per_second = cStringTokenizer(str).asIntVector();
+    video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
 
-    video_buffer_max_length = par("video_buffer_max_length");
-    video_duration          = par("video_duration");
-    manifest_size           = par("manifest_size");
+    video_buffer_max_length = par("video_buffer_max_length"); // 10s
+    video_duration          = par("video_duration"); // 30s
+    manifest_size           = par("manifest_size"); // 100000
 
     numRequestsToSend = video_duration;
 
@@ -58,23 +58,22 @@ void DASHApp::initialize(int stage) {
     DASH_playback_pointer     = registerSignal("DASHVideoPlaybackPointer");
     DASH_quality_level_signal = registerSignal("DASHQualityLevel");
 
-
     emit(DASH_buffer_length_signal, video_buffer);
     emit(DASH_playback_pointer, video_playback_pointer);
     emit(DASH_quality_level_signal, video_current_quality_index);
 
-    video_startTime = par("video_startTime").doubleValue();
-    stopTime        = par("stopTime");
+    startTime = par("startTime").doubleValue(); // 1s
+    stopTime  = par("stopTime"); // 0 means infinity
 
-    if (stopTime != 0 && stopTime <= video_startTime)
+    if (stopTime != 0 && stopTime <= startTime)
         error("Invalid startTime/stopTime parameters");
 
     timeoutMsg = new cMessage("timer");
     timeoutMsg->setKind(MSGKIND_CONNECT);
 
     //scheduleAt(startTime, timeoutMsg);
-    EV<< "start time: " << video_startTime << "\n";
-    scheduleAt(simTime()+(simtime_t)video_startTime, timeoutMsg);
+    EV<< "Start Time: " << startTime << "\n";
+    scheduleAt(simTime()+(simtime_t)startTime, timeoutMsg);
 }
 
 void DASHApp::sendRequest() {
@@ -115,6 +114,7 @@ void DASHApp::handleTimer(cMessage *msg) {
 
             break;
         case MSGKIND_SEND:
+            EV<< "ENTROU\n";
             sendRequest();
 
             break;

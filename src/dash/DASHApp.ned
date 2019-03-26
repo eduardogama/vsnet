@@ -1,4 +1,4 @@
-package vsnet.dash;
+	package vsnet.dash;
 
 import inet.applications.contract.IApp;
 
@@ -46,19 +46,24 @@ simple DASHApp like IApp
         int    connectPort 	  = default(1000); 	// port number to connect to
         
 		string 			dataTransferMode  @enum("bytecount","object","bytestream") = default("bytecount");
-    	volatile double video_startTime   @unit(s) = default(1s); 		// time first session begins
+    	volatile double startTime   	  @unit(s) = default(1s); 		// time first session begins
         double 			stopTime 		  @unit(s) = default(0);  		// time of finish sending, 0 means infinity
         volatile int 	requestLength 	  @unit(B) = default(200B); 	// length of a request
-        volatile double reconnectInterval @unit(s) = default(10s);  	// if connection breaks, waits this much before trying to reconnect      
+        volatile int 	replyLength 	  @unit(B) = default(1MiB); 	// length of a reply
+        volatile double reconnectInterval @unit(s) = default(30s);  	// if connection breaks, waits this much before trying to reconnect      
         
         // Adaptive Video parameters
         string video_packet_size_per_second @units(kbps) = default("1000 1500 2000 4000 8000 12000"); // how many kbits are required for 1 second of video for each representation (quality levels)
-        int    manifest_size                @units(byte) = default(100000);
         int	   video_buffer_max_length      @units(s) 	 = default(10); 									  // buffer max length in seconds
         int    video_duration 				@units(s)    = default(30); 							  // video length in seconds
+        int    manifest_size                @units(byte) = default(100000);
+        
+        
+        @signal[packetSent](type=inet::Packet);
+        @signal[packetReceived](type=inet::Packet);
         
         // General statistics
-		@signal[DASHBufferLength](type="int");
+		@signal[DASHBufferLength](type="long");
         @statistic[DASHBufferLength](title="Video buffer length (in seconds)"; record=vector);
         
         @signal[DASHQualityLevel](type="int");
@@ -68,9 +73,9 @@ simple DASHApp like IApp
         @statistic[DASHVideoPlaybackPointer](title="Video playback pointer"; record=vector);
         
         @signal[DASHVideoPlaybackStatus](type="bool");
-        @statistic[DASHVideoPlaybackStatus](title="Video playback status (playing=1, buffering=0)"; record=vector);       
+        @statistic[DASHVideoPlaybackStatus](title="Video playback status (playing=1, buffering=0)"; record=vector);
         
     gates:
-        input socketIn @labels(TCPCommand/up);
-        output socketOut @labels(TCPCommand/down);
+        input socketIn @labels(TcpCommand/up);
+        output socketOut @labels(TcpCommand/down);
 }
