@@ -26,6 +26,9 @@ class VideoStreamPacket : public FieldsChunk {
 public:
     VideoStreamPacket();
     virtual ~VideoStreamPacket();
+
+protected:
+
 };
 
 #endif /* DASH_VIDEOSTREAMPACKET_H_ */

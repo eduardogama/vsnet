@@ -30,8 +30,107 @@ void DashServer::initialize(int stage)
 {
     TcpGenericServerApp::initialize(stage);
 
-    EV << "[] ENTROU STAGE = " << stage << endl;
-
     if (stage != 3) return;
 
+    if (stage == INITSTAGE_LOCAL) {
+        sendInterval = &par("sendInterval");
+        packetLen = &par("packetLen");
+        videoSize = &par("videoSize");
+        localPort = par("localPort");
+
+        // statistics
+        numStreams = 0;
+        numPkSent = 0;
+
+        WATCH_MAP(streams);
+    }
+
 }
+
+void DashServerServer::processStreamRequest(Packet *msg)
+{
+    // register video stream...
+    cMessage *timer = new cMessage("VideoStreamTmr");
+    VideoStreamData *d = &streams[timer->getId()];
+    d->timer = timer;
+    d->clientAddr = msg->getTag<L3AddressInd>()->getSrcAddress();
+    d->clientPort = msg->getTag<L4PortInd>()->getSrcPort();
+    d->videoSize = (*videoSize);
+    d->bytesLeft = d->videoSize;
+    d->numPkSent = 0;
+    ASSERT(d->videoSize > 0);
+    delete msg;
+
+    numStreams++;
+    emit(reqStreamBytesSignal, d->videoSize);
+
+    // ... then transmit first packet right away
+    sendStreamData(timer);
+}
+
+void DashServer::sendStreamData(cMessage *timer)
+{
+    auto it = streams.find(timer->getId());
+    if (it == streams.end())
+        throw cRuntimeError("Model error: Stream not found for timer");
+
+    VideoStreamData *d = &(it->second);
+
+    // generate and send a packet
+    Packet *pkt = new Packet("VideoStrmPk");
+    long pktLen = *packetLen;
+
+    if (pktLen > d->bytesLeft)
+        pktLen = d->bytesLeft;
+    const auto& payload = makeShared<ByteCountChunk>(B(pktLen));
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+    pkt->insertAtBack(payload);
+
+    emit(packetSentSignal, pkt);
+    socket.sendTo(pkt, d->clientAddr, d->clientPort);
+
+    d->bytesLeft -= pktLen;
+    d->numPkSent++;
+    numPkSent++;
+
+    // reschedule timer if there's bytes left to send
+    if (d->bytesLeft > 0) {
+        simtime_t interval = (*sendInterval);
+        scheduleAt(simTime() + interval, timer);
+    }
+    else {
+        streams.erase(it);
+        delete timer;
+    }
+}
+
+void DashServer::clearStreams()
+{
+    for (auto & elem : streams)
+        cancelAndDelete(elem.second.timer);
+    streams.clear();
+}
+
+void DashServer::handleStartOperation(LifecycleOperation *operation)
+{
+    socket.setOutputGate(gate("socketOut"));
+    socket.bind(localPort);
+    socket.setCallback(this);
+}
+
+void DashServer::handleStopOperation(LifecycleOperation *operation)
+{
+    clearStreams();
+    socket.setCallback(nullptr);
+    socket.close();
+    delayActiveOperationFinish(par("stopOperationTimeout"));
+}
+
+void DashServer::handleCrashOperation(LifecycleOperation *operation)
+{
+    clearStreams();
+    if (operation->getRootModule() != getContainingNode(this))     // closes socket when the application crashed only
+        socket.destroy();    //TODO  in real operating systems, program crash detected by OS and OS closes sockets of crashed programs.
+    socket.setCallback(nullptr);
+}
+
