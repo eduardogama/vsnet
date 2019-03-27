@@ -7,6 +7,12 @@
 
 #include "DASHApp.h"
 
+#include "inet/applications/tcpapp/GenericAppMsg_m.h"
+#include "inet/common/ModuleAccess.h"
+#include "inet/common/lifecycle/ModuleOperations.h"
+#include "inet/common/packet/Packet.h"
+#include "inet/common/TimeTag_m.h"
+
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
@@ -101,7 +107,28 @@ void DASHApp::sendRequest() {
         EV << "Sending manifest request" << endl;
     }
 
-    //sendPacket(requestLength, replyLength); // STILL REFACTOR
+   sendPacket(requestLength, replyLength); // STILL REFACTOR
+}
+
+void DASHApp::sendPacket(int requestLength, int replyLength, bool serverClose)
+{
+    if (requestLength < 1)
+        requestLength = 1;
+    if (replyLength < 1)
+        replyLength = 1;
+
+    const auto& payload = makeShared<GenericAppMsg>();
+    Packet *packet = new Packet("data");
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+    payload->setChunkLength(B(requestLength));
+    payload->setExpectedReplyLength(B(replyLength));
+    payload->setServerClose(false);
+    packet->insertAtBack(payload);
+
+    EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+            << "remaining " << numRequestsToSend - 1 << " request\n";
+
+    TcpAppBase::sendPacket(packet);
 }
 
 void DASHApp::handleTimer(cMessage *msg) {
@@ -114,7 +141,6 @@ void DASHApp::handleTimer(cMessage *msg) {
 
             break;
         case MSGKIND_SEND:
-            EV<< "ENTROU\n";
             sendRequest();
 
             break;

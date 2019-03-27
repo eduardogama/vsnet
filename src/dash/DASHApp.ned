@@ -1,4 +1,4 @@
-	package vsnet.dash;
+package vsnet.dash;
 
 import inet.applications.contract.IApp;
 

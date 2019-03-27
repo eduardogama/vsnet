@@ -12,6 +12,7 @@
 
 #include "inet/common/INETDefs.h"
 #include "inet/applications/tcpapp/TcpBasicClientApp.h"
+#include "inet/applications/tcpapp/GenericAppMsg_m.h"
 
 
 using namespace inet;
@@ -40,13 +41,19 @@ class DASHApp: public  TcpBasicClientApp {
         virtual void socketFailure(TcpSocket *socket, int code) override;
 
         /** Utility: sends a request to the server **/
-        virtual void sendRequest();
+        virtual void sendRequest() override;
 
         /**
          * Utility: cancel msgTimer and if d is smaller than stopTime, then schedule it to d,
          * otherwise delete msgTimer
          **/
-        virtual void rescheduleOrDeleteTimer(simtime_t d, short int msgKind);
+        virtual void rescheduleOrDeleteTimer(simtime_t d, short int msgKind) override;
+
+        /**
+         * Method from lower inet version (<4.1)
+         * Sends a GenericAppMsg of the given length
+         **/
+        virtual void sendPacket(int requestLength, int replyLength, bool serverClose=false);
 
         virtual void handleStartOperation(LifecycleOperation *operation) override;
         virtual void handleStopOperation(LifecycleOperation *operation) override;
