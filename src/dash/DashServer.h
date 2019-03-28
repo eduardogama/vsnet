@@ -16,38 +16,52 @@
 #ifndef DASH_DASHSERVER_H_
 #define DASH_DASHSERVER_H_
 
+//#include "inet/common/INETDefs.h"
+
+
 #include "inet/applications/tcpapp/TcpGenericServerApp.h"
+#include "inet/transportlayer/contract/tcp/TcpSocket.h"
+
+#include "inet/common/TimeTag_m.h"
+#include "inet/common/packet/chunk/ByteCountChunk.h"
+#include "inet/networklayer/common/L3AddressTag_m.h"
+#include "inet/transportlayer/common/L4PortTag_m.h"
+
 
 using namespace inet;
 
-struct VideoStreamData
-{
-    cMessage *timer = nullptr;    // self timer msg
-    L3Address clientAddr;    // client address
-    int clientPort = -1;    // client UDP port
-    long videoSize = 0;    // total size of video
-    long bytesLeft = 0;    // bytes left to transmit
-    long numPkSent = 0;    // number of packets sent
-};
 
-
-class DashServer :  public TcpGenericServerApp{
+class DashServer :  public TcpGenericServerApp {
 public:
     DashServer();
     virtual ~DashServer();
+
+    struct VideoStreamDash
+    {
+        cMessage *timer = nullptr;    // self timer msg
+        L3Address clientAddr;    // client address
+        int clientPort = -1;    // client UDP port
+        long videoSize = 0;    // total size of video
+        long bytesLeft = 0;    // bytes left to transmit
+        long numPkSent = 0;    // number of packets sent
+    };
 
 protected:
     virtual void initialize(int stage) override;
 
     virtual void clearStreams();
 
-    virtual void handleStartOperation(LifecycleOperation *operation) override;
-    virtual void handleStopOperation(LifecycleOperation *operation) override;
-    virtual void handleCrashOperation(LifecycleOperation *operation) override;
+    virtual void processStreamRequest(Packet *msg);
+    virtual void sendStreamData(cMessage *timer);
+
+
+//    virtual void handleStartOperation(LifecycleOperation *operation) override;
+//    virtual void handleStopOperation(LifecycleOperation *operation) override;
+//    virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
 
 protected:
-    typedef std::map<long int, VideoStreamData> VideoStreamMap;
+    typedef std::map<long int, VideoStreamDash> VideoStreamMap;
 
     int localPort = -1;
 

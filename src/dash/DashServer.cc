@@ -18,6 +18,15 @@
 
 Define_Module(DashServer);
 
+simsignal_t DashServer::reqStreamBytesSignal = registerSignal("reqStreamBytes");
+
+inline std::ostream& operator<<(std::ostream& out, const DashServer::VideoStreamDash& d)
+{
+    out << "client=" << d.clientAddr << ":" << d.clientPort
+        << "  size=" << d.videoSize << "  pksent=" << d.numPkSent << "  bytesleft=" << d.bytesLeft;
+    return out;
+}
+
 DashServer::DashServer() {
     // TODO Auto-generated constructor stub
 }
@@ -47,11 +56,11 @@ void DashServer::initialize(int stage)
 
 }
 
-void DashServerServer::processStreamRequest(Packet *msg)
+void DashServer::processStreamRequest(Packet *msg)
 {
     // register video stream...
     cMessage *timer = new cMessage("VideoStreamTmr");
-    VideoStreamData *d = &streams[timer->getId()];
+    VideoStreamDash *d = &streams[timer->getId()];
     d->timer = timer;
     d->clientAddr = msg->getTag<L3AddressInd>()->getSrcAddress();
     d->clientPort = msg->getTag<L4PortInd>()->getSrcPort();
@@ -74,7 +83,7 @@ void DashServer::sendStreamData(cMessage *timer)
     if (it == streams.end())
         throw cRuntimeError("Model error: Stream not found for timer");
 
-    VideoStreamData *d = &(it->second);
+    VideoStreamDash *d = &(it->second);
 
     // generate and send a packet
     Packet *pkt = new Packet("VideoStrmPk");
@@ -86,8 +95,9 @@ void DashServer::sendStreamData(cMessage *timer)
     payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
     pkt->insertAtBack(payload);
 
-    emit(packetSentSignal, pkt);
-    socket.sendTo(pkt, d->clientAddr, d->clientPort);
+//    emit(packetSentSignal, pkt);
+//    socket.sendTo(pkt, d->clientAddr, d->clientPort);
+    socket.send(pkt);
 
     d->bytesLeft -= pktLen;
     d->numPkSent++;
@@ -111,26 +121,26 @@ void DashServer::clearStreams()
     streams.clear();
 }
 
-void DashServer::handleStartOperation(LifecycleOperation *operation)
-{
-    socket.setOutputGate(gate("socketOut"));
-    socket.bind(localPort);
-    socket.setCallback(this);
-}
-
-void DashServer::handleStopOperation(LifecycleOperation *operation)
-{
-    clearStreams();
-    socket.setCallback(nullptr);
-    socket.close();
-    delayActiveOperationFinish(par("stopOperationTimeout"));
-}
-
-void DashServer::handleCrashOperation(LifecycleOperation *operation)
-{
-    clearStreams();
-    if (operation->getRootModule() != getContainingNode(this))     // closes socket when the application crashed only
-        socket.destroy();    //TODO  in real operating systems, program crash detected by OS and OS closes sockets of crashed programs.
-    socket.setCallback(nullptr);
-}
+//void DashServer::handleStartOperation(LifecycleOperation *operation)
+//{
+//    socket.setOutputGate(gate("socketOut"));
+//    socket.bind(localPort);
+//    socket.setCallback(this);
+//}
+//
+//void DashServer::handleStopOperation(LifecycleOperation *operation)
+//{
+//    clearStreams();
+//    socket.setCallback(nullptr);
+//    socket.close();
+//    delayActiveOperationFinish(par("stopOperationTimeout"));
+//}
+//
+//void DashServer::handleCrashOperation(LifecycleOperation *operation)
+//{
+//    clearStreams();
+//    if (operation->getRootModule() != getContainingNode(this))     // closes socket when the application crashed only
+//        socket.destroy();    //TODO  in real operating systems, program crash detected by OS and OS closes sockets of crashed programs.
+//    socket.setCallback(nullptr);
+//}
 
