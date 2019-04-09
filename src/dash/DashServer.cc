@@ -20,7 +20,7 @@ Define_Module(DashServer);
 
 simsignal_t DashServer::reqStreamBytesSignal = registerSignal("reqStreamBytes");
 
-inline std::ostream& operator<<(std::ostream& out, const DashServer::VideoStreamDash& d)
+inline std::ostream& operator<<(std::ostream& out, const VideoStreamDash& d)
 {
     out << "client=" << d.clientAddr << ":" << d.clientPort
         << "  size=" << d.videoSize << "  pksent=" << d.numPkSent << "  bytesleft=" << d.bytesLeft;

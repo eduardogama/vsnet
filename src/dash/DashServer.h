@@ -31,20 +31,20 @@
 using namespace inet;
 
 
+struct VideoStreamDash
+{
+    cMessage *timer = nullptr;    // self timer msg
+    L3Address clientAddr;    // client address
+    int clientPort = -1;    // client TCP port
+    long videoSize = 0;    // total size of video
+    long bytesLeft = 0;    // bytes left to transmit
+    long numPkSent = 0;    // number of packets sent
+};
+
 class DashServer :  public TcpGenericServerApp {
 public:
     DashServer();
     virtual ~DashServer();
-
-    struct VideoStreamDash
-    {
-        cMessage *timer = nullptr;    // self timer msg
-        L3Address clientAddr;    // client address
-        int clientPort = -1;    // client UDP port
-        long videoSize = 0;    // total size of video
-        long bytesLeft = 0;    // bytes left to transmit
-        long numPkSent = 0;    // number of packets sent
-    };
 
 protected:
     virtual void initialize(int stage) override;
@@ -54,11 +54,9 @@ protected:
     virtual void processStreamRequest(Packet *msg);
     virtual void sendStreamData(cMessage *timer);
 
-
 //    virtual void handleStartOperation(LifecycleOperation *operation) override;
 //    virtual void handleStopOperation(LifecycleOperation *operation) override;
 //    virtual void handleCrashOperation(LifecycleOperation *operation) override;
-
 
 protected:
     typedef std::map<long int, VideoStreamDash> VideoStreamMap;
