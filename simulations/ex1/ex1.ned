@@ -60,9 +60,6 @@ network ex1
                 config = xml("<config><interface hosts='*' address='10.0.x.x' netmask='255.255.x.x'/></config>");
                 @display("p=44,19;i=block/cogwheel_s");
         }
-        visualizer: IntegratedCanvasVisualizer {
-            @display("p=125,19;is=s");
-        }
     connections:
         client.ethg++ <--> line1 <--> router1.ethg++;
         router1.ethg++ <--> line1 <--> server.ethg++;
