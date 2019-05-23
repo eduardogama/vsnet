@@ -6,7 +6,26 @@
 #ifndef DASHCLIENT_H_
 #define DASHCLIENT_H_
 
+#include <string>
+#include <iostream>
 
+#include "pugixml.hpp"
+
+// Dictionary to convert size to bits
+/*enum SIZE_DICT{*/
+/*	bits:   1,*/
+/*	Kbits:  1024,*/
+/*	Mbits:  1024*1024,*/
+/*	bytes:  8,*/
+/*	KB:  1024*8,*/
+/*	MB: 1024*1024*8,*/
+/*}*/
+
+struct DashPlayback{
+	std::string title; 
+	int duration;
+	
+};
 
 
 class DashClient
@@ -14,13 +33,19 @@ class DashClient
 public:
 
 	DashClient();
-	virtual ~DashClient();
+	~DashClient();
     /**
      * initializes base class-attributes
      *
      * @param stage the init stage
      */
 	void initialize(int stage);
+	
+	/**
+     * initializes config in MPD file
+     */
+	void ReadMPD();
+	
 /*    virtual void finishApp();*/
 /*    virtual void handleTimerEvent(cMessage* msg);*/
 /*    virtual void handleLowerMessage(cMessage* msg);*/
@@ -42,6 +67,9 @@ public:
 /*	virtual void checkForPlaying();*/
 
 protected:
+
+	struct DashPlayback dashplayback;
+	
 	//10 is for if we want to study effects and relations between chunk size and video length
     unsigned short int numOfBFrame; /**<Number of B frames between 'I' and 'P' or between two 'P' frames */
    	unsigned short int chunkSize; /**< Number of frames in a chunk - */

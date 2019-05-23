@@ -3,16 +3,26 @@
  * @author Eduardo S Gama
  */
 
-
 #include "DashClient.h"
 
+
 // Define_Module(VodApp);
+
+DashClient::DashClient()
+{
+
+}
+
+DashClient::~DashClient()
+{
+
+}
 
 void DashClient::initialize(int stage)
 {
 //	TcpAppBase::initialize(stage);
 
-//	if (stage != 3) return;
+	if (stage != 3) return;
     
 //	bufferMapExchangePeriod = par("bufferMapExchangePeriod");
 
@@ -49,4 +59,24 @@ void DashClient::initialize(int stage)
 //	Discoment
 //	getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");	
 
+}
+
+
+void DashClient::ReadMPD()
+{
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file("sample.mpd");
+    
+    if (!result){
+    	std::cout << "ERROR" << std::endl;
+        return;
+    }
+    
+    dashplayback.title = doc.child("MPD").child("ProgramInformation").child_value("Title");
+    dashplayback.duration = doc.child("MPD").child("Period").attribute("duration").as_int();
+    std::cout << result.description() << std::endl;
+    std::cout << doc.child("MPD").child("ProgramInformation").child_value("Title") << std::endl;
+	std::cout << doc.child("MPD").child("Period").attribute("duration").value() << std::endl;
+	
+	
 }
