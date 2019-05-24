@@ -6,7 +6,7 @@
 #include "DashClient.h"
 
 
-// Define_Module(VodApp);
+Define_Module(DashClient);
 
 DashClient::DashClient()
 {
@@ -20,9 +20,9 @@ DashClient::~DashClient()
 
 void DashClient::initialize(int stage)
 {
-//	TcpAppBase::initialize(stage);
+	TcpAppBase::initialize(stage);
 
-	if (stage != 3) return;
+	if (INITSTAGE_APPLICATION_LAYER != 3) return;
 	
 	ReadMPD();
     
@@ -58,12 +58,13 @@ void DashClient::initialize(int stage)
 //	playingTimer = new cMessage("playingTimer");
 //	sendFrameTimer = new cMessage("sendFrameTimer");
 
-//	Discoment
-//	getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");	
-
+	getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
 
+void DashClient::decodePacket(Packet *vp)
+{
 
+}
 
 void DashClient::ReadMPD()
 {

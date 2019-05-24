@@ -10,10 +10,16 @@
 #include <vector>
 #include <iostream>
 
-#include "pugixml.hpp"
+#include "inet/applications/tcpapp/TcpBasicClientApp.h"
+#include "inet/common/packet/Packet.h"
+
+#include "parser/pugixml.hpp"
 
 #include "VideoBuffer.h"
+#include "MPDParser.h"
 
+
+using namespace inet;  // namespace inet
 
 typedef struct DashPlayback_t{
 	std::string title; 
@@ -25,19 +31,35 @@ typedef struct DashPlayback_t{
 	int height;
 } DashPlayback;
 
-class DashClient
+class DashClient : public TcpBasicClientApp
 {
 	public:
 
 		DashClient();
 		~DashClient();
+
 		/**
 		 * initializes base class-attributes
 		 *
 		 * @param stage the init stage
 		 */
-		void initialize(int stage);
+		void initialize(int stage) override;
 		
+		/**
+		 *
+		 */
+		void decodePacket(Packet *vp);
+
+        /**
+         * handleMessage method description
+         */
+//	    void handleMessage(cMessage *msg) override;
+
+	    /**
+         * Finish method description
+         */
+//	    virtual void finish() override;
+
 		/**
 		 * initializes config in MPD file
 		 */
@@ -66,6 +88,8 @@ class DashClient
 	protected:
 
 		DashPlayback dashplayback;
+		
+		MPDParser mpd;
 		
 		std::vector <int> requestedChunks;	
 		
