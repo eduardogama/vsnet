@@ -23,6 +23,8 @@ void DashClient::initialize(int stage)
 //	TcpAppBase::initialize(stage);
 
 	if (stage != 3) return;
+	
+	ReadMPD();
     
 //	bufferMapExchangePeriod = par("bufferMapExchangePeriod");
 
@@ -62,6 +64,7 @@ void DashClient::initialize(int stage)
 }
 
 
+
 void DashClient::ReadMPD()
 {
     pugi::xml_document doc;
@@ -72,11 +75,11 @@ void DashClient::ReadMPD()
         return;
     }
     
-    dashplayback.title = doc.child("MPD").child("ProgramInformation").child_value("Title");
-    dashplayback.duration = doc.child("MPD").child("Period").attribute("duration").as_int();
-    std::cout << result.description() << std::endl;
-    std::cout << doc.child("MPD").child("ProgramInformation").child_value("Title") << std::endl;
-	std::cout << doc.child("MPD").child("Period").attribute("duration").value() << std::endl;
-	
-	
+    dashplayback.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
+    dashplayback.duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
+    
+    
+    std::cout << result.description()  << std::endl;
+    std::cout << dashplayback.title    << std::endl;
+	std::cout << dashplayback.duration << std::endl;	
 }
