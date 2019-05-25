@@ -3,23 +3,23 @@
  * @author Eduardo S Gama, State University of Campinas (Unicamp)
  */
 
-#include "MPDParser.h"
+#include "MPDRequestHandler.h"
 
 
-MPDParser::MPDParser()
+MPDRequestHandler::MPDRequestHandler()
 {}
 
-MPDParser::~MPDParser()
+MPDRequestHandler::~MPDRequestHandler()
 {}
 
-MPDRequestHandler MPDParser::ReadMPD(std::string path_mpd)
+void MPDRequestHandler::ReadMPD(std::string path_mpd)
 {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file("sample.mpd");
     
     if (!result){
     	std::cout << "ERROR" << std::endl;
-        return mpd_handler;
+        return;
     }
     
     mpd_handler.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
@@ -65,8 +65,6 @@ MPDRequestHandler MPDParser::ReadMPD(std::string path_mpd)
               << "bandwidth=" << (*it).bandwidth  << endl;
         cout << "===================================================" << endl;
     }
-    
-    return mpd_handler;
 }
 
 

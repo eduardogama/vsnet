@@ -16,7 +16,7 @@
 #include "parser/pugixml.hpp"
 
 #include "VideoBuffer.h"
-#include "MPDParser.h"
+#include "MPDRequestHandler.h"
 
 
 using namespace inet;  // namespace inet
@@ -89,10 +89,31 @@ class DashClient : public TcpBasicClientApp
 
 		DashPlayback dashplayback;
 		
-		MPDParser mpd;
-		
-		std::vector <int> requestedChunks;	
-		
+		MPDRequestHandler mpd;
+
+        // Adaptive Video (AV) parameters
+        std::vector<int> video_packet_size_per_second;
+
+        int video_buffer_max_length;
+        int video_duration;
+        int manifest_size;
+
+        int video_buffer_min_rebuffering; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
+        int video_buffer; // current lenght of the buffer in seconds
+        int video_playback_pointer;
+        int video_current_quality_index; // requested quality
+        bool video_is_playing;
+
+        bool video_is_buffering = true;
+        bool manifestAlreadySent = false;
+
+        simsignal_t DASH_buffer_length_signal;
+        simsignal_t DASH_quality_level_signal;
+        simsignal_t DASH_video_is_playing_signal;
+        simsignal_t DASH_playback_pointer;
+
+		std::vector <int> requestedChunks;
+
 		//10 is for if we want to study effects and relations between chunk size and video length
 		unsigned short int numOfBFrame; /**<Number of B frames between 'I' and 'P' or between two 'P' frames */
 	   	unsigned short int chunkSize; /**< Number of frames in a chunk - */

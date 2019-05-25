@@ -10,12 +10,10 @@ Define_Module(DashClient);
 
 DashClient::DashClient()
 {
-
 }
 
 DashClient::~DashClient()
 {
-
 }
 
 void DashClient::initialize(int stage)
@@ -23,9 +21,38 @@ void DashClient::initialize(int stage)
 	TcpAppBase::initialize(stage);
 
 	if (INITSTAGE_APPLICATION_LAYER != 3) return;
-	
-	ReadMPD();
-    
+
+	mpd.ReadMPD("sample.mpd");
+
+
+	// read Adaptive Video (AV) parameters
+    const char *str = par("video_packet_size_per_second").stringValue();
+    video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
+
+    video_buffer_max_length = par("video_buffer_max_length"); // 10s
+    video_duration          = par("video_duration"); // 30s
+    manifest_size           = par("manifest_size"); // 100000
+
+    numRequestsToSend = video_duration;
+
+    video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
+    video_buffer                 = 0;
+    video_playback_pointer       = 0;
+    video_current_quality_index  = 0;  // start with min quality
+    video_is_playing             = false;
+
+	WATCH(video_buffer);
+    WATCH(video_playback_pointer);
+    WATCH(numRequestsToSend);
+
+
+    startTime = par("startTime"); // 1s
+    stopTime  = par("stopTime"); // 0 means infinity
+
+    if (stopTime != 0 && stopTime <= startTime)
+        error("Invalid startTime/stopTime parameters");
+
+
 //	bufferMapExchangePeriod = par("bufferMapExchangePeriod");
 
 
@@ -58,7 +85,7 @@ void DashClient::initialize(int stage)
 //	playingTimer = new cMessage("playingTimer");
 //	sendFrameTimer = new cMessage("sendFrameTimer");
 
-	getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
+    getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
 
 void DashClient::decodePacket(Packet *vp)

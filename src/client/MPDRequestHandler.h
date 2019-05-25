@@ -3,8 +3,8 @@
  * @author Eduardo S Gama, State University of Campinas (Unicamp)
  */
 
-#ifndef MPDPARSER_H_
-#define MPDPARSER_H_
+#ifndef MPDREQUESTHANDLER_H_
+#define MPDREQUESTHANDLER_H_
 
 #include <iostream>
 #include <string>
@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-#include "pugixml.hpp"
+#include "parser/pugixml.hpp"
 
 
 using namespace std;
@@ -28,24 +28,24 @@ typedef struct MPDSegment_t{
 	int bandwidth;
 } MPDSegment;
 
-typedef struct MPDRequestHandler_t{
+typedef struct MPDFile_t{
 	string title; 
 	string mimeType;
 	int duration;
 	vector<MPDSegment> segments;
-} MPDRequestHandler;
+} MPDFile;
 
-class MPDParser {
+class MPDRequestHandler {
 
     public:
     
-        MPDParser();
-        ~MPDParser();
+        MPDRequestHandler();
+        ~MPDRequestHandler();
     
-        MPDRequestHandler ReadMPD(std::string path_mpd);
+        void ReadMPD(std::string path_mpd);
 
     protected:
-        MPDRequestHandler mpd_handler;
+        MPDFile mpd_handler;
 };
 
-#endif /* MPDPARSER_H_ */   
+#endif /* MPDREQUESTHANDLER_H_ */
