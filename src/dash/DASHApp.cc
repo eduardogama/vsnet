@@ -194,8 +194,6 @@ void DASHApp::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
 void DASHApp::socketEstablished(TcpSocket *socket) {
     TcpAppBase::socketEstablished(socket);
 
-    EV << "[] ENTROU []" << endl;
-
     // perform first request
     sendRequest();
 }

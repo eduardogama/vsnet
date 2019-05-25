@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include <stdlib.h>
-
 #include "parser/pugixml.hpp"
 
 
@@ -43,6 +41,8 @@ class MPDRequestHandler {
         ~MPDRequestHandler();
     
         void ReadMPD(std::string path_mpd);
+
+        vector<MPDSegment> &getSegments();
 
     protected:
         MPDFile mpd_handler;

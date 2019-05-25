@@ -36,7 +36,7 @@ import inet.applications.contract.IApp;
 //
 // @see ~TCPGenericSrvApp, ~GenericAppMsg, ~TelnetApp
 //
-simple DASHApp like IApp
+simple DashClient like IApp
 {
     parameters:
         string localAddress = default("");  // may be left empty ("")

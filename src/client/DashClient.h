@@ -13,7 +13,6 @@
 #include "inet/applications/tcpapp/TcpBasicClientApp.h"
 #include "inet/common/packet/Packet.h"
 
-#include "parser/pugixml.hpp"
 
 #include "VideoBuffer.h"
 #include "MPDRequestHandler.h"
@@ -84,6 +83,22 @@ class DashClient : public TcpBasicClientApp
 		 * check if we whether enough frames eqaul to startup buffering to play
 		 */
 	/*	virtual void checkForPlaying();*/
+
+
+        /** Redefined. **/
+        virtual void socketEstablished(TcpSocket *socket) override;
+        /** Redefined. **/
+        virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
+
+        /** Redefined to start another session after a delay (currently not used). **/
+        virtual void socketClosed(TcpSocket *socket) override;
+
+        /** Redefined to reconnect after a delay. **/
+        virtual void socketFailure(TcpSocket *socket, int code) override;
+
+        virtual void handleStartOperation(LifecycleOperation *operation) override;
+        virtual void handleStopOperation(LifecycleOperation *operation) override;
+        virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
 	protected:
 

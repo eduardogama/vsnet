@@ -20,10 +20,26 @@ void DashClient::initialize(int stage)
 {
 	TcpAppBase::initialize(stage);
 
-	if (INITSTAGE_APPLICATION_LAYER != 3) return;
+	if (stage != INITSTAGE_APPLICATION_LAYER)
+	    return;
 
-	mpd.ReadMPD("sample.mpd");
+    EV_INFO << getFullPath() << "Initializing DashClient ... \n";
 
+	mpd.ReadMPD("/home/futebol/github/vsnet/bin/sample.mpd");
+
+	EV_INFO << "Segments Size="<< mpd.getSegments().size() << "\n";
+
+    for (std::vector<MPDSegment>::iterator it = mpd.getSegments().begin() ; it != mpd.getSegments().end(); ++it){
+        EV_INFO << "===================================================" << endl;
+        EV_INFO << "Id="        << (*it).id         << endl
+                << "mimeType="  << (*it).mimeType   << endl
+                << "codecs="    << (*it).codecs     << endl
+                << "frameRate=" << (*it).frameRate  << endl
+                << "width="     << (*it).width      << endl
+                << "height="    << (*it).height     << endl
+                << "bandwidth=" << (*it).bandwidth  << endl;
+        EV_INFO << "===================================================" << endl;
+    }
 
 	// read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
@@ -52,6 +68,12 @@ void DashClient::initialize(int stage)
     if (stopTime != 0 && stopTime <= startTime)
         error("Invalid startTime/stopTime parameters");
 
+    timeoutMsg = new cMessage("timer");
+//    timeoutMsg->setKind(MSGKIND_CONNECT);
+
+    //scheduleAt(startTime, timeoutMsg);
+    EV<< "Start Time: " << startTime << "\n";
+    scheduleAt(simTime()+(simtime_t)startTime, timeoutMsg);
 
 //	bufferMapExchangePeriod = par("bufferMapExchangePeriod");
 
@@ -93,6 +115,47 @@ void DashClient::decodePacket(Packet *vp)
 
 }
 
+
+void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
+{
+    TcpAppBase::socketDataArrived(socket, msg, urgent);
+}
+
+void DashClient::socketEstablished(TcpSocket *socket)
+{
+    TcpAppBase::socketEstablished(socket);
+
+    // perform first request
+    // sendRequest();
+}
+
+
+void DashClient::socketClosed(TcpSocket *socket)
+{
+    TcpAppBase::socketClosed(socket);
+
+    // Nothing to do here...
+}
+
+void DashClient::socketFailure(TcpSocket *socket, int code) {
+    TcpAppBase::socketFailure(socket, code);
+    // TODO
+}
+
+void DashClient::handleStartOperation(LifecycleOperation *operation)
+{
+    // TODO
+}
+
+void DashClient::handleStopOperation(LifecycleOperation *operation)
+{
+    // TODO
+}
+
+void DashClient::handleCrashOperation(LifecycleOperation *operation)
+{
+    // TODO
+}
 void DashClient::ReadMPD()
 {
     pugi::xml_document doc;
