@@ -5,6 +5,15 @@
 
 #include "DashClient.h"
 
+#include "inet/applications/tcpapp/GenericAppMsg_m.h"
+#include "inet/common/packet/Packet.h"
+#include "inet/common/TimeTag_m.h"
+
+
+#define MSGKIND_CONNECT     0
+#define MSGKIND_SEND        1
+#define MSGKIND_VIDEO_PLAY  2
+
 
 Define_Module(DashClient);
 
@@ -18,7 +27,7 @@ DashClient::~DashClient()
 
 void DashClient::initialize(int stage)
 {
-	TcpAppBase::initialize(stage);
+	TcpBasicClientApp::initialize(stage);
 
 	if (stage != INITSTAGE_APPLICATION_LAYER)
 	    return;
@@ -26,20 +35,6 @@ void DashClient::initialize(int stage)
     EV_INFO << getFullPath() << "Initializing DashClient ... \n";
 
 	mpd.ReadMPD("/home/futebol/github/vsnet/bin/sample.mpd");
-
-	EV_INFO << "Segments Size="<< mpd.getSegments().size() << "\n";
-
-    for (std::vector<MPDSegment>::iterator it = mpd.getSegments().begin() ; it != mpd.getSegments().end(); ++it){
-        EV_INFO << "===================================================" << endl;
-        EV_INFO << "Id="        << (*it).id         << endl
-                << "mimeType="  << (*it).mimeType   << endl
-                << "codecs="    << (*it).codecs     << endl
-                << "frameRate=" << (*it).frameRate  << endl
-                << "width="     << (*it).width      << endl
-                << "height="    << (*it).height     << endl
-                << "bandwidth=" << (*it).bandwidth  << endl;
-        EV_INFO << "===================================================" << endl;
-    }
 
 	// read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
@@ -49,7 +44,7 @@ void DashClient::initialize(int stage)
     video_duration          = par("video_duration"); // 30s
     manifest_size           = par("manifest_size"); // 100000
 
-    numRequestsToSend = video_duration;
+    numRequestsToSend = mpd.getSegments().size();
 
     video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
     video_buffer                 = 0;
@@ -59,53 +54,11 @@ void DashClient::initialize(int stage)
 
 	WATCH(video_buffer);
     WATCH(video_playback_pointer);
-    WATCH(numRequestsToSend);
 
-
-    startTime = par("startTime"); // 1s
-    stopTime  = par("stopTime"); // 0 means infinity
-
-    if (stopTime != 0 && stopTime <= startTime)
-        error("Invalid startTime/stopTime parameters");
-
-    timeoutMsg = new cMessage("timer");
-//    timeoutMsg->setKind(MSGKIND_CONNECT);
-
-    //scheduleAt(startTime, timeoutMsg);
-    EV<< "Start Time: " << startTime << "\n";
-    scheduleAt(simTime()+(simtime_t)startTime, timeoutMsg);
-
-//	bufferMapExchangePeriod = par("bufferMapExchangePeriod");
-
-
-//	chunkSize = par ("chunkSize");
-//	
-//	numOfBFrame = par("numOfBFrame");
-//	for (int i=0;i<10;i++)
-//	{
-//		bufferSize[i] =0;
-//		videolenght[i]=0;
-//		if (isVideoServer==true)
-//			LV->watchFilm[i]=true;
-//	}
-    
-    //LV->
-//    rateControl = par("rateControl");
-//    maxFrameRequestPerBufferMapExchangePeriod=par("maxFrameRequestPerBufferMapExchangePeriod");
-//    numberOfFrameRequested=0;
-//    measuringTime = par("measuringTime");
-//    receiverSideSchedulingNumber = par("receiverSideSchedulingNumber");
-//    senderSideSchedulingNumber = par("senderSideSchedulingNumber");
-//    averageChunkLength = par("averageChunkLength");
-//	
-//	//initialize self messages
-//    structureImprovementTimer=new cMessage("structureImprovementTimer");
-//    improvmentStructure=par("improvmentStructure");
-//    improvementPeriod=par("improvementPeriod");
-//    bufferMapTimer = new cMessage("bufferMapTimer");
-//	requestChunkTimer = new cMessage("requestChunkTimer");
-//	playingTimer = new cMessage("playingTimer");
-//	sendFrameTimer = new cMessage("sendFrameTimer");
+//    if (stopTime >= SIMTIME_ZERO && stopTime < startTime){
+//        throw cRuntimeError("Invalid startTime/stopTime parameters");
+//    }
+//    timeoutMsg = new cMessage("timer");
 
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
@@ -115,47 +68,141 @@ void DashClient::decodePacket(Packet *vp)
 
 }
 
-
 void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
+    std::cout << "========================================" << std::endl;
+    std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
+    std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
+    std::cout << "Data Length=" << msg->getDataLength() << std::endl;
+
     TcpAppBase::socketDataArrived(socket, msg, urgent);
+
+    std::cout << "Packets Received=" << packetsRcvd << std::endl;
+    std::cout << "Bytes Received=" << bytesRcvd << std::endl;
+
+    if(numRequestsToSend > 0){
+        std::cout << "Reply arrived" << std::endl;
+        if(timeoutMsg){
+            //Send new request
+            simtime_t d = simTime();
+            rescheduleOrDeleteTimer(d, MSGKIND_SEND);
+        }
+    }
 }
+
+
 
 void DashClient::socketEstablished(TcpSocket *socket)
 {
+    std::cout << "[socketEstablished] Socket being established ... " << std::endl;
+
     TcpAppBase::socketEstablished(socket);
 
-    // perform first request
-    // sendRequest();
-}
+    if (!earlySend)
+        sendRequest();
 
+    numRequestsToSend--;
+}
 
 void DashClient::socketClosed(TcpSocket *socket)
 {
-    TcpAppBase::socketClosed(socket);
-
-    // Nothing to do here...
+    // TODO
+    TcpBasicClientApp::socketClosed(socket);
 }
 
 void DashClient::socketFailure(TcpSocket *socket, int code) {
-    TcpAppBase::socketFailure(socket, code);
     // TODO
+    TcpBasicClientApp::socketFailure(socket, code);
 }
 
 void DashClient::handleStartOperation(LifecycleOperation *operation)
 {
     // TODO
+    TcpBasicClientApp::handleStartOperation(operation);
 }
 
 void DashClient::handleStopOperation(LifecycleOperation *operation)
 {
     // TODO
+    TcpBasicClientApp::handleStopOperation(operation);
 }
 
 void DashClient::handleCrashOperation(LifecycleOperation *operation)
 {
     // TODO
+    TcpBasicClientApp::handleCrashOperation(operation);
 }
+
+void DashClient::sendRequest()
+{
+    long requestLength = par("requestLength");
+    long replyLength   = par("replyLength"); // Fix it later
+
+    if (requestLength < 1)
+        requestLength = 1;
+
+    if (replyLength < 1)
+        replyLength = 1;
+
+    const auto& payload = makeShared<GenericAppMsg>();
+    Packet *packet = new Packet("data");
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+    payload->setChunkLength(B(requestLength));
+    payload->setExpectedReplyLength(B(replyLength));
+    payload->setServerClose(false);
+    packet->insertAtBack(payload);
+
+    EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+            << "remaining " << numRequestsToSend - 1 << " request\n";
+
+    std::cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+              << "remaining " << numRequestsToSend - 1 << " request\n";
+
+    sendPacket(packet);
+}
+
+void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
+
+    cancelEvent(timeoutMsg);
+
+    if(stopTime >= 0) {
+        timeoutMsg->setKind(msgKind);
+        scheduleAt(d, timeoutMsg);
+    } else{
+        delete timeoutMsg;
+        timeoutMsg = nullptr;
+    }
+}
+
+void DashClient::handleTimer(cMessage *msg)
+{
+    std::cout <<  "[handleTimer] Handle Timer " << msg->getKind() << std::endl;
+    switch (msg->getKind()) {
+        case MSGKIND_CONNECT:
+            connect();    // active OPEN
+
+            // significance of earlySend: if true, data will be sent already
+            // in the ACK of SYN, otherwise only in a separate packet (but still
+            // immediately)
+            if (earlySend)
+                sendRequest();
+
+            std::cout << "[handleTimer] Connection established ." << std::endl;
+
+            break;
+
+        case MSGKIND_SEND:
+            sendRequest();
+            numRequestsToSend--;
+            // no scheduleAt(): next request will be sent when reply to this one
+            // arrives (see socketDataArrived())
+            break;
+
+        default:
+            throw cRuntimeError("Invalid timer msg: kind=%d", msg->getKind());
+    }
+}
+
 void DashClient::ReadMPD()
 {
     pugi::xml_document doc;

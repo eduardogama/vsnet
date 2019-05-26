@@ -25,10 +25,9 @@ void MPDRequestHandler::ReadMPD(std::string path_mpd)
     mpd_handler.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
     mpd_handler.duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
     
-    
-//  std::cout << mpd_handler.title    << std::endl;
-//	std::cout << mpd_handler.duration << std::endl;
-    
+    std::cout << mpd_handler.title    << std::endl;
+	std::cout << mpd_handler.duration << std::endl;
+
     for (pugi::xml_node tool = doc.child("MPD").child("Period").child("AdaptationSet").first_child(); tool; tool = tool.next_sibling())
     {
         MPDSegment segment;
@@ -41,7 +40,24 @@ void MPDRequestHandler::ReadMPD(std::string path_mpd)
         segment.height    = tool.attribute("height").as_int();
         segment.bandwidth = tool.attribute("bandwidth").as_int();
 
-        mpd_handler.segments.push_back(segment);
+        getSegments().push_back(segment);
+    }
+}
+
+void MPDRequestHandler::printSegments()
+{
+    std::cout << "Segments Size="<< getSegments().size() << std::endl;
+
+    for (std::vector<MPDSegment>::iterator it = getSegments().begin() ; it != getSegments().end(); ++it){
+        std::cout << "===================================================" << std::endl;
+        std::cout << "Id="        << (*it).id         << endl
+                  << "mimeType="  << (*it).mimeType   << endl
+                  << "codecs="    << (*it).codecs     << endl
+                  << "frameRate=" << (*it).frameRate  << endl
+                  << "width="     << (*it).width      << endl
+                  << "height="    << (*it).height     << endl
+                  << "bandwidth=" << (*it).bandwidth  << endl;
+        std::cout << "===================================================" << std::endl;
     }
 }
 

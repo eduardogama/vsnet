@@ -39,7 +39,9 @@ class MPDRequestHandler {
     
         MPDRequestHandler();
         ~MPDRequestHandler();
-    
+
+        void printSegments();
+
         void ReadMPD(std::string path_mpd);
 
         vector<MPDSegment> &getSegments();

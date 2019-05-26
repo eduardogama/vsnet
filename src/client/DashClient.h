@@ -84,9 +84,16 @@ class DashClient : public TcpBasicClientApp
 		 */
 	/*	virtual void checkForPlaying();*/
 
+		/** Redefined. **/
+		virtual void sendRequest() override;
+
+		virtual void rescheduleOrDeleteTimer(simtime_t d, short int msgKind) override;
+
+        virtual void handleTimer(cMessage *msg) override;
 
         /** Redefined. **/
         virtual void socketEstablished(TcpSocket *socket) override;
+
         /** Redefined. **/
         virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
 
@@ -99,6 +106,7 @@ class DashClient : public TcpBasicClientApp
         virtual void handleStartOperation(LifecycleOperation *operation) override;
         virtual void handleStopOperation(LifecycleOperation *operation) override;
         virtual void handleCrashOperation(LifecycleOperation *operation) override;
+
 
 	protected:
 
