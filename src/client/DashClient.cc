@@ -9,6 +9,7 @@
 #include "inet/common/packet/Packet.h"
 #include "inet/common/TimeTag_m.h"
 
+#include <unistd.h>
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
@@ -34,7 +35,14 @@ void DashClient::initialize(int stage)
 
     EV_INFO << getFullPath() << "Initializing DashClient ... \n";
 
-	mpd.ReadMPD("/home/futebol/github/vsnet/bin/sample.mpd");
+    videoBuffer = new VideoBuffer();
+
+    dashplayback = new DashPlayback();
+
+    mpd = new MPDRequestHandler();
+    segIndex = 0;
+
+	mpd->ReadMPD("/home/futebol/github/vsnet/bin/sample.mpd");
 
 	// read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
@@ -44,7 +52,7 @@ void DashClient::initialize(int stage)
     video_duration          = par("video_duration"); // 30s
     manifest_size           = par("manifest_size"); // 100000
 
-    numRequestsToSend = mpd.getSegments().size();
+    numRequestsToSend = mpd->getSegments().size();
 
     video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
     video_buffer                 = 0;
@@ -72,6 +80,7 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
     std::cout << "========================================" << std::endl;
     std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
+    std::cout << "Request Number=" << numRequestsToSend << std::endl;
     std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
     std::cout << "Data Length=" << msg->getDataLength() << std::endl;
 
@@ -79,14 +88,15 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 
     std::cout << "Packets Received=" << packetsRcvd << std::endl;
     std::cout << "Bytes Received=" << bytesRcvd << std::endl;
+    std::cout << "Global Time=" << simTime() << std::endl;
 
-    if(numRequestsToSend > 0){
+    if(bytesRcvd >= currentSegment->getSegmentSize() && numRequestsToSend > 0){
         std::cout << "Reply arrived" << std::endl;
-        if(timeoutMsg){
-            //Send new request
-            simtime_t d = simTime();
-            rescheduleOrDeleteTimer(d, MSGKIND_SEND);
-        }
+
+        bytesRcvd = 0;
+
+        simtime_t d = simTime();
+        rescheduleOrDeleteTimer(d, MSGKIND_SEND);
     }
 }
 
@@ -94,14 +104,10 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 
 void DashClient::socketEstablished(TcpSocket *socket)
 {
-    std::cout << "[socketEstablished] Socket being established ... " << std::endl;
-
     TcpAppBase::socketEstablished(socket);
 
     if (!earlySend)
         sendRequest();
-
-    numRequestsToSend--;
 }
 
 void DashClient::socketClosed(TcpSocket *socket)
@@ -135,8 +141,16 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 
 void DashClient::sendRequest()
 {
+    currentSegment = new Segment();
+    MPDSegment &segment = mpd->getSegment(segIndex);
+
+    currentSegment->setValues(segment.bandwidth);
+    currentSegment->setSegmentNumber(segIndex);
+    segIndex++;
+    numRequestsToSend--;
+
     long requestLength = par("requestLength");
-    long replyLength   = par("replyLength"); // Fix it later
+    long replyLength   = currentSegment->getSegmentSize(); // Fix it later
 
     if (requestLength < 1)
         requestLength = 1;
@@ -213,11 +227,11 @@ void DashClient::ReadMPD()
         return;
     }
     
-    dashplayback.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
-    dashplayback.duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
+    dashplayback->title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
+    dashplayback->duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
     
     
     std::cout << result.description()  << std::endl;
-    std::cout << dashplayback.title    << std::endl;
-	std::cout << dashplayback.duration << std::endl;	
+    std::cout << dashplayback->title    << std::endl;
+	std::cout << dashplayback->duration << std::endl;
 }

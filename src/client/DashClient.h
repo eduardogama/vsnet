@@ -17,6 +17,8 @@
 #include "VideoBuffer.h"
 #include "MPDRequestHandler.h"
 
+#include "Segment.h"
+
 
 using namespace inet;  // namespace inet
 
@@ -29,6 +31,8 @@ typedef struct DashPlayback_t{
 	int width;
 	int height;
 } DashPlayback;
+
+
 
 class DashClient : public TcpBasicClientApp
 {
@@ -110,9 +114,13 @@ class DashClient : public TcpBasicClientApp
 
 	protected:
 
-		DashPlayback dashplayback;
+        Segment *currentSegment;
+        VideoBuffer *videoBuffer;
+
+		DashPlayback *dashplayback;
 		
-		MPDRequestHandler mpd;
+		MPDRequestHandler *mpd;
+		int segIndex;
 
         // Adaptive Video (AV) parameters
         std::vector<int> video_packet_size_per_second;

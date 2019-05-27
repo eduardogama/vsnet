@@ -1,6 +1,8 @@
 #ifndef VIDEOBUFFER_H_
 #define VIDEOBUFFER_H_
 
+#include "Segment.h"
+
 class VideoBuffer
 {
 	protected:
@@ -15,7 +17,7 @@ class VideoBuffer
 		int lastSetChunk; /**< last chunk that recently set*/
 		int lastSetFrame; /**< last frame that recently set*/
 		short int gopSize; /**< Number of frames per Group of Picture */
-		//Chunk* chunkBuffer; /**< video buffer that keeps some number of chunks*/
+		Segment* segmentBuffer; /**< video buffer that keeps some number of chunks*/
 
 };
 

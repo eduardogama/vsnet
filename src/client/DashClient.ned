@@ -47,7 +47,7 @@ simple DashClient like IApp
         
 		string 			dataTransferMode  @enum("bytecount","object","bytestream") = default("bytecount");
     	double 			startTime   	  @unit(s) = default(1s); 		// time first session begins
-        double 			stopTime 		  @unit(s) = default(-1s);  		// time of finish sending, 0 means infinity
+        double 			stopTime 		  @unit(s) = default(100s);  		// time of finish sending, 0 means infinity
         volatile int 	requestLength 	  @unit(B) = default(200B); 	// length of a request
         volatile int 	replyLength 	  @unit(B) = default(1MiB); 	// length of a reply
         volatile double reconnectInterval @unit(s) = default(30s);  	// if connection breaks, waits this much before trying to reconnect      
