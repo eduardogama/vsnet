@@ -24,7 +24,7 @@ class DASHApp: public  TcpBasicClientApp {
 
     protected:
         /** Redefined **/
-        virtual void initialize(int stage) override;
+     virtual void initialize(int stage) override;
         /** Redefined **/
 //        void handleMessage(cMessage);
         /** Redefined. **/

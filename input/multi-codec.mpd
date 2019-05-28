@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" minBufferTime="PT1.500S" type="static" mediaPresentationDuration="PT0H0M20.000S" maxSegmentDuration="PT0H0M4.000S" profiles="urn:mpeg:dash:profile:full:2011">
+
+ <BaseURL>https://www.itec.aau.at/ftp/datasets/mmsys18/YachtRide/YachtRide_4sec/</BaseURL>
+
+ <Period duration="PT0H0M20.000S">
+    <AdaptationSet id="1" group="1" segmentAlignment="true" bitstreamSwitching="true" maxWidth="3840" maxHeight="2160" maxFrameRate="30" par="16:9" lang="en">
+        <BaseURL>x264/</BaseURL>
+        <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+        <SegmentTemplate initialization="avc_init.mp4"/>
+        <Representation id="1" mimeType="video/mp4" codecs="avc3.64000C" width="256" height="144" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="103423">
+            <SegmentTemplate media="segment_100$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="2" mimeType="video/mp4" codecs="avc3.64000D" width="320" height="180" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="200138">
+            <SegmentTemplate media="segment_200$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="3" mimeType="video/mp4" codecs="avc3.64000D" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="238700">
+            <SegmentTemplate media="segment_240$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="4" mimeType="video/mp4" codecs="avc3.64000D" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="369784">
+            <SegmentTemplate media="segment_375$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="5" mimeType="video/mp4" codecs="avc3.640015" width="512" height="288" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="539381">
+            <SegmentTemplate media="segment_550$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="6" mimeType="video/mp4" codecs="avc3.64001E" width="640" height="360" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="733580">
+            <SegmentTemplate media="segment_750$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+            <Representation id="7" mimeType="video/mp4" codecs="avc3.64001E" width="768" height="432" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="976342">
+        <SegmentTemplate media="segment_1000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="8" mimeType="video/mp4" codecs="avc3.64001F" width="1024" height="576" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="1464807">
+            <SegmentTemplate media="segment_1500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="9" mimeType="video/mp4" codecs="avc3.64001F" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2247066">
+            <SegmentTemplate media="segment_2300$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="10" mimeType="video/mp4" codecs="avc3.64001F" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2933354">
+            <SegmentTemplate media="segment_3000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="11" mimeType="video/mp4" codecs="avc3.640032" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="4198228">
+            <SegmentTemplate media="segment_4300$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="12" mimeType="video/mp4" codecs="avc3.640032" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="5644511">
+            <SegmentTemplate media="segment_5800$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="13" mimeType="video/mp4" codecs="avc3.640032" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6379150">
+            <SegmentTemplate media="segment_6500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="14" mimeType="video/mp4" codecs="avc3.640032" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6863509">
+            <SegmentTemplate media="segment_7000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="15" mimeType="video/mp4" codecs="avc3.640032" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7348497">
+            <SegmentTemplate media="segment_7500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="16" mimeType="video/mp4" codecs="avc3.640033" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7877779">
+            <SegmentTemplate media="segment_8000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="17" mimeType="video/mp4" codecs="avc3.640033" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="11638687">
+            <SegmentTemplate media="segment_12000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="18" mimeType="video/mp4" codecs="avc3.640033" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="16372716">
+            <SegmentTemplate media="segment_17000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+        <Representation id="19" mimeType="video/mp4" codecs="avc3.640033" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="19243156">
+            <SegmentTemplate media="segment_20000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+        </Representation>
+    </AdaptationSet>
+
+  <AdaptationSet id="2" group="1" segmentAlignment="true" bitstreamSwitching="true" maxWidth="3840" maxHeight="2160" maxFrameRate="30" par="16:9" lang="en">
+   <BaseURL>x265/</BaseURL>
+   <SegmentTemplate initialization="hevc_init.mp4"/>
+   <Representation id="1" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="256" height="144" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="103423">
+    <SegmentTemplate media="segment_100$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="2" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="320" height="180" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="200138">
+    <SegmentTemplate media="segment_200$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="3" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="238700">
+    <SegmentTemplate media="segment_240$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="4" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="369784">
+    <SegmentTemplate media="segment_375$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="5" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="512" height="288" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="539381">
+    <SegmentTemplate media="segment_550$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="6" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="640" height="360" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="733580">
+    <SegmentTemplate media="segment_750$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="7" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="768" height="432" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="976342">
+    <SegmentTemplate media="segment_1000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="8" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="1024" height="576" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="1464807">
+    <SegmentTemplate media="segment_1500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="9" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2247066">
+    <SegmentTemplate media="segment_2300$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="10" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2933354">
+    <SegmentTemplate media="segment_3000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="11" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="4198228">
+    <SegmentTemplate media="segment_4300$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="12" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="5644511">
+    <SegmentTemplate media="segment_5800$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="13" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6379150">
+    <SegmentTemplate media="segment_6500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="14" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6863509">
+    <SegmentTemplate media="segment_7000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="15" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7348497">
+    <SegmentTemplate media="segment_7500$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="16" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7877779">
+    <SegmentTemplate media="segment_8000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="17" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="11638687">
+    <SegmentTemplate media="segment_12000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="18" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="16372716">
+    <SegmentTemplate media="segment_17000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="19" mimeType="video/mp4" codecs="hev1.1.6.L60.90" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="19243156">
+    <SegmentTemplate media="segment_20000$Number$.m4s" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+  </AdaptationSet>
+
+  <AdaptationSet id="3" group="1" segmentAlignment="true" bitstreamSwitching="true" maxWidth="3840" maxHeight="2160" maxFrameRate="30" par="16:9" lang="en">
+   <BaseURL>vp9/</BaseURL>
+   <SegmentTemplate initialization="vp9_init.webm"/>
+   <Representation id="1" mimeType="video/webm" codecs="vp09.00.40.08" width="256" height="144" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="103423">
+    <SegmentTemplate media="segment_100$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="2" mimeType="video/webm" codecs="vp09.00.40.08" width="320" height="180" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="200138">
+    <SegmentTemplate media="segment_200$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="3" mimeType="video/webm" codecs="vp09.00.40.08" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="238700">
+    <SegmentTemplate media="segment_240$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="4" mimeType="video/webm" codecs="vp09.00.40.08" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="369784">
+    <SegmentTemplate media="segment_375$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="5" mimeType="video/webm" codecs="vp09.00.40.08" width="512" height="288" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="539381">
+    <SegmentTemplate media="segment_550$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="6" mimeType="video/webm" codecs="vp09.00.40.08" width="640" height="360" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="733580">
+    <SegmentTemplate media="segment_750$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="7" mimeType="video/webm" codecs="vp09.00.40.08" width="768" height="432" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="976342">
+    <SegmentTemplate media="segment_1000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="8" mimeType="video/webm" codecs="vp09.00.40.08" width="1024" height="576" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="1464807">
+    <SegmentTemplate media="segment_1500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="9" mimeType="video/webm" codecs="vp09.00.40.08" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2247066">
+    <SegmentTemplate media="segment_2300$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="10" mimeType="video/webm" codecs="vp09.00.40.08" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2933354">
+    <SegmentTemplate media="segment_3000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="11" mimeType="video/webm" codecs="vp09.00.40.08" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="4198228">
+    <SegmentTemplate media="segment_4300$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="12" mimeType="video/webm" codecs="vp09.00.40.08" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="5644511">
+    <SegmentTemplate media="segment_5800$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="13" mimeType="video/webm" codecs="vp09.00.40.08" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6379150">
+    <SegmentTemplate media="segment_6500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="14" mimeType="video/webm" codecs="vp09.00.40.08" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6863509">
+    <SegmentTemplate media="segment_7000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="15" mimeType="video/webm" codecs="vp09.00.40.08" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7348497">
+    <SegmentTemplate media="segment_7500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="16" mimeType="video/webm" codecs="vp09.00.40.08" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7877779">
+    <SegmentTemplate media="segment_8000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="17" mimeType="video/webm" codecs="vp09.00.40.08" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="11638687">
+    <SegmentTemplate media="segment_12000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="18" mimeType="video/webm" codecs="vp09.00.40.08" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="16372716">
+    <SegmentTemplate media="segment_17000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="19" mimeType="video/webm" codecs="vp09.00.40.08" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="19243156">
+    <SegmentTemplate media="segment_20000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+  </AdaptationSet>
+
+  <AdaptationSet id="4" group="1" segmentAlignment="true" bitstreamSwitching="true" maxWidth="3840" maxHeight="2160" maxFrameRate="30" par="16:9" lang="en">
+   <BaseURL>av1/</BaseURL>
+   <SegmentTemplate initialization="av1_init.webm"/>
+   <Representation id="1" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="256" height="144" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="103423">
+    <SegmentTemplate media="segment_100$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="2" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="320" height="180" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="200138">
+    <SegmentTemplate media="segment_200$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="3" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="238700">
+    <SegmentTemplate media="segment_240$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="4" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="384" height="216" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="369784">
+    <SegmentTemplate media="segment_375$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="5" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="512" height="288" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="539381">
+    <SegmentTemplate media="segment_550$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="6" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="640" height="360" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="733580">
+    <SegmentTemplate media="segment_750$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="7" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="768" height="432" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="976342">
+    <SegmentTemplate media="segment_1000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="8" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="1024" height="576" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="1464807">
+    <SegmentTemplate media="segment_1500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="9" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2247066">
+    <SegmentTemplate media="segment_2300$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="10" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="1280" height="720" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="2933354">
+    <SegmentTemplate media="segment_3000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="11" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="4198228">
+    <SegmentTemplate media="segment_4300$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="12" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="1920" height="1080" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="5644511">
+    <SegmentTemplate media="segment_5800$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="13" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6379150">
+    <SegmentTemplate media="segment_6500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="14" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="6863509">
+    <SegmentTemplate media="segment_7000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="15" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="2560" height="1440" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7348497">
+    <SegmentTemplate media="segment_7500$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="16" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="7877779">
+    <SegmentTemplate media="segment_8000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="17" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="11638687">
+    <SegmentTemplate media="segment_12000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="18" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="16372716">
+    <SegmentTemplate media="segment_17000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+   <Representation id="19" mimeType="video/webm" codecs="av1.experimental.84dc6e97cb6bfaee4185e63ac78dcd5e080f378c" width="3840" height="2160" frameRate="30" sar="1:1" startWithSAP="1" bandwidth="19243156">
+    <SegmentTemplate media="segment_20000$Number$.webm" timescale="90000" startNumber="1" duration="360000"/>
+   </Representation>
+  </AdaptationSet>
+  
+ </Period>
+</MPD>

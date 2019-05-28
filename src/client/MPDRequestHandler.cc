@@ -45,7 +45,6 @@ void MPDRequestHandler::ReadMPD(std::string path_mpd)
 
         getSegments().push_back(*segment);
     }
-
 }
 
 void MPDRequestHandler::printSegments()
