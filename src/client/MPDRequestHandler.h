@@ -26,12 +26,30 @@ typedef struct MPDSegment_t{
 	int bandwidth;
 } MPDSegment;
 
+typedef struct Representation_t {
+	int id;
+} Representation;
+
+typedef struct AdaptationSet_t {
+	int id;
+	int group;
+	bool bitstreamSwitching;
+	int maxWidth;
+	int maxHeight;
+	int maxFrameRate;
+	std::string par;
+	vector<MPDSegment> segments;
+	vector<Representation> Rrepresentations;
+} AdaptationSet;
+
 typedef struct MPDFile_t{
 	string title; 
 	string mimeType;
 	int duration;
+/*	vector<AdaptationSet> adaptationset;*/
 	vector<MPDSegment> segments;
 } MPDFile;
+
 
 class MPDRequestHandler {
 

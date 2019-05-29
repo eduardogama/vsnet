@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for vsnet
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET_PROJ=../../inet4 -DINET_IMPORT -I. -Idash -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake -f --deep -KINET_PROJ=../../inet4 -DINET_IMPORT -I. -I/home/futebol/github/vsnet/src/dash -I/home/eduardo/inet4/src/inet/applications/voipstream -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\)
 #
 
 # Name of target to be created (-o option)
@@ -16,7 +16,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I. -Idash -I$(INET_PROJ)/src
+INCLUDE_PATH = -I. -I/home/futebol/github/vsnet/src/dash -I/home/eduardo/inet4/src/inet/applications/voipstream -I$(INET_PROJ)/src
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -30,7 +30,16 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/TCPAdaptiveVideoClientApp.o $O/dash/DASHApp.o
+OBJS = \
+    $O/TCPAdaptiveVideoClientApp.o \
+    $O/client/DashClient.o \
+    $O/client/MPDRequestHandler.o \
+    $O/client/Segment.o \
+    $O/client/VideoFrame.o \
+    $O/dash/DASHApp.o \
+    $O/dash/DashServer.o \
+    $O/dash/VideoStreamPacket.o \
+    $O/parser/pugixml.o
 
 # Message files
 MSGFILES =
