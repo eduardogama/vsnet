@@ -31,7 +31,9 @@
 class Segment
 {
 protected:
-
+    int frameRate;
+    int width;
+    int height;
 	int segmentNumber; /**< The segment number of the created object */
 	short int filmNumber;  // Film number of segment- for vod -(AGH)
 	int segmentSize; /**< Number of frames in the segment object*/
@@ -44,7 +46,7 @@ public:
 	 *
 	 * @param SegmentSize number of frame available in this segment
 	 */
-	void setValues(int SegmentSize);
+	void setValues(int SegmentSize, int frameRate, int width, int height);
 	/**
 	 * Base class constructor
 	 */

@@ -40,19 +40,24 @@ void DashClient::initialize(int stage)
     dashplayback = new DashPlayback();
 
     mpd = new MPDRequestHandler();
+
+	mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
+
     segIndex = 0;
 
-	mpd->ReadMPD("/home/futebol/github/vsnet/bin/sample.mpd");
-
-	// read Adaptive Video (AV) parameters
+    // read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
     video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
 
     video_buffer_max_length = par("video_buffer_max_length"); // 10s
-    video_duration          = par("video_duration"); // 30s
+    video_duration          = par("video_duration"); // 10m
     manifest_size           = par("manifest_size"); // 100000
 
-    numRequestsToSend = mpd->getSegments().size();
+    std::cout << "Video time=" << mpd->getMediaPresentationDuration() << " Segment=" << mpd->getMaxSegmentDuration() << std::endl;
+
+    numRequestsToSend = mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
+
+    videoBuffer->numRequestsToSend = numRequestsToSend;
 
     video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
     video_buffer                 = 0;
@@ -62,11 +67,6 @@ void DashClient::initialize(int stage)
 
 	WATCH(video_buffer);
     WATCH(video_playback_pointer);
-
-//    if (stopTime >= SIMTIME_ZERO && stopTime < startTime){
-//        throw cRuntimeError("Invalid startTime/stopTime parameters");
-//    }
-//    timeoutMsg = new cMessage("timer");
 
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
@@ -78,36 +78,38 @@ void DashClient::decodePacket(Packet *vp)
 
 void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
+    TcpAppBase::socketDataArrived(socket, msg, urgent);
     std::cout << "========================================" << std::endl;
     std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
     std::cout << "Request Number=" << numRequestsToSend << std::endl;
     std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
     std::cout << "Data Length=" << msg->getDataLength() << std::endl;
-
-    TcpAppBase::socketDataArrived(socket, msg, urgent);
-
     std::cout << "Packets Received=" << packetsRcvd << std::endl;
-    std::cout << "Bytes Received=" << bytesRcvd << std::endl;
+    std::cout << "Bytes Received=" << videoBuffer->bytesRcvd << std::endl;
     std::cout << "Global Time=" << simTime() << std::endl;
 
-    if(bytesRcvd >= currentSegment->getSegmentSize() && numRequestsToSend > 0){
+    videoBuffer->bytesRcvd += bytesRcvd;
+
+    if(bytesRcvd >= videoBuffer->segmentSize && numRequestsToSend > 0){
         std::cout << "Reply arrived" << std::endl;
 
-        bytesRcvd = 0;
-
         simtime_t d = simTime();
+
+        videoBuffer->bytesRcvd = bytesRcvd = 0;
+
         rescheduleOrDeleteTimer(d, MSGKIND_SEND);
     }
 }
-
-
 
 void DashClient::socketEstablished(TcpSocket *socket)
 {
     TcpAppBase::socketEstablished(socket);
 
-    if (!earlySend)
+    if (!earlySend){
+        prepareRequest();
+
         sendRequest();
+    }
 }
 
 void DashClient::socketClosed(TcpSocket *socket)
@@ -139,18 +141,28 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
     TcpBasicClientApp::handleCrashOperation(operation);
 }
 
-void DashClient::sendRequest()
+void DashClient::prepareRequest()
 {
     currentSegment = new Segment();
-    MPDSegment &segment = mpd->getSegment(segIndex);
 
-    currentSegment->setValues(segment.bandwidth);
+    MPDSegment &segment = (false) ? mpd->getLowRepresentation() : mpd->getHighRepresentation();
+
+    currentSegment->setValues(segment.bandwidth/videoBuffer->numRequestsToSend, segment.frameRate, segment.width, segment.height);
     currentSegment->setSegmentNumber(segIndex);
-    segIndex++;
-    numRequestsToSend--;
 
+    videoBuffer->bytesRcvd = 0;
+    videoBuffer->segmentSize = segment.bandwidth / videoBuffer->numRequestsToSend;
+    videoBuffer->segmentframes = segment.frameRate;
+    videoBuffer->reqtime = simTime();
+
+    std::cout << "Bandwith=" << segment.bandwidth << std::endl;
+    std::cout << "Segment Size=" << videoBuffer->segmentSize << std::endl;
+}
+
+void DashClient::sendRequest()
+{
     long requestLength = par("requestLength");
-    long replyLength   = currentSegment->getSegmentSize(); // Fix it later
+    long replyLength   = videoBuffer->segmentSize; // Fix it later
 
     if (requestLength < 1)
         requestLength = 1;
@@ -173,6 +185,9 @@ void DashClient::sendRequest()
               << "remaining " << numRequestsToSend - 1 << " request\n";
 
     sendPacket(packet);
+
+    segIndex++;
+    numRequestsToSend--;
 }
 
 void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
@@ -198,16 +213,12 @@ void DashClient::handleTimer(cMessage *msg)
             // significance of earlySend: if true, data will be sent already
             // in the ACK of SYN, otherwise only in a separate packet (but still
             // immediately)
-            if (earlySend)
-                sendRequest();
-
-            std::cout << "[handleTimer] Connection established ." << std::endl;
-
+//            if (earlySend)
+//                sendRequest();
             break;
 
         case MSGKIND_SEND:
             sendRequest();
-            numRequestsToSend--;
             // no scheduleAt(): next request will be sent when reply to this one
             // arrives (see socketDataArrived())
             break;

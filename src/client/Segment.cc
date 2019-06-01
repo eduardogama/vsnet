@@ -36,10 +36,13 @@ int Segment::getSegmentSize()
 {
     return segmentSize;
 }
-void Segment::setValues(int SegmentSize)
+void Segment::setValues(int SegmentSize, int frameRate, int width, int height)
 {
-	segmentSize = SegmentSize;
-//	segment = new VideoFrame[segmentSize];
+	this->segmentSize = SegmentSize;
+	this->frameRate = frameRate;
+	this->width = width;
+	this->height = height;
+	//	segment = new VideoFrame[segmentSize];
 }
 bool Segment::isComplete()
 {

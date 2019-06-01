@@ -22,11 +22,14 @@ void MPDRequestHandler::ReadMPD(std::string path_mpd)
         return;
     }
     
-    mpd_handler.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
-    mpd_handler.duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
-    
-    std::cout << mpd_handler.title    << std::endl;
-	std::cout << mpd_handler.duration << std::endl;
+    mpdhandler.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
+
+    this->mediaPresentationDuration = 10*60;
+    this->maxSegmentDuration = 4;
+
+//	std::string duration = doc.child("MPD").attribute("mediaPresentationDuration");
+    std::cout << this->mediaPresentationDuration << std::endl;
+    std::cout << this->maxSegmentDuration << std::endl;
 
     for (pugi::xml_node tool = doc.child("MPD").child("Period").child("AdaptationSet").first_child(); tool; tool = tool.next_sibling())
     {
@@ -66,10 +69,31 @@ void MPDRequestHandler::printSegments()
 
 vector<MPDSegment> &MPDRequestHandler::getSegments()
 {
-    return (mpd_handler.segments);
+    return (mpdhandler.segments);
+}
+
+MPDSegment &MPDRequestHandler::getHighRepresentation()
+{
+    return mpdhandler.segments[mpdhandler.segments.size()-1];
+}
+
+MPDSegment &MPDRequestHandler::getLowRepresentation()
+{
+    return mpdhandler.segments[0];
 }
 
 MPDSegment &MPDRequestHandler::getSegment(int value)
 {
-    return mpd_handler.segments[value];
+    return mpdhandler.segments[value];
 }
+
+simtime_t MPDRequestHandler::getMediaPresentationDuration()
+{
+    return this->mediaPresentationDuration;
+}
+
+simtime_t MPDRequestHandler::getMaxSegmentDuration()
+{
+    return this->maxSegmentDuration;
+}
+

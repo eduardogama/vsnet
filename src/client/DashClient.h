@@ -32,8 +32,6 @@ typedef struct DashPlayback_t{
 	int height;
 } DashPlayback;
 
-
-
 class DashClient : public TcpBasicClientApp
 {
 	public:
@@ -87,6 +85,8 @@ class DashClient : public TcpBasicClientApp
 		 * check if we whether enough frames eqaul to startup buffering to play
 		 */
 	/*	virtual void checkForPlaying();*/
+
+        void prepareRequest();
 
 		/** Redefined. **/
 		virtual void sendRequest() override;

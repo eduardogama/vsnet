@@ -10,10 +10,15 @@
 #include <string>
 #include <vector>
 
+#include <omnetpp.h>
+#include <stdlib.h>
+
 #include "parser/pugixml.hpp"
 
 
 using namespace std;
+//using namespace inet;
+using namespace omnetpp;
 
 
 typedef struct MPDSegment_t{
@@ -63,10 +68,22 @@ class MPDRequestHandler {
         void ReadMPD(std::string path_mpd);
 
         vector<MPDSegment> &getSegments();
+
+        MPDSegment &getHighRepresentation();
+
+        MPDSegment &getLowRepresentation();
+
         MPDSegment &getSegment(int value);
 
+        simtime_t getMediaPresentationDuration();
+
+        simtime_t getMaxSegmentDuration();
+
     protected:
-        MPDFile mpd_handler;
+        simtime_t mediaPresentationDuration;
+        simtime_t maxSegmentDuration;
+
+        MPDFile mpdhandler;
 };
 
 #endif /* MPDREQUESTHANDLER_H_ */
