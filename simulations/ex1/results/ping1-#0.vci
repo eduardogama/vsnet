@@ -1,4 +1,4 @@
-file 78717 1553527660                                           
+file 78717 1559433864                                           
 version 2
 run ping1-0-20190325-12:27:07-19821
 attr configname ping1
@@ -33,134 +33,133 @@ param *.visualizer.interfaceTableVisualizer.nodeFilter "\"not (*switch* or *Swit
 vector 0 ex1.client.app[0] pingTxSeq:vector ETV
 attr interpolationmode none
 attr title "ping tx seq, vector"
+0	5684 2546 1 3368 0.548813502304 99.548813502304 100 0 99 4950 328350
 vector 1 ex1.client.eth[0].encap encapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source encapPk
 attr title "packets encapsulated, vector(packetBytes)"
+1	8230 2556 4 3370 0.548813502304 99.548813502304 100 84 84 8400 705600
 vector 2 ex1.client.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, vector(packetBytes)"
+2	10786 2656 5 3371 0.548813502304 99.548813502304 100 102 102 10200 1040400
 vector 3 ex1.client.eth[0].mac txPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToLower
 attr title "packets transmitted, vector(packetBytes)"
+3	13442 2656 6 3372 0.548822302304 99.548822302304 100 102 102 10200 1040400
 vector 4 ex1.router1.eth[0].mac rxPkOk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source rxPkOk
 attr title "packets received OK, vector(packetBytes)"
+4	16098 2656 8 3374 0.548922302304 99.548922302304 100 102 102 10200 1040400
 vector 5 ex1.router1.eth[0].mac passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+5	18754 2656 8 3374 0.548922302304 99.548922302304 100 102 102 10200 1040400
 vector 6 ex1.router1.eth[0].encap decapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source decapPk
 attr title "packets decapsulated, vector(packetBytes)"
+6	21410 2556 9 3375 0.548922302304 99.548922302304 100 84 84 8400 705600
 vector 7 ex1.router1.eth[1].encap encapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source encapPk
 attr title "packets encapsulated, vector(packetBytes)"
+7	23966 2557 11 3377 0.548922302304 99.548922302304 100 84 84 8400 705600
 vector 8 ex1.router1.eth[1].mac packetReceivedFromUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, vector(packetBytes)"
+8	26523 2657 12 3378 0.548922302304 99.548922302304 100 102 102 10200 1040400
 vector 9 ex1.router1.eth[1].mac txPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToLower
 attr title "packets transmitted, vector(packetBytes)"
+9	29180 2657 13 3379 0.548931102304 99.548931102304 100 102 102 10200 1040400
 vector 10 ex1.server.eth[0].mac rxPkOk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source rxPkOk
 attr title "packets received OK, vector(packetBytes)"
+10	31837 2758 15 3381 0.549031102304 99.549031102304 100 102 102 10200 1040400
 vector 11 ex1.server.eth[0].mac passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+11	34595 2758 15 3381 0.549031102304 99.549031102304 100 102 102 10200 1040400
 vector 12 ex1.server.eth[0].encap decapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source decapPk
 attr title "packets decapsulated, vector(packetBytes)"
+12	37353 2658 16 3382 0.549031102304 99.549031102304 100 84 84 8400 705600
 vector 13 ex1.server.eth[0].encap encapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source encapPk
 attr title "packets encapsulated, vector(packetBytes)"
+13	40011 2658 20 3386 0.549031102304 99.549031102304 100 84 84 8400 705600
 vector 14 ex1.server.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, vector(packetBytes)"
+14	42669 2758 21 3387 0.549031102304 99.549031102304 100 102 102 10200 1040400
 vector 15 ex1.server.eth[0].mac txPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToLower
 attr title "packets transmitted, vector(packetBytes)"
+15	45427 2758 22 3388 0.549039902304 99.549039902304 100 102 102 10200 1040400
 vector 16 ex1.router1.eth[1].mac rxPkOk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source rxPkOk
 attr title "packets received OK, vector(packetBytes)"
+16	48185 2758 24 3390 0.549139902304 99.549139902304 100 102 102 10200 1040400
 vector 17 ex1.router1.eth[1].mac passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+17	50943 2758 24 3390 0.549139902304 99.549139902304 100 102 102 10200 1040400
 vector 18 ex1.router1.eth[1].encap decapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source decapPk
 attr title "packets decapsulated, vector(packetBytes)"
+18	53701 2658 25 3391 0.549139902304 99.549139902304 100 84 84 8400 705600
 vector 19 ex1.router1.eth[0].encap encapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source encapPk
 attr title "packets encapsulated, vector(packetBytes)"
+19	56359 2658 27 3393 0.549139902304 99.549139902304 100 84 84 8400 705600
 vector 20 ex1.router1.eth[0].mac packetReceivedFromUpper:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetReceivedFromUpper
 attr title "packet bytes from higher layer, vector(packetBytes)"
+20	59017 2758 28 3394 0.549139902304 99.549139902304 100 102 102 10200 1040400
 vector 21 ex1.router1.eth[0].mac txPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToLower
 attr title "packets transmitted, vector(packetBytes)"
+21	61775 2758 29 3395 0.549148702304 99.549148702304 100 102 102 10200 1040400
 vector 22 ex1.client.eth[0].mac rxPkOk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source rxPkOk
 attr title "packets received OK, vector(packetBytes)"
+22	64533 2758 31 3397 0.549248702304 99.549248702304 100 102 102 10200 1040400
 vector 23 ex1.client.eth[0].mac passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source packetSentToUpper
 attr title "packets passed to higher layer, vector(packetBytes)"
+23	67291 2758 31 3397 0.549248702304 99.549248702304 100 102 102 10200 1040400
 vector 24 ex1.client.eth[0].encap decapPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr source decapPk
 attr title "packets decapsulated, vector(packetBytes)"
+24	70049 2659 32 3398 0.549248702304 99.549248702304 100 84 84 8400 705600
 vector 25 ex1.client.app[0] pingRxSeq:vector ETV
 attr interpolationmode none
 attr title "ping rx seq, vector"
+25	72708 2649 34 3400 0.549248702304 99.549248702304 100 0 99 4950 328350
 vector 26 ex1.client.app[0] rtt:vector ETV
 attr interpolationmode none
 attr title "ping round-trip time, vector"
 attr unit s
-0	5684 2546 1 3368 0.548813502304 99.548813502304 100 0 99 4950 328350
-1	8230 2556 4 3370 0.548813502304 99.548813502304 100 84 84 8400 705600
-2	10786 2656 5 3371 0.548813502304 99.548813502304 100 102 102 10200 1040400
-3	13442 2656 6 3372 0.548822302304 99.548822302304 100 102 102 10200 1040400
-4	16098 2656 8 3374 0.548922302304 99.548922302304 100 102 102 10200 1040400
-5	18754 2656 8 3374 0.548922302304 99.548922302304 100 102 102 10200 1040400
-6	21410 2556 9 3375 0.548922302304 99.548922302304 100 84 84 8400 705600
-7	23966 2557 11 3377 0.548922302304 99.548922302304 100 84 84 8400 705600
-8	26523 2657 12 3378 0.548922302304 99.548922302304 100 102 102 10200 1040400
-9	29180 2657 13 3379 0.548931102304 99.548931102304 100 102 102 10200 1040400
-10	31837 2758 15 3381 0.549031102304 99.549031102304 100 102 102 10200 1040400
-11	34595 2758 15 3381 0.549031102304 99.549031102304 100 102 102 10200 1040400
-12	37353 2658 16 3382 0.549031102304 99.549031102304 100 84 84 8400 705600
-13	40011 2658 20 3386 0.549031102304 99.549031102304 100 84 84 8400 705600
-14	42669 2758 21 3387 0.549031102304 99.549031102304 100 102 102 10200 1040400
-15	45427 2758 22 3388 0.549039902304 99.549039902304 100 102 102 10200 1040400
-16	48185 2758 24 3390 0.549139902304 99.549139902304 100 102 102 10200 1040400
-17	50943 2758 24 3390 0.549139902304 99.549139902304 100 102 102 10200 1040400
-18	53701 2658 25 3391 0.549139902304 99.549139902304 100 84 84 8400 705600
-19	56359 2658 27 3393 0.549139902304 99.549139902304 100 84 84 8400 705600
-20	59017 2758 28 3394 0.549139902304 99.549139902304 100 102 102 10200 1040400
-21	61775 2758 29 3395 0.549148702304 99.549148702304 100 102 102 10200 1040400
-22	64533 2758 31 3397 0.549248702304 99.549248702304 100 102 102 10200 1040400
-23	67291 2758 31 3397 0.549248702304 99.549248702304 100 102 102 10200 1040400
-24	70049 2659 32 3398 0.549248702304 99.549248702304 100 84 84 8400 705600
-25	72708 2649 34 3400 0.549248702304 99.549248702304 100 0 99 4950 328350
-26	75357 3359 34 3400 0.549248702304 99.549248702304 100 0.0004352 0.0004352 0.04352 1.8939904e-05
-
+26	75357 3360 34 3400 0.549248702304 99.549248702304 100 0.0004352 0.0004352 0.04352 1.8939904e-05

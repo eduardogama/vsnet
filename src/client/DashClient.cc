@@ -5,11 +5,27 @@
 
 #include "DashClient.h"
 
-#include "inet/applications/tcpapp/GenericAppMsg_m.h"
-#include "inet/common/packet/Packet.h"
-#include "inet/common/TimeTag_m.h"
+#include <omnetpp/cexception.h>
+#include <omnetpp/clog.h>
+#include <omnetpp/cmessage.h>
+#include <omnetpp/cobjectfactory.h>
+#include <omnetpp/cpar.h>
+#include <omnetpp/csimulation.h>
+#include <omnetpp/cstringtokenizer.h>
+#include <omnetpp/cwatch.h>
+#include <omnetpp/platdep/platdefs.h>
+#include <omnetpp/regmacros.h>
+#include <omnetpp/simtime.h>
+#include <omnetpp/simtime_t.h>
 
-#include <unistd.h>
+#include "../../../inet4/src/inet/applications/tcpapp/GenericAppMsg_m.h"
+#include "../../../inet4/src/inet/common/InitStages.h"
+#include "../../../inet4/src/inet/common/packet/chunk/Chunk.h"
+#include "../../../inet4/src/inet/common/packet/chunk/FieldsChunk.h"
+#include "../../../inet4/src/inet/common/Ptr.h"
+#include "../../../inet4/src/inet/common/TimeTag_m.h"
+#include "../../../inet4/src/inet/common/Units.h"
+#include "../parser/pugixml.hpp"
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
@@ -33,42 +49,75 @@ void DashClient::initialize(int stage)
 	if (stage != INITSTAGE_APPLICATION_LAYER)
 	    return;
 
-    EV_INFO << getFullPath() << "Initializing DashClient ... \n";
+    this->videoBuffer  = new VideoBuffer();
+    this->dashplayback = new DashPlayback();
+    this->mpd          = new MPDRequestHandler();
 
-    videoBuffer = new VideoBuffer();
-
-    dashplayback = new DashPlayback();
-
-    mpd = new MPDRequestHandler();
-
-	mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
-
-    segIndex = 0;
+    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/sample.mpd");
 
     // read Adaptive Video (AV) parameters
     const char *str = par("video_packet_size_per_second").stringValue();
-    video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
+    this->video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
 
-    video_buffer_max_length = par("video_buffer_max_length"); // 10s
-    video_duration          = par("video_duration"); // 10m
-    manifest_size           = par("manifest_size"); // 100000
+    this->video_buffer_max_length = par("video_buffer_max_length"); // 10s
+    this->video_duration          = par("video_duration"); // 10m
+    this->manifest_size           = par("manifest_size"); // 100000
 
-    std::cout << "Video time=" << mpd->getMediaPresentationDuration() << " Segment=" << mpd->getMaxSegmentDuration() << std::endl;
+    std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
 
-    numRequestsToSend = mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
+    this->numRequestsToSend = this->mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
 
-    videoBuffer->numRequestsToSend = numRequestsToSend;
+    this->videoBuffer->numRequestsToSend = numRequestsToSend;
+    this->videoBuffer->segIndex = 0;
 
-    video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
-    video_buffer                 = 0;
-    video_playback_pointer       = 0;
-    video_current_quality_index  = 0;  // start with min quality
-    video_is_playing             = false;
+    this->video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
+    this->video_buffer                 = 0;
+    this->video_playback_pointer       = 0;
+    this->video_current_quality_index  = 0;  // start with min quality
+    this->video_is_playing             = false;
 
-	WATCH(video_buffer);
-    WATCH(video_playback_pointer);
+	WATCH(this->video_buffer);
+    WATCH(this->video_playback_pointer);
+
+    WATCH(this->videoBuffer->segIndex);
+
+    this->DASH_seg_cmplt = registerSignal("DASH_seg_cmplt");
+    emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
 
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
+}
+
+void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
+
+    cancelEvent(timeoutMsg);
+
+    if(stopTime >= 0) {
+        timeoutMsg->setKind(msgKind);
+        scheduleAt(d, timeoutMsg);
+    } else{
+        delete timeoutMsg;
+        timeoutMsg = nullptr;
+    }
+}
+
+void DashClient::handleTimer(cMessage *msg)
+{
+    std::cout <<  "[handleTimer] Handle Timer " << msg->getKind() << std::endl;
+    switch (msg->getKind()) {
+        case MSGKIND_CONNECT:
+            connect();    // active OPEN
+
+            break;
+
+        case MSGKIND_SEND:
+            sendRequest();
+            // no scheduleAt(): next request will be sent when reply to this one
+            // arrives (see socketDataArrived())
+            break;
+
+        default:
+            throw cRuntimeError("Invalid timer msg: kind=%d", msg->getKind());
+    }
 }
 
 void DashClient::decodePacket(Packet *vp)
@@ -97,6 +146,7 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 
         videoBuffer->bytesRcvd = bytesRcvd = 0;
 
+        emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
         rescheduleOrDeleteTimer(d, MSGKIND_SEND);
     }
 }
@@ -107,7 +157,6 @@ void DashClient::socketEstablished(TcpSocket *socket)
 
     if (!earlySend){
         prepareRequest();
-
         sendRequest();
     }
 }
@@ -148,7 +197,7 @@ void DashClient::prepareRequest()
     MPDSegment &segment = (false) ? mpd->getLowRepresentation() : mpd->getHighRepresentation();
 
     currentSegment->setValues(segment.bandwidth/videoBuffer->numRequestsToSend, segment.frameRate, segment.width, segment.height);
-    currentSegment->setSegmentNumber(segIndex);
+    currentSegment->setSegmentNumber(this->videoBuffer->segIndex);
 
     videoBuffer->bytesRcvd = 0;
     videoBuffer->segmentSize = segment.bandwidth / videoBuffer->numRequestsToSend;
@@ -186,46 +235,8 @@ void DashClient::sendRequest()
 
     sendPacket(packet);
 
-    segIndex++;
+    this->videoBuffer->segIndex++;
     numRequestsToSend--;
-}
-
-void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
-
-    cancelEvent(timeoutMsg);
-
-    if(stopTime >= 0) {
-        timeoutMsg->setKind(msgKind);
-        scheduleAt(d, timeoutMsg);
-    } else{
-        delete timeoutMsg;
-        timeoutMsg = nullptr;
-    }
-}
-
-void DashClient::handleTimer(cMessage *msg)
-{
-    std::cout <<  "[handleTimer] Handle Timer " << msg->getKind() << std::endl;
-    switch (msg->getKind()) {
-        case MSGKIND_CONNECT:
-            connect();    // active OPEN
-
-            // significance of earlySend: if true, data will be sent already
-            // in the ACK of SYN, otherwise only in a separate packet (but still
-            // immediately)
-//            if (earlySend)
-//                sendRequest();
-            break;
-
-        case MSGKIND_SEND:
-            sendRequest();
-            // no scheduleAt(): next request will be sent when reply to this one
-            // arrives (see socketDataArrived())
-            break;
-
-        default:
-            throw cRuntimeError("Invalid timer msg: kind=%d", msg->getKind());
-    }
 }
 
 void DashClient::ReadMPD()

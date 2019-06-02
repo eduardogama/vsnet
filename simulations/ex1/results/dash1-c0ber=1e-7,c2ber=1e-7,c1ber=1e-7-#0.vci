@@ -1,4 +1,4 @@
-file 2261 1553550013                                            
+file 2261 1559433864                                            
 version 2
 run dash1-0-20190325-18:30:03-20040
 attr configname dash1
@@ -58,11 +58,10 @@ param *.visualizer.interfaceTableVisualizer.nodeFilter "\"not (*switch* or *Swit
 
 vector 0 ex1.client.app[0] DASHBufferLength:vector ETV
 attr title "Video buffer length (in seconds), vector"
+0	2236 8 0 0 0 0 1 0 0 0 0
 vector 1 ex1.client.app[0] DASHVideoPlaybackPointer:vector ETV
 attr title "Video playback pointer, vector"
+1	2244 8 0 0 0 0 1 0 0 0 0
 vector 2 ex1.client.app[0] DASHQualityLevel:vector ETV
 attr title "Requested quality level, vector"
-0	2236 8 0 0 0 0 1 0 0 0 0
-1	2244 8 0 0 0 0 1 0 0 0 0
-2	2252 8 0 0 0 0 1 0 0 0 0
-
+2	2252 9 0 0 0 0 1 0 0 0 0

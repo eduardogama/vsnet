@@ -17,6 +17,7 @@ class VideoBuffer
 		short int numOfBFrame; /**<Number of B frames between 'I' and 'P' or between two 'P' frames; */
 		int bufferSize; /**< number of chunk available in the buffer*/
 	public:
+		int segIndex;
 		int bytesRcvd;
         int segmentSize; /**< number of frames available in a chunk*/
 		int interactiveChunkStart;

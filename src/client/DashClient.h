@@ -111,7 +111,6 @@ class DashClient : public TcpBasicClientApp
         virtual void handleStopOperation(LifecycleOperation *operation) override;
         virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
-
 	protected:
 
         Segment *currentSegment;
@@ -120,7 +119,6 @@ class DashClient : public TcpBasicClientApp
 		DashPlayback *dashplayback;
 		
 		MPDRequestHandler *mpd;
-		int segIndex;
 
         // Adaptive Video (AV) parameters
         std::vector<int> video_packet_size_per_second;
@@ -142,6 +140,8 @@ class DashClient : public TcpBasicClientApp
         simsignal_t DASH_quality_level_signal;
         simsignal_t DASH_video_is_playing_signal;
         simsignal_t DASH_playback_pointer;
+
+        simsignal_t DASH_seg_cmplt;
 
 		std::vector <int> requestedChunks;
 

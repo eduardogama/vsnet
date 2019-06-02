@@ -1,0 +1,690 @@
+version 2
+run Simple-Dash-0-20190602-18:03:03-21634
+attr configname Simple-Dash
+attr datetime 20190602-18:03:03
+attr experiment Simple-Dash
+attr inifile simple_omnetpp.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network scenario
+attr processid 21634
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param **.client*.app[*].typename "\"DashClient\""
+param **.client*.app[*].localAddress "\"client\""
+param **.client*.app[*].connectAddress "\"server\""
+param **.client*.app[*].connectPort 1000
+param **.server.app[*].typename "\"TcpGenericServerApp\""
+param **.server.app[*].localAddress "\"server\""
+param **.server.app[*].localPort 1000
+param **.client.numApps 1
+param **.server.numApps 1
+param **.tcp.advertisedWindow 65535
+param **.tcp.delayedAcksEnabled false
+param **.tcp.nagleEnabled true
+param **.tcp.limitedTransmitEnabled false
+param **.tcp.increasedIWEnabled false
+param **.tcp.sackSupport false
+param **.tcp.windowScalingSupport false
+param **.tcp.timestampSupport false
+param **.tcp.mss 1452
+param **.tcp.tcpAlgorithmClass "\"TcpReno\""
+param **.tcp.recordStats true
+
+scalar scenario.client.lo[0].lo rcvdPkFromHl:count 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar scenario.client.lo[0].lo rcvdPkFromHl:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar scenario.client.lo[0].lo passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar scenario.client.lo[0].lo passedUpPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+statistic scenario.client.ppp[0].queue queueingTime:histogram
+field count 3002
+field mean 1.8787475016656e-06
+field stddev 8.1935082130869e-06
+field min 0
+field max 3.76e-05
+field sum 0.00564
+field sqrsum 2.12064e-07
+attr interpolationmode none
+attr title "queueing time, histogram"
+bin	-inf	0
+bin	0	2852
+bin	1e-06	0
+bin	2e-06	0
+bin	3e-06	0
+bin	4e-06	0
+bin	5e-06	0
+bin	6e-06	0
+bin	7e-06	0
+bin	8e-06	0
+bin	9e-06	0
+bin	1e-05	0
+bin	1.1e-05	0
+bin	1.2e-05	0
+bin	1.3e-05	0
+bin	1.4e-05	0
+bin	1.5e-05	0
+bin	1.6e-05	0
+bin	1.7e-05	0
+bin	1.8e-05	0
+bin	1.9e-05	0
+bin	2e-05	0
+bin	2.1e-05	0
+bin	2.2e-05	0
+bin	2.3e-05	0
+bin	2.4e-05	0
+bin	2.5e-05	0
+bin	2.6e-05	0
+bin	2.7e-05	0
+bin	2.8e-05	0
+bin	2.9e-05	0
+bin	3e-05	0
+bin	3.1e-05	0
+bin	3.2e-05	0
+bin	3.3e-05	0
+bin	3.4e-05	0
+bin	3.5e-05	0
+bin	3.6e-05	0
+bin	3.7e-05	150
+bin	3.8e-05	0
+bin	3.9e-05	0
+bin	4e-05	0
+bin	4.1e-05	0
+bin	4.2e-05	0
+bin	4.3e-05	0
+bin	4.4e-05	0
+bin	4.5e-05	0
+bin	4.6e-05	0
+bin	4.7e-05	0
+scalar scenario.client.ppp[0].queue queueLength:max 1
+attr interpolationmode sample-hold
+attr title "queue length, max"
+scalar scenario.client.ppp[0].queue queueLength:timeavg 0.0013124864257139
+attr interpolationmode sample-hold
+attr title "queue length, timeavg"
+scalar scenario.client.ppp[0].queue packetReceived:count 3002
+attr interpolationmode none
+attr title "received packets, count"
+scalar scenario.client.ppp[0].queue packetReceived:sum(packetBytes) 150084
+attr interpolationmode none
+attr title "received packets, sum(packetBytes)"
+scalar scenario.client.ppp[0].queue dropPk:count 0
+attr interpolationmode none
+attr source packetDropped
+attr title "dropped packets, count"
+scalar scenario.client.ppp[0].queue dropPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropped
+attr title "dropped packets, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp transmissionState:timeavg 0.031853021626494
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "tx state, timeavg"
+scalar scenario.client.ppp[0].ppp rxPkOk:count 3001
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar scenario.client.ppp[0].ppp rxPkOk:sum(packetBytes) 4077201
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp txPk:count 3002
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar scenario.client.ppp[0].ppp txPk:sum(packetBytes) 171098
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp rcvdPkFromHl:count 3002
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar scenario.client.ppp[0].ppp rcvdPkFromHl:sum(packetBytes) 150084
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp passedUpPk:count 3001
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar scenario.client.ppp[0].ppp passedUpPk:sum(packetBytes) 4056194
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar scenario.client.ppp[0].ppp packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar scenario.client.ppp[0].ppp packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar scenario.client.ppp[0].ppp packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropAddressResolutionFailed:count 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, count"
+scalar scenario.client.ipv4.ip packetDropAddressResolutionFailed:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropHopLimitReached:count 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, count"
+scalar scenario.client.ipv4.ip packetDropHopLimitReached:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropForwardingDisabled:count 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, count"
+scalar scenario.client.ipv4.ip packetDropForwardingDisabled:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropNoInterfaceFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, count"
+scalar scenario.client.ipv4.ip packetDropNoInterfaceFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropNoRouteFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, count"
+scalar scenario.client.ipv4.ip packetDropNoRouteFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, sum(packetBytes)"
+scalar scenario.client.ipv4.ip packetDropUndefined:count 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, count"
+scalar scenario.client.ipv4.ip packetDropUndefined:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, sum(packetBytes)"
+scalar scenario.client.ipv4.arp arpResolutionFailed:count 0
+attr title "ARP failed resolutions, count"
+scalar scenario.client.ipv4.arp arpResolutionCompleted:count 0
+attr title "ARP completed resolutions, count"
+scalar scenario.client.ipv4.arp arpResolutionInitiated:count 0
+attr title "ARP initiated resolutions, count"
+scalar scenario.client.ipv4.arp arpReplySent:count 0
+attr source arpReplySent
+attr title "ARP replies sent, count"
+scalar scenario.client.ipv4.arp arpReplySent:sum(packetBytes) 0
+attr source arpReplySent
+attr title "ARP replies sent, sum(packetBytes)"
+scalar scenario.client.ipv4.arp arpRequestSent:count 0
+attr source arpRequestSent
+attr title "ARP request sent, count"
+scalar scenario.client.ipv4.arp arpRequestSent:sum(packetBytes) 0
+attr source arpRequestSent
+attr title "ARP request sent, sum(packetBytes)"
+scalar scenario.client.udp packetReceived:count 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, count"
+scalar scenario.client.udp packetReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, sum(packetBytes)"
+scalar scenario.client.udp packetSent:count 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, count"
+scalar scenario.client.udp packetSent:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, sum(packetBytes)"
+scalar scenario.client.udp passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, count"
+scalar scenario.client.udp droppedPkWrongPort:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+scalar scenario.client.udp droppedPkBadChecksum:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+statistic scenario.client.app[0] DASH_seg_cmplt:stats
+field count 150
+field mean 74.5
+field stddev 43.445367992457
+field min 0
+field max 149
+field sum 11175
+field sqrsum 1113775
+attr title "Segment Received, stats"
+statistic scenario.client.app[0] DASH_seg_cmplt:histogram
+field count 150
+field mean 74.5
+field stddev 43.445367992457
+field min 0
+field max 149
+field sum 11175
+field sqrsum 1113775
+attr title "Segment Received, histogram"
+bin	-inf	0
+bin	0	2
+bin	2	2
+bin	4	2
+bin	6	2
+bin	8	2
+bin	10	2
+bin	12	2
+bin	14	2
+bin	16	2
+bin	18	2
+bin	20	2
+bin	22	2
+bin	24	2
+bin	26	2
+bin	28	2
+bin	30	2
+bin	32	2
+bin	34	2
+bin	36	2
+bin	38	2
+bin	40	2
+bin	42	2
+bin	44	2
+bin	46	2
+bin	48	2
+bin	50	2
+bin	52	2
+bin	54	2
+bin	56	2
+bin	58	2
+bin	60	2
+bin	62	2
+bin	64	2
+bin	66	2
+bin	68	2
+bin	70	2
+bin	72	2
+bin	74	2
+bin	76	2
+bin	78	2
+bin	80	2
+bin	82	2
+bin	84	2
+bin	86	2
+bin	88	2
+bin	90	2
+bin	92	2
+bin	94	2
+bin	96	2
+bin	98	2
+bin	100	2
+bin	102	2
+bin	104	2
+bin	106	2
+bin	108	2
+bin	110	2
+bin	112	2
+bin	114	2
+bin	116	2
+bin	118	2
+bin	120	2
+bin	122	2
+bin	124	2
+bin	126	2
+bin	128	2
+bin	130	2
+bin	132	2
+bin	134	2
+bin	136	2
+bin	138	2
+bin	140	2
+bin	142	2
+bin	144	2
+bin	146	2
+bin	148	2
+bin	150	0
+bin	152	0
+bin	154	0
+bin	156	0
+bin	158	0
+bin	160	0
+bin	162	0
+bin	164	0
+bin	166	0
+bin	168	0
+bin	170	0
+bin	172	0
+bin	174	0
+bin	176	0
+bin	178	0
+bin	180	0
+bin	182	0
+bin	184	0
+bin	186	0
+bin	188	0
+scalar scenario.server.lo[0].lo rcvdPkFromHl:count 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar scenario.server.lo[0].lo rcvdPkFromHl:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar scenario.server.lo[0].lo passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar scenario.server.lo[0].lo passedUpPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+statistic scenario.server.ppp[0].queue queueingTime:histogram
+field count 3001
+field mean 0.010249060446518
+field stddev 0.0068231669697084
+field min 0
+field max 0.0216232
+field sum 30.7574304
+field sqrsum 0.45490158583872
+attr interpolationmode none
+attr title "queueing time, histogram"
+bin	-inf	0
+bin	0	302
+bin	0.0005	0
+bin	0.001	151
+bin	0.0015	0
+bin	0.002	151
+bin	0.0025	0
+bin	0.003	0
+bin	0.0035	151
+bin	0.004	0
+bin	0.0045	151
+bin	0.005	0
+bin	0.0055	2
+bin	0.006	149
+bin	0.0065	0
+bin	0.007	151
+bin	0.0075	0
+bin	0.008	151
+bin	0.0085	0
+bin	0.009	0
+bin	0.0095	151
+bin	0.01	0
+bin	0.0105	150
+bin	0.011	0
+bin	0.0115	0
+bin	0.012	149
+bin	0.0125	0
+bin	0.013	149
+bin	0.0135	0
+bin	0.014	149
+bin	0.0145	0
+bin	0.015	0
+bin	0.0155	149
+bin	0.016	0
+bin	0.0165	149
+bin	0.017	0
+bin	0.0175	0
+bin	0.018	149
+bin	0.0185	0
+bin	0.019	149
+bin	0.0195	0
+bin	0.02	149
+bin	0.0205	0
+bin	0.021	0
+bin	0.0215	149
+bin	0.022	0
+bin	0.0225	0
+bin	0.023	0
+bin	0.0235	0
+bin	0.024	0
+bin	0.0245	0
+bin	0.025	0
+bin	0.0255	0
+bin	0.026	0
+bin	0.0265	0
+bin	0.027	0
+bin	0.0275	0
+scalar scenario.server.ppp[0].queue queueLength:max 19
+attr interpolationmode sample-hold
+attr title "queue length, max"
+scalar scenario.server.ppp[0].queue queueLength:timeavg 7.1575726755034
+attr interpolationmode sample-hold
+attr title "queue length, timeavg"
+scalar scenario.server.ppp[0].queue packetReceived:count 3001
+attr interpolationmode none
+attr title "received packets, count"
+scalar scenario.server.ppp[0].queue packetReceived:sum(packetBytes) 4056194
+attr interpolationmode none
+attr title "received packets, sum(packetBytes)"
+scalar scenario.server.ppp[0].queue dropPk:count 0
+attr interpolationmode none
+attr source packetDropped
+attr title "dropped packets, count"
+scalar scenario.server.ppp[0].queue dropPk:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropped
+attr title "dropped packets, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp transmissionState:timeavg 0.75904552729174
+attr interpolationmode sample-hold
+attr source transmissionStateChanged
+attr title "tx state, timeavg"
+scalar scenario.server.ppp[0].ppp rxPkOk:count 3002
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, count"
+scalar scenario.server.ppp[0].ppp rxPkOk:sum(packetBytes) 171098
+attr interpolationmode none
+attr source rxPkOk
+attr title "packets received OK, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp txPk:count 3001
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, count"
+scalar scenario.server.ppp[0].ppp txPk:sum(packetBytes) 4077201
+attr interpolationmode none
+attr source packetSentToLower
+attr title "packets transmitted, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp rcvdPkFromHl:count 3001
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, count"
+scalar scenario.server.ppp[0].ppp rcvdPkFromHl:sum(packetBytes) 4056194
+attr interpolationmode none
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp passedUpPk:count 3002
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, count"
+scalar scenario.server.ppp[0].ppp passedUpPk:sum(packetBytes) 150084
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed to higher layer, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp packetDropIncorrectlyReceived:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, count"
+scalar scenario.server.ppp[0].ppp packetDropIncorrectlyReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packet drop: incorrectly received, sum(packetBytes)"
+scalar scenario.server.ppp[0].ppp packetDropInterfaceDown:count 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, count"
+scalar scenario.server.ppp[0].ppp packetDropInterfaceDown:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsInterfaceDown(packetDropped)
+attr title "packet drop: interface down, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropAddressResolutionFailed:count 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, count"
+scalar scenario.server.ipv4.ip packetDropAddressResolutionFailed:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsAddressResolutionFailed(packetDropped)
+attr title "packet drop: address resolution failed, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropHopLimitReached:count 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, count"
+scalar scenario.server.ipv4.ip packetDropHopLimitReached:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsHopLimitReached(packetDropped)
+attr title "packet drop: hop limit reached, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropForwardingDisabled:count 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, count"
+scalar scenario.server.ipv4.ip packetDropForwardingDisabled:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsForwardingDisabled(packetDropped)
+attr title "packet drop: forwarding disabled, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropNoInterfaceFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, count"
+scalar scenario.server.ipv4.ip packetDropNoInterfaceFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoInterfaceFound(packetDropped)
+attr title "packet drop: no interface found, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropNoRouteFound:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, count"
+scalar scenario.server.ipv4.ip packetDropNoRouteFound:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsNoRouteFound(packetDropped)
+attr title "packet drop: no route found, sum(packetBytes)"
+scalar scenario.server.ipv4.ip packetDropUndefined:count 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, count"
+scalar scenario.server.ipv4.ip packetDropUndefined:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetDropReasonIsUndefined(packetDropped)
+attr title "packet drop: undefined, sum(packetBytes)"
+scalar scenario.server.ipv4.arp arpResolutionFailed:count 0
+attr title "ARP failed resolutions, count"
+scalar scenario.server.ipv4.arp arpResolutionCompleted:count 0
+attr title "ARP completed resolutions, count"
+scalar scenario.server.ipv4.arp arpResolutionInitiated:count 0
+attr title "ARP initiated resolutions, count"
+scalar scenario.server.ipv4.arp arpReplySent:count 0
+attr source arpReplySent
+attr title "ARP replies sent, count"
+scalar scenario.server.ipv4.arp arpReplySent:sum(packetBytes) 0
+attr source arpReplySent
+attr title "ARP replies sent, sum(packetBytes)"
+scalar scenario.server.ipv4.arp arpRequestSent:count 0
+attr source arpRequestSent
+attr title "ARP request sent, count"
+scalar scenario.server.ipv4.arp arpRequestSent:sum(packetBytes) 0
+attr source arpRequestSent
+attr title "ARP request sent, sum(packetBytes)"
+scalar scenario.server.udp packetReceived:count 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, count"
+scalar scenario.server.udp packetReceived:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, sum(packetBytes)"
+scalar scenario.server.udp packetSent:count 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, count"
+scalar scenario.server.udp packetSent:sum(packetBytes) 0
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, sum(packetBytes)"
+scalar scenario.server.udp passedUpPk:count 0
+attr interpolationmode none
+attr source packetSentToUpper
+attr title "packets passed up, count"
+scalar scenario.server.udp droppedPkWrongPort:count 0
+attr interpolationmode none
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+scalar scenario.server.udp droppedPkBadChecksum:count 0
+attr interpolationmode none
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+scalar scenario.server.app[0] packetReceived:count 150
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, count"
+scalar scenario.server.app[0] packetReceived:sum(packetBytes) 30000
+attr interpolationmode none
+attr source packetReceived
+attr title "packets received, sum(packetBytes)"
+statistic scenario.server.app[0] endToEndDelay:histogram
+field count 0
+field mean -nan
+field stddev nan
+field min nan
+field max nan
+field sum 0
+field sqrsum 0
+attr interpolationmode none
+attr source dataAge(packetReceived)
+attr title "end-to-end delay, histogram"
+attr unit s
+bin	-inf	0
+bin	0	0
+bin	1	0
+statistic scenario.server.app[0] endToEndDelay:weightedHistogram
+field count 0
+field mean -nan
+field stddev nan
+field min nan
+field max nan
+field weights 0
+field weightedSum 0
+field sqrSumWeights 0
+field weightedSqrSum 0
+attr interpolationmode none
+attr source dataAge(packetReceived)
+attr title "end-to-end delay, weightedHistogram"
+attr unit s
+bin	-inf	0
+bin	0	0
+bin	1	0
+scalar scenario.server.app[0] packetSent:count 150
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, count"
+scalar scenario.server.app[0] packetSent:sum(packetBytes) 3936150
+attr interpolationmode none
+attr source packetSent
+attr title "packets sent, sum(packetBytes)"
+
