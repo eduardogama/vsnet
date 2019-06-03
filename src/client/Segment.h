@@ -26,120 +26,134 @@
 #ifndef CHUNK_H_
 #define CHUNK_H_
 
+#include "inet/common/INETDefs.h"
+
 #include "VideoFrame.h"
+
+
+using namespace inet;
 
 class Segment
 {
-protected:
-    int frameRate;
-    int width;
-    int height;
-	int segmentNumber; /**< The segment number of the created object */
-	short int filmNumber;  // Film number of segment- for vod -(AGH)
-	int segmentSize; /**< Number of frames in the segment object*/
-	short int hopCount; /**< Hop count of the segment that traverse through the network*/
-	//double creationTime; /**< Time that the segment is created. It is use for calculating end to end delay*/
-public:
-	VideoFrame* segment; /**< array that keeps video frames as a segment*/
-	/**
-	 * This function is used in order to initialize the segment class
-	 *
-	 * @param SegmentSize number of frame available in this segment
-	 */
-	void setValues(int SegmentSize, int frameRate, int width, int height);
-	/**
-	 * Base class constructor
-	 */
-	Segment();
-	/**
-	 * Base class distructor
-	 */
-	~Segment();
-	/**
-     * @return an integer, it contains segment size
-     */
-    int getSegmentSize();
-	/**
-	 * set a frame in segment array acording to its number
-	 *
-	 * @param VideoFrame a frame to place in this segment
-	 */
-	void setFrame(bool isServer,VideoFrame vFrame);
-	/**
-	 * check whether this segment fill with its frames
-	 *
-	 * @return boolean true if it is contained all frames
-	 */
-	bool isComplete();
-	/**
-	 * set the Film id of this segment-AGH
-	 *
-	* @param FilmNumber is id of film-AGH
-	*/
-	void setFilmNumber(int FilmNumber);
+    protected:
+        simtime_t startTime;
+        simtime_t endTime;
 
-	/**
-	 * set the number of this segment
-	 *
-	 * @param SegmentNumber the number to set for segment number
-	 */
-	void setSegmentNumber(int SegmentNumber);
+        int frameRate;
+        int width;
+        int height;
+        int segmentNumber; /**< The segment number of the created object */
+        short int filmNumber;  // Film number of segment- for vod -(AGH)
+        int segmentSize; /**< Number of frames in the segment object*/
+        short int hopCount; /**< Hop count of the segment that traverse through the network*/
+        //double creationTime; /**< Time that the segment is created. It is use for calculating end to end delay*/
+    public:
+        VideoFrame* segment; /**< array that keeps video frames as a segment*/
+        /**
+         * This function is used in order to initialize the segment class
+         *
+         * @param SegmentSize number of frame available in this segment
+         */
+        void setValues(int SegmentSize, int frameRate, int width, int height);
+        /**
+         * This function is used when the transmission segment is completed
+         *
+         * @param endtime the end time of segment
+         */
+        void endSegment(simtime_t endtime);
+        /**
+         * Base class constructor
+         */
+        Segment();
+        /**
+         * Base class distructor
+         */
+        ~Segment();
+        /**
+         * @return an integer, it contains segment size
+         */
+        int getSegmentSize();
+        /**
+         * set a frame in segment array acording to its number
+         *
+         * @param VideoFrame a frame to place in this segment
+         */
+        void setFrame(bool isServer,VideoFrame vFrame);
+        /**
+         * check whether this segment fill with its frames
+         *
+         * @return boolean true if it is contained all frames
+         */
+        bool isComplete();
+        /**
+         * set the Film id of this segment-AGH
+         *
+        * @param FilmNumber is id of film-AGH
+        */
+        void setFilmNumber(int FilmNumber);
 
-	/* * set the Film id of this segment-AGH
-	 *
-	* @param FilmNumber is id of film-AGH
-	*/
-	 int getFilmNumber(){return filmNumber;};
-	/**
-	 * get the segment number of this segment
-	 *
-	 * @return integer the segment number
-	 */
-	 int getSegmentNumber(){return segmentNumber;}
-	/**
-	 * get the byte size of the segment based on contained frames and other variables
-	 *
-	 * @return integer byte size of this segment
-	 */
-	int getSegmentByteLength();
-	/**
-	 * get the value of the hop that the segment traverse
-	 *
-	 * @return integer hop count number
-	 */
-	int getHopCount(){return hopCount;}
-	/**
-	 * for geting the time of creating this segment
-	 * @return double creation time value
-	 */
-	//double getCreationTime();
-	/**
-	 * set hop count number
-	 *
-	 * @param HopCount to be set
-	 */
-	void setHopCout(int HopCount);
-    /**
-     * standard output stream for Segment,
-     * gives out all contained frames
-     *
-     * @param os the ostream
-     * @param c the Segment
-     * @return the output stream
-     */
-	friend std::ostream& operator<<(std::ostream& os, const Segment& c);
-	/**
-	 * gives the last frame number that is insert in this segment
-	 *
-	 * @return integer las frame numbers
-	 */
-	int getLastFrameNo();
-	/**
-	 * calculate the size of frame that will lost due to late arrival
-	 *
-	 * @param playbackPoint frame number that is currently is playing
-	 * @return integer size of late arrival frames
-	 */
-	int getLateArrivalLossSize(int playBackPoint);
+        /**
+         * set the number of this segment
+         *
+         * @param SegmentNumber the number to set for segment number
+         */
+        void setSegmentNumber(int SegmentNumber);
+
+        /* * set the Film id of this segment-AGH
+         *
+        * @param FilmNumber is id of film-AGH
+        */
+         int getFilmNumber(){return filmNumber;};
+        /**
+         * get the segment number of this segment
+         *
+         * @return integer the segment number
+         */
+         int getSegmentNumber(){return segmentNumber;}
+        /**
+         * get the byte size of the segment based on contained frames and other variables
+         *
+         * @return integer byte size of this segment
+         */
+        int getSegmentByteLength();
+        /**
+         * get the value of the hop that the segment traverse
+         *
+         * @return integer hop count number
+         */
+        int getHopCount(){return hopCount;}
+        /**
+         * for geting the time of creating this segment
+         * @return double creation time value
+         */
+        //double getCreationTime();
+        /**
+         * set hop count number
+         *
+         * @param HopCount to be set
+         */
+        void setHopCout(int HopCount);
+        /**
+         * standard output stream for Segment,
+         * gives out all contained frames
+         *
+         * @param os the ostream
+         * @param c the Segment
+         * @return the output stream
+         */
+        friend std::ostream& operator<<(std::ostream& os, const Segment& c);
+        /**
+         * gives the last frame number that is insert in this segment
+         *
+         * @return integer las frame numbers
+         */
+        int getLastFrameNo();
+        /**
+         * calculate the size of frame that will lost due to late arrival
+         *
+         * @param playbackPoint frame number that is currently is playing
+         * @return integer size of late arrival frames
+         */
+        int getLateArrivalLossSize(int playBackPoint);
 };
 #endif /* CHUNK_H_ */

@@ -25,84 +25,75 @@
 
 #include "Segment.h"
 
-Segment::Segment()
-{
-	segmentNumber = -1;
+Segment::Segment() {
+    segmentNumber = -1;
 }
-Segment::~Segment()
-{
+Segment::~Segment() {
 }
-int Segment::getSegmentSize()
-{
+int Segment::getSegmentSize() {
     return segmentSize;
 }
-void Segment::setValues(int SegmentSize, int frameRate, int width, int height)
-{
-	this->segmentSize = SegmentSize;
-	this->frameRate = frameRate;
-	this->width = width;
-	this->height = height;
-	//	segment = new VideoFrame[segmentSize];
-}
-bool Segment::isComplete()
-{
-	for(int i = 0 ; i<segmentSize ; i++)
-		if(!segment[i].isSet())
-			return false;
-	return true;
-}
-void Segment::setFilmNumber(int FilmNumber)
-{
-	filmNumber=FilmNumber;
-}
-void Segment::setSegmentNumber(int SegmentNumber)
-{
-	segmentNumber = SegmentNumber;
-}
-void Segment::setFrame(bool isServer,VideoFrame vFrame)
-{
-	int ExtractedFrameNum = vFrame.getFrameNumber()%segmentSize;
-	segment[ExtractedFrameNum].setFrame(vFrame);
+void Segment::setValues(int SegmentSize, int frameRate, int width, int height) {
+    this->segmentSize = SegmentSize;
+    this->frameRate = frameRate;
+    this->width = width;
+    this->height = height;
 
+    this->startTime = simTime();
 }
 
-int Segment::getSegmentByteLength()
+void Segment::endSegment(simtime_t endtime)
 {
-	int totalSize = 0;
-	if(isComplete())
-	{
-		for(int i = 0 ; i < segmentSize ; i++)
-			totalSize += segment[i].getFrameLength();
-		return totalSize;
-	}
-	else
-		return -1;
+    this->endTime = endtime;
 }
 
-std::ostream& operator<<(std::ostream& os, const Segment& c)
-{
-	os << c.segmentNumber<< ": ";
-	for(int i = 0 ; i < c.segmentSize ; i++)
-		os << c.segment[i] << " ";
-	return os;
+bool Segment::isComplete() {
+    for (int i = 0; i < segmentSize; i++)
+        if (!segment[i].isSet())
+            return false;
+    return true;
 }
-void Segment::setHopCout(int HopCount)
-{
-	hopCount = HopCount;
+void Segment::setFilmNumber(int FilmNumber) {
+    filmNumber = FilmNumber;
+}
+void Segment::setSegmentNumber(int SegmentNumber) {
+    segmentNumber = SegmentNumber;
+}
+void Segment::setFrame(bool isServer, VideoFrame vFrame) {
+    int ExtractedFrameNum = vFrame.getFrameNumber() % segmentSize;
+    segment[ExtractedFrameNum].setFrame(vFrame);
+}
+
+int Segment::getSegmentByteLength() {
+    int totalSize = 0;
+    if (isComplete()) {
+        for (int i = 0; i < segmentSize; i++)
+            totalSize += segment[i].getFrameLength();
+        return totalSize;
+    } else
+        return -1;
+}
+
+std::ostream& operator<<(std::ostream& os, const Segment& c) {
+    os << c.segmentNumber << ": ";
+    for (int i = 0; i < c.segmentSize; i++)
+        os << c.segment[i] << " ";
+    return os;
+}
+void Segment::setHopCout(int HopCount) {
+    hopCount = HopCount;
 }
 /*double Segment::getCreationTime()
-{
-	return segment[segmentSize -1].getCreationTime();
-}*/
-int Segment::getLastFrameNo()
-{
-	return segment[segmentSize-1].getFrameNumber();
+ {
+ return segment[segmentSize -1].getCreationTime();
+ }*/
+int Segment::getLastFrameNo() {
+    return segment[segmentSize - 1].getFrameNumber();
 }
-int Segment::getLateArrivalLossSize(int playBackPoint)
-{
-	int totalSize = 0;
-	for(int i = 0 ; i < segmentSize ;i++)
-		if(segment[i].getFrameNumber() > playBackPoint)
-			totalSize += segment[i].getFrameLength();
-	return totalSize;
+int Segment::getLateArrivalLossSize(int playBackPoint) {
+    int totalSize = 0;
+    for (int i = 0; i < segmentSize; i++)
+        if (segment[i].getFrameNumber() > playBackPoint)
+            totalSize += segment[i].getFrameLength();
+    return totalSize;
 }

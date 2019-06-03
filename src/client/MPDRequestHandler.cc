@@ -22,10 +22,10 @@ void MPDRequestHandler::ReadMPD(std::string path_mpd)
         return;
     }
     
-    mpdhandler.title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
+    mpdhandler.title = doc.child("MPD").child("ProgramInformation").child_value("Title");
 
     this->mediaPresentationDuration = 10*60;
-    this->maxSegmentDuration = 4;
+    this->maxSegmentDuration = 50;
 
 //	std::string duration = doc.child("MPD").attribute("mediaPresentationDuration");
     std::cout << this->mediaPresentationDuration << std::endl;

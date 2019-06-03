@@ -53,7 +53,7 @@ void DashClient::initialize(int stage)
     this->dashplayback = new DashPlayback();
     this->mpd          = new MPDRequestHandler();
 
-    this->mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
+    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/sample.mpd");
 
     std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
 
@@ -149,12 +149,14 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
     if(bytesRcvd >= videoBuffer->segmentSize && numRequestsToSend > 0){
         std::cout << "Reply arrived" << std::endl;
 
-        simtime_t d = simTime();
+        currentSegment->endSegment(simTime());
+
+        this->videoBuffer->addSegment(*currentSegment);
 
         videoBuffer->bytesRcvd = bytesRcvd = 0;
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
-        rescheduleOrDeleteTimer(d, MSGKIND_SEND);
+        rescheduleOrDeleteTimer(simTime(), MSGKIND_SEND);
     }
 }
 
@@ -165,6 +167,8 @@ void DashClient::socketEstablished(TcpSocket *socket)
     if (!earlySend){
         prepareRequest();
         sendRequest();
+
+        earlySend = true;
     }
 }
 
@@ -201,7 +205,8 @@ void DashClient::prepareRequest()
 {
     currentSegment = new Segment();
 
-    MPDSegment &segment = (false) ? mpd->getLowRepresentation() : mpd->getHighRepresentation();
+    MPDSegment &segment = (!earlySend) ? mpd->getLowRepresentation()
+            : mpd->getHighRepresentation();
 
     currentSegment->setValues(segment.bandwidth/videoBuffer->numRequestsToSend, segment.frameRate, segment.width, segment.height);
     currentSegment->setSegmentNumber(this->videoBuffer->segIndex);
@@ -218,7 +223,7 @@ void DashClient::prepareRequest()
 void DashClient::sendRequest()
 {
     long requestLength = par("requestLength");
-    long replyLength   = videoBuffer->segmentSize; // Fix it later
+    long replyLength   = videoBuffer->segmentSize;// + 52; // Fix it later | 52 is header size
 
     if (requestLength < 1)
         requestLength = 1;

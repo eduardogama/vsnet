@@ -12,19 +12,19 @@ network router_scenario2
     parameters:
         // Channel 1 parameters (to be redefined in .ini file)
         double C1_datarate @unit(bps) = default(2Mbps);
-        double C1_delay @unit(s) = default(0.1us);
+        double C1_delay @unit(s) = default(121ms);
         double C1_per = default(0);
         double C1_ber = default(0);
 
         // Channel 2 parameters (to be redefined in .ini file)
         double C2_datarate @unit(bps) = default(4Mbps);
-        double C2_delay @unit(s) = default(8ms);
+        double C2_delay @unit(s) = default(121ms);
         double C2_per = default(0);
         double C2_ber = default(0);
 
         // Channel 3 parameters (to be redefined in .ini file)
         double C3_datarate @unit(bps) = default(4Mbps);
-        double C3_delay @unit(s) = default(8ms);
+        double C3_delay @unit(s) = default(121ms);
         double C3_per = default(0);
         double C3_ber = default(0);
 

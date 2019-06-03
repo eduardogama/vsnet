@@ -32,6 +32,22 @@ class VideoBuffer
 	    int maxBuffer;
 	    bool isPlaying;
 
+	public:
+
+	    VideoBuffer();
+	    virtual ~VideoBuffer();
+
+	    /**
+         * Estimate bandwith according to avg. throughput
+         *
+         * @return integer bitrate
+         */
+        double estimatedBitRate();
+
+        /**
+         * Add segment in buffer
+         */
+        void addSegment(Segment &s);
 };
 
 #endif /* VIDEOBUFFER_H_ */

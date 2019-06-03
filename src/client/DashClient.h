@@ -36,7 +36,6 @@ typedef struct DashPlayback_t{
 class DashClient : public TcpBasicClientApp
 {
 	public:
-
 		DashClient();
 		~DashClient();
 

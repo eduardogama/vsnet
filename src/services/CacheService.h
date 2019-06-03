@@ -5,8 +5,8 @@
  *      Author: eduardo
  */
 
-#ifndef WEBSERVER_CACHESERVICE_H_
-#define WEBSERVER_CACHESERVICE_H_
+#ifndef SERVICES_CACHESERVICE_H_
+#define SERVICES_CACHESERVICE_H_
 
 #include <vector>
 #include <string>
@@ -31,4 +31,4 @@ class CacheService: public HttpServer {
         vector<Segment> segmentCache;
 };
 
-#endif /* WEBSERVER_CACHESERVICE_H_ */
+#endif /* SERVICES_CACHESERVICE_H_ */
