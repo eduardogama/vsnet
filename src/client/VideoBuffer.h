@@ -20,16 +20,17 @@ class VideoBuffer
 		int segIndex;
 		int bytesRcvd;
         int segmentSize; /**< number of frames available in a chunk*/
-		int interactiveChunkStart;
-		int seekChuncknumbers;
 
 		int numRequestsToSend;
 		simtime_t reqtime;
 
-		int lastSetChunk; /**< last chunk that recently set*/
-		int lastSetFrame; /**< last frame that recently set*/
 		int segmentframes; /**< Number of frames per Group of Picture */
 		vector<Segment> segmentBuffer; /**< video buffer that keeps some number of chunks*/
+
+	    int playbbackPtr;
+	    int minPlayBack;
+	    int maxBuffer;
+	    bool isPlaying;
 
 };
 

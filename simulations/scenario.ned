@@ -16,7 +16,7 @@ network scenario
         channel C extends DatarateChannel
         {
             datarate = 10Mbps;//0.8Mbps
-            delay = 0.1us; //0.565us
+            delay = 121ms; //0.565us
             per = per;
         }
     submodules:

@@ -53,15 +53,7 @@ void DashClient::initialize(int stage)
     this->dashplayback = new DashPlayback();
     this->mpd          = new MPDRequestHandler();
 
-    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/sample.mpd");
-
-    // read Adaptive Video (AV) parameters
-    const char *str = par("video_packet_size_per_second").stringValue();
-    this->video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
-
-    this->video_buffer_max_length = par("video_buffer_max_length"); // 10s
-    this->video_duration          = par("video_duration"); // 10m
-    this->manifest_size           = par("manifest_size"); // 100000
+    this->mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
 
     std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
 
@@ -70,14 +62,14 @@ void DashClient::initialize(int stage)
     this->videoBuffer->numRequestsToSend = numRequestsToSend;
     this->videoBuffer->segIndex = 0;
 
-    this->video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
-    this->video_buffer                 = 0;
-    this->video_playback_pointer       = 0;
-    this->video_current_quality_index  = 0;  // start with min quality
-    this->video_is_playing             = false;
+    this->videoBuffer->playbbackPtr = 0;
+    this->videoBuffer->minPlayBack  = 4;
+    this->videoBuffer->maxBuffer    = 20;
+    this->videoBuffer->isPlaying    = false;
 
-	WATCH(this->video_buffer);
-    WATCH(this->video_playback_pointer);
+    WATCH(this->videoBuffer);
+    WATCH(this->videoBuffer->playbbackPtr);
+    WATCH(this->videoBuffer->minPlayBack);
 
     WATCH(this->videoBuffer->segIndex);
 
@@ -85,6 +77,21 @@ void DashClient::initialize(int stage)
     emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
 
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
+
+    // read Adaptive Video (AV) parameters
+//    const char *str = par("video_packet_size_per_second").stringValue();
+//    this->video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
+
+//    this->video_buffer_max_length = par("video_buffer_max_length"); // 10s
+//    this->video_duration          = par("video_duration"); // 10m
+//    this->manifest_size           = par("manifest_size"); // 100000
+
+
+//    this->video_buffer_min_rebuffering = 3; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
+//    this->video_buffer                 = 0;
+//    this->video_playback_pointer       = 0;
+//    this->video_current_quality_index  = 0;  // start with min quality
+//    this->video_is_playing             = false;
 }
 
 void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
