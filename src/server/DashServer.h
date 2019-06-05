@@ -17,16 +17,22 @@
 #define DASH_DASHSERVER_H_
 
 #include <omnetpp/clistener.h>
+#include <omnetpp/platdep/platdefs.h>
 #include <map>
 
+#include "../../../inet4/src/inet/applications/tcpapp/TcpGenericServerApp.h"
 #include "../../../inet4/src/inet/networklayer/common/L3Address.h"
-#include "inet/applications/tcpapp/TcpServerHostApp.h"
-
 #include "../services/CacheService.h"
+
+#include "inet/transportlayer/contract/tcp/TcpSocket.h"
+
+#include "inet/common/TimeTag_m.h"
+#include "inet/common/packet/chunk/ByteCountChunk.h"
+#include "inet/networklayer/common/L3AddressTag_m.h"
+#include "inet/transportlayer/common/L4PortTag_m.h"
 
 
 using namespace inet;
-using namespace httptools;
 
 struct VideoStreamDash
 {
@@ -38,7 +44,10 @@ struct VideoStreamDash
     long numPkSent = 0;    // number of packets sent
 };
 
-class DashServer :  public  TcpServerHostApp {
+typedef std::map<long int, VideoStreamDash> VideoStreamMap;
+typedef std::map<long int, CacheService> FogMap;
+
+class DashServer :  public  TcpGenericServerApp {
 public:
     DashServer();
     virtual ~DashServer();
@@ -46,14 +55,14 @@ public:
 protected:
     virtual void initialize(int stage) override;
 
+    virtual void handleMessage(cMessage *msg) override;
+
     virtual void clearStreams();
 
     virtual void processStreamRequest(Packet *msg);
     virtual void sendStreamData(cMessage *timer);
 
 protected:
-    typedef std::map<long int, VideoStreamDash> VideoStreamMap;
-    typedef std::map<long int, CacheService> FogMap;
 
     int localPort = -1;
 
