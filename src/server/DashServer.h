@@ -16,15 +16,13 @@
 #ifndef DASH_DASHSERVER_H_
 #define DASH_DASHSERVER_H_
 
-#include <vector>
+#include <omnetpp/clistener.h>
+#include <map>
 
-#include "inet/common/TimeTag_m.h"
-#include "inet/common/packet/chunk/ByteCountChunk.h"
-#include "inet/networklayer/common/L3AddressTag_m.h"
-#include "inet/transportlayer/common/L4PortTag_m.h"
-#include "inet/applications/httptools/server/HttpServer.h"
+#include "../../../inet4/src/inet/networklayer/common/L3Address.h"
+#include "inet/applications/tcpapp/TcpServerHostApp.h"
 
-#include "services/CacheService.h"
+#include "../services/CacheService.h"
 
 
 using namespace inet;
@@ -40,7 +38,7 @@ struct VideoStreamDash
     long numPkSent = 0;    // number of packets sent
 };
 
-class DashServer :  public HttpServer {
+class DashServer :  public  TcpServerHostApp {
 public:
     DashServer();
     virtual ~DashServer();
@@ -52,12 +50,6 @@ protected:
 
     virtual void processStreamRequest(Packet *msg);
     virtual void sendStreamData(cMessage *timer);
-
-    virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
-
-//    virtual void handleStartOperation(LifecycleOperation *operation) override;
-//    virtual void handleStopOperation(LifecycleOperation *operation) override;
-//    virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
 protected:
     typedef std::map<long int, VideoStreamDash> VideoStreamMap;
@@ -80,7 +72,6 @@ protected:
     unsigned int numStreams = 0;             // Number of video streams served
     unsigned long numPkSent = 0;             // Total number of packets sent
     static simsignal_t reqStreamBytesSignal; // Length of video streams served
-
 };
 
 #endif /* DASH_DASHSERVER_H_ */

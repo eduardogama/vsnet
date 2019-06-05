@@ -35,6 +35,34 @@ void DASHApp::initialize(int stage) {
     HttpNodeBase::initialize(stage);
 
     if (stage != 3) return;
+
+    this->videoBuffer  = new VideoBuffer();
+    this->mpd          = new MPDRequestHandler();
+
+    this->mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
+
+    std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
+
+    this->numRequestsToSend = this->mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
+
+    this->videoBuffer->numRequestsToSend = numRequestsToSend;
+    this->videoBuffer->segIndex = 0;
+
+    this->videoBuffer->playbbackPtr = 0;
+    this->videoBuffer->minPlayBack  = 4;
+    this->videoBuffer->maxBuffer    = 20;
+    this->videoBuffer->isPlaying    = false;
+
+    WATCH(this->videoBuffer);
+    WATCH(this->videoBuffer->playbbackPtr);
+    WATCH(this->videoBuffer->minPlayBack);
+
+    WATCH(this->videoBuffer->segIndex);
+
+    this->DASH_seg_cmplt = registerSignal("DASH_seg_cmplt");
+    emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
+
+    getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
 
 void DASHApp::prepareRequest()

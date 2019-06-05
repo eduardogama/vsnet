@@ -53,7 +53,7 @@ void DashClient::initialize(int stage)
     this->dashplayback = new DashPlayback();
     this->mpd          = new MPDRequestHandler();
 
-    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/sample.mpd");
+    this->mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
 
     std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
 
