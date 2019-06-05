@@ -80,7 +80,7 @@ void DashClient::initialize(int stage)
 
     // read Adaptive Video (AV) parameters
 //    const char *str = par("video_packet_size_per_second").stringValue();
-//    this->video_packet_size_per_second = cStringTokenizer(str).asIntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
+//    this->video_packet_size_per_second = cStringTokenizer(str).as IntVector(); //vector <1000,1500,2000,4000,8000,12000> in kbits
 
 //    this->video_buffer_max_length = par("video_buffer_max_length"); // 10s
 //    this->video_duration          = par("video_duration"); // 10m

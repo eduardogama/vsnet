@@ -37,7 +37,7 @@ DashServer::~DashServer() {
 
 void DashServer::initialize(int stage)
 {
-    TcpGenericServerApp::initialize(stage);
+    HttpServer::initialize(stage);
 
     if (stage != 3) return;
 
@@ -53,7 +53,6 @@ void DashServer::initialize(int stage)
 
         WATCH_MAP(streams);
     }
-
 }
 
 void DashServer::processStreamRequest(Packet *msg)
@@ -77,6 +76,36 @@ void DashServer::processStreamRequest(Packet *msg)
     sendStreamData(timer);
 }
 
+void HttpServer::handleMessage(cMessage *msg)
+{
+    if (msg->isSelfMessage()) {
+        // Self messages not used at the moment
+    }
+    else {
+        EV_DEBUG << "Handle inbound message " << msg->getName() << " of kind " << msg->getKind() << endl;
+        TcpSocket *socket = check_and_cast_nullable<TcpSocket*>(sockCollection.findSocketFor(msg));
+        if (socket) {
+            EV_DEBUG << "Process the message " << msg->getName() << endl;
+            socket->processMessage(msg);
+        }
+        else {
+            EV_DEBUG << "No socket found for the message. Create a new one" << endl;
+            // new connection -- create new socket object and server process
+            socket = new TcpSocket(msg);
+            socket->setOutputGate(gate("socketOut"));
+            sockCollection.addSocket(socket);
+
+            // Initialize the associated data structure
+            SockData *sockdata = new SockData;
+            sockdata->socket = socket;
+
+            socket->setCallback(this);
+            socket->setUserData(sockdata);
+            listensocket.processMessage(msg);
+        }
+    }
+}
+
 void DashServer::sendStreamData(cMessage *timer)
 {
     auto it = streams.find(timer->getId());
@@ -97,7 +126,7 @@ void DashServer::sendStreamData(cMessage *timer)
 
 //    emit(packetSentSignal, pkt);
 //    socket.sendTo(pkt, d->clientAddr, d->clientPort);
-    socket.send(pkt);
+//    socket.send(pkt);
 
     d->bytesLeft -= pktLen;
     d->numPkSent++;
@@ -114,33 +143,34 @@ void DashServer::sendStreamData(cMessage *timer)
     }
 }
 
+void DashServer::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
+{
+    SockData *sockdata = (SockData *)socket->getUserData();
+    if (sockdata == nullptr) {
+        EV_ERROR << "Socket establish failure. Null pointer" << endl;
+        return;
+    }
+
+    // Should be a HttpReplyMessage
+    EV_DEBUG << "Socket data arrived on connection " << socket->getSocketId() << ". Message=" << msg->getName() << ", kind=" << msg->getKind() << endl;
+
+    if(streams.find(socket->getSocketId()) == streams.end())
+    {
+        VideoStreamDash stream;
+
+        stream.clientAddr = socket->getRemoteAddress();
+        stream.clientPort = socket->getRemotePort();
+
+        std::pair<long int, VideoStreamDash> ps(socket->getSocketId(), stream);
+        this->streams.insert(ps);
+    }
+}
+
+
 void DashServer::clearStreams()
 {
     for (auto & elem : streams)
         cancelAndDelete(elem.second.timer);
     streams.clear();
 }
-
-//void DashServer::handleStartOperation(LifecycleOperation *operation)
-//{
-//    socket.setOutputGate(gate("socketOut"));
-//    socket.bind(localPort);
-//    socket.setCallback(this);
-//}
-//
-//void DashServer::handleStopOperation(LifecycleOperation *operation)
-//{
-//    clearStreams();
-//    socket.setCallback(nullptr);
-//    socket.close();
-//    delayActiveOperationFinish(par("stopOperationTimeout"));
-//}
-//
-//void DashServer::handleCrashOperation(LifecycleOperation *operation)
-//{
-//    clearStreams();
-//    if (operation->getRootModule() != getContainingNode(this))     // closes socket when the application crashed only
-//        socket.destroy();    //TODO  in real operating systems, program crash detected by OS and OS closes sockets of crashed programs.
-//    socket.setCallback(nullptr);
-//}
 

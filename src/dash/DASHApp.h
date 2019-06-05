@@ -11,28 +11,52 @@
 #include <algorithm>
 
 #include "inet/common/INETDefs.h"
-#include "inet/applications/tcpapp/TcpBasicClientApp.h"
-#include "inet/applications/tcpapp/GenericAppMsg_m.h"
+#include "inet/applications/httptools/common/HttpNodeBase.h"
+
+#include "inet/common/packet/ChunkQueue.h"
+#include "inet/common/packet/Packet.h"
+#include "inet/common/socket/SocketMap.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
+#include "inet/transportlayer/contract/tcp/TcpSocket.h"
+
+#include "client/Segment.h"
+#include "client/VideoBuffer.h"
+#include "client/MPDRequestHandler.h"
 
 
 using namespace inet;
+using namespace httptools;
 
-class DASHApp: public  TcpBasicClientApp {
+class DASHApp: public HttpNodeBase, public TcpSocket::ICallback
+{
     public:
         DASHApp();
         virtual ~DASHApp();
 
     protected:
         /** Redefined **/
-     virtual void initialize(int stage) override;
+        void initialize(int stage) override;
+
         /** Redefined **/
-//        void handleMessage(cMessage);
+        void handleMessage(cMessage *msg) override;
+
         /** Redefined. **/
-        void handleTimer(cMessage *msg) override;
+        void prepareRequest();
+
+        /** Redefined. **/
+        void sendRequest();
+
         /** Redefined. **/
         virtual void socketEstablished(TcpSocket *socket) override;
+
+        /** Redefined. **/
+        virtual void socketPeerClosed(TcpSocket *socket) override;
+
         /** Redefined. **/
         virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
+
+        /** Redefined. **/
+        virtual void socketAvailable(TcpSocket *socket, TcpAvailableInfo *availableInfo) override;
 
         /** Redefined to start another session after a delay (currently not used). **/
         virtual void socketClosed(TcpSocket *socket) override;
@@ -40,66 +64,26 @@ class DASHApp: public  TcpBasicClientApp {
         /** Redefined to reconnect after a delay. **/
         virtual void socketFailure(TcpSocket *socket, int code) override;
 
-        /** Utility: sends a request to the server **/
-        virtual void sendRequest() override;
+        /** Redefined. **/
+        virtual void socketStatusArrived(TcpSocket *socket, TcpStatusInfo *status) override;
 
-        /**
-         * Utility: cancel msgTimer and if d is smaller than stopTime, then schedule it to d,
-         * otherwise delete msgTimer
-         **/
-        virtual void rescheduleOrDeleteTimer(simtime_t d, short int msgKind) override;
-
-        /**
-         * Method from lower inet version (<4.1)
-         * Sends a GenericAppMsg of the given length
-         **/
-        virtual void sendPacket(int requestLength, int replyLength, bool serverClose=false);
-
-        virtual void handleStartOperation(LifecycleOperation *operation) override;
-        virtual void handleStopOperation(LifecycleOperation *operation) override;
-        virtual void handleCrashOperation(LifecycleOperation *operation) override;
+        /** Redefined. **/
+        virtual void socketDeleted(TcpSocket *socket) override;
 
     protected:
-        // Adaptive Video (AV) parameters
-        std::vector<int> video_packet_size_per_second;
 
-        int video_buffer_max_length;
-        int video_duration;
-        int manifest_size;
+        Segment *currentSegment;
+        VideoBuffer *videoBuffer;
 
-        int video_buffer_min_rebuffering; // if video_buffer < video_buffer_min_rebuffering then a rebuffering event occurs
-        int video_buffer; // current lenght of the buffer in seconds
-        int video_playback_pointer;
-        int video_current_quality_index; // requested quality
-        bool video_is_playing;
+        MPDRequestHandler *mpd;
 
-        int numRequestsToSend; // requests to send in this session. Each request = 1s of video
+        simsignal_t DASH_seg_cmplt;
 
-        bool video_is_buffering = true;
-        bool manifestAlreadySent = false;
-
-        simsignal_t DASH_buffer_length_signal;
-        simsignal_t DASH_quality_level_signal;
-        simsignal_t DASH_video_is_playing_signal;
-        simsignal_t DASH_playback_pointer;
-
-        double startTime;
+        cMessage *timeoutMsg = nullptr;
+        bool earlySend = false;    // if true, don't wait with sendRequest() until established()
+        int numRequestsToSend = 0;    // requests to send in this session
+        simtime_t startTime;
         simtime_t stopTime;
-
-        cMessage *timeoutMsg;
-
-        // Flags to avoid multiple quality switches when the buffer is at full capacity
-        bool can_switch = true;
-        int switch_timeout = 5;
-        int switch_timer = switch_timeout;
-
-        // Enhanced switch algorithm (estimate available bit rate before switching to higher quality level)
-        int packetTimeArrayLength = 5;
-        int packetTimePointer = 0;
-
-        simtime_t packetTime[5];
-        simtime_t tLastPacketRequested;
-
 };
 
 

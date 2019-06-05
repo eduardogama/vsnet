@@ -16,20 +16,19 @@
 #ifndef DASH_DASHSERVER_H_
 #define DASH_DASHSERVER_H_
 
-//#include "inet/common/INETDefs.h"
-
-
-#include "inet/applications/tcpapp/TcpGenericServerApp.h"
-#include "inet/transportlayer/contract/tcp/TcpSocket.h"
+#include <vector>
 
 #include "inet/common/TimeTag_m.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
 #include "inet/networklayer/common/L3AddressTag_m.h"
 #include "inet/transportlayer/common/L4PortTag_m.h"
+#include "inet/applications/httptools/server/HttpServer.h"
+
+#include "services/CacheService.h"
 
 
 using namespace inet;
-
+using namespace httptools;
 
 struct VideoStreamDash
 {
@@ -41,7 +40,7 @@ struct VideoStreamDash
     long numPkSent = 0;    // number of packets sent
 };
 
-class DashServer :  public TcpGenericServerApp {
+class DashServer :  public HttpServer {
 public:
     DashServer();
     virtual ~DashServer();
@@ -54,17 +53,23 @@ protected:
     virtual void processStreamRequest(Packet *msg);
     virtual void sendStreamData(cMessage *timer);
 
+    virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
+
 //    virtual void handleStartOperation(LifecycleOperation *operation) override;
 //    virtual void handleStopOperation(LifecycleOperation *operation) override;
 //    virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
 protected:
     typedef std::map<long int, VideoStreamDash> VideoStreamMap;
+    typedef std::map<long int, CacheService> FogMap;
 
     int localPort = -1;
 
     // State
     VideoStreamMap streams;
+
+    // Network State
+    FogMap fognodes;
 
     // Parameters
     cPar *sendInterval = nullptr;
