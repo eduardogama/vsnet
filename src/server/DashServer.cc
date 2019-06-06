@@ -41,7 +41,6 @@
 #include "../../../inet4/src/inet/transportlayer/contract/tcp/TcpCommand_m.h"
 #include "DashAppMsg_m.h"
 
-
 Define_Module(DashServer);
 
 
@@ -98,10 +97,20 @@ void DashServer::handleMessage(cMessage *msg)
         emit(packetReceivedSignal, packet);
 
         bool doClose = false;
+
+//        std::cout << "========================================" << std::endl;
+//        std::cout << "DashServer "
+//                  << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind()) << std::endl
+//                  << "Socket ID=" << connId << std::endl
+//                  << "Total Length=" << packet->getTotalLength()
+//                  << "Chunk Serialization="<< Chunk::enableImplicitChunkSerialization
+//                  << std::endl;
+
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
             B requestedBytes = appmsg->getExpectedReplyLength();
+
             simtime_t msgDelay = appmsg->getReplyDelay();
             if (msgDelay > maxMsgDelay)
                 maxMsgDelay = msgDelay;
@@ -110,12 +119,15 @@ void DashServer::handleMessage(cMessage *msg)
                 Packet *outPacket = new Packet(msg->getName());
                 outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
                 outPacket->setKind(TCP_C_SEND);
+
                 const auto& payload = makeShared<DashAppMsg>();
                 payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
                 payload->setChunkLength(requestedBytes);
                 payload->setExpectedReplyLength(B(0));
                 payload->setReplyDelay(0);
+
                 outPacket->insertAtBack(payload);
+
                 sendOrSchedule(outPacket, delay + msgDelay);
             }
             if (appmsg->getServerClose()) {

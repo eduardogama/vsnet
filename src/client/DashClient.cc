@@ -5,27 +5,28 @@
 
 #include "DashClient.h"
 
+#include <omnetpp/ccomponent.h>
 #include <omnetpp/cexception.h>
 #include <omnetpp/clog.h>
 #include <omnetpp/cmessage.h>
 #include <omnetpp/cobjectfactory.h>
-#include <omnetpp/cpar.h>
+#include <omnetpp/cpacket.h>
 #include <omnetpp/csimulation.h>
-#include <omnetpp/cstringtokenizer.h>
 #include <omnetpp/cwatch.h>
 #include <omnetpp/platdep/platdefs.h>
 #include <omnetpp/regmacros.h>
 #include <omnetpp/simtime.h>
 #include <omnetpp/simtime_t.h>
 
-#include "../../../inet4/src/inet/applications/tcpapp/GenericAppMsg_m.h"
 #include "../../../inet4/src/inet/common/InitStages.h"
 #include "../../../inet4/src/inet/common/packet/chunk/Chunk.h"
 #include "../../../inet4/src/inet/common/packet/chunk/FieldsChunk.h"
 #include "../../../inet4/src/inet/common/Ptr.h"
+#include "../../../inet4/src/inet/common/Simsignals.h"
 #include "../../../inet4/src/inet/common/TimeTag_m.h"
 #include "../../../inet4/src/inet/common/Units.h"
 #include "../parser/pugixml.hpp"
+#include "../server/DashAppMsg_m.h"
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
@@ -60,12 +61,11 @@ void DashClient::initialize(int stage)
     this->numRequestsToSend = this->mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
 
     this->videoBuffer->numRequestsToSend = numRequestsToSend;
-    this->videoBuffer->segIndex = 0;
 
+    this->videoBuffer->segIndex     = 0;
     this->videoBuffer->playbbackPtr = 0;
     this->videoBuffer->minPlayBack  = 4;
     this->videoBuffer->maxBuffer    = 20;
-    this->videoBuffer->isPlaying    = false;
 
     WATCH(this->videoBuffer);
     WATCH(this->videoBuffer->playbbackPtr);
@@ -75,6 +75,12 @@ void DashClient::initialize(int stage)
 
     this->DASH_seg_cmplt = registerSignal("DASH_seg_cmplt");
     emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
+
+    this->DASH_video_is_playing = registerSignal("DASH_video_is_playing");
+    emit(this->DASH_video_is_playing, this->videoBuffer->isReady());
+
+    this->DASH_buffer_length = registerSignal("DASH_buffer_length");
+    emit(this->DASH_buffer_length,this->videoBuffer->videostream->size());
 
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
@@ -94,19 +100,29 @@ void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
 
 void DashClient::handleTimer(cMessage *msg)
 {
-    std::cout <<  "[handleTimer] Handle Timer " << msg->getKind() << std::endl;
+    std::cout <<  "DashClient Handle Timer=" << msg->getKind() << std::endl;
     switch (msg->getKind()) {
         case MSGKIND_CONNECT:
             connect();    // active OPEN
 
             break;
-
         case MSGKIND_SEND:
+            prepareRequest();
             sendRequest();
             // no scheduleAt(): next request will be sent when reply to this one
             // arrives (see socketDataArrived())
             break;
+        case MSGKIND_VIDEO_PLAY:
+            cancelAndDelete(msg);
 
+            this->videoBuffer->removeLastSegment();
+            emit(DASH_buffer_length, this->videoBuffer->videostream->size());
+
+            if(!this->videoBuffer->isEmpty()){
+                emit(DASH_video_is_playing, this->videoBuffer->isReady());
+            }
+
+            break;
         default:
             throw cRuntimeError("Invalid timer msg: kind=%d", msg->getKind());
     }
@@ -119,17 +135,10 @@ void DashClient::decodePacket(Packet *vp)
 
 void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
+    printPacket(msg);
+    videoBuffer->bytesRcvd += msg->getByteLength();
     TcpAppBase::socketDataArrived(socket, msg, urgent);
-    std::cout << "========================================" << std::endl;
-    std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
-    std::cout << "Request Number=" << numRequestsToSend << std::endl;
-    std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
-    std::cout << "Data Length=" << msg->getDataLength() << std::endl;
-    std::cout << "Packets Received=" << packetsRcvd << std::endl;
-    std::cout << "Bytes Received=" << videoBuffer->bytesRcvd << std::endl;
-    std::cout << "Global Time=" << simTime() << std::endl;
 
-    videoBuffer->bytesRcvd += bytesRcvd;
 
     if(bytesRcvd >= videoBuffer->segmentSize && numRequestsToSend > 0){
         std::cout << "Reply arrived" << std::endl;
@@ -138,10 +147,21 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 
         this->videoBuffer->addSegment(*currentSegment);
 
-        videoBuffer->bytesRcvd = bytesRcvd = 0;
+        videoBuffer->bytesRcvd = 0;
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
         rescheduleOrDeleteTimer(simTime(), MSGKIND_SEND);
+    }
+
+    if(this->videoBuffer->isReady()){
+        emit(DASH_video_is_playing, this->videoBuffer->isReady());
+
+        cMessage *videoPlaybackMsg = new cMessage("playback");
+        videoPlaybackMsg->setKind(MSGKIND_VIDEO_PLAY);
+
+        simtime_t d = this->videoBuffer->playingBackSeg().getDuration();
+
+        scheduleAt(simTime() + d, videoPlaybackMsg); // Time for remove segmente from the Buffer
     }
 }
 
@@ -216,7 +236,7 @@ void DashClient::sendRequest()
     if (replyLength < 1)
         replyLength = 1;
 
-    const auto& payload = makeShared<GenericAppMsg>();
+    const auto& payload = makeShared<DashAppMsg>();
     Packet *packet = new Packet("data");
     payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
     payload->setChunkLength(B(requestLength));
@@ -236,21 +256,14 @@ void DashClient::sendRequest()
     numRequestsToSend--;
 }
 
-void DashClient::ReadMPD()
+void DashClient::printPacket(Packet *msg)
 {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file("sample.mpd");
-    
-    if (!result){
-    	std::cout << "ERROR" << std::endl;
-        return;
-    }
-    
-    dashplayback->title    = doc.child("MPD").child("ProgramInformation").child_value("Title");
-    dashplayback->duration = doc.child("MPD").child("Period").child("AdaptationSet").child("SegmentTemplate").attribute("duration").as_int();
-    
-    
-    std::cout << result.description()  << std::endl;
-    std::cout << dashplayback->title    << std::endl;
-	std::cout << dashplayback->duration << std::endl;
+    std::cout << "========================================" << std::endl;
+    std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
+    std::cout << "Request Number=" << numRequestsToSend << std::endl;
+    std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
+    std::cout << "Data Length=" << msg->getDataLength() << std::endl;
+    std::cout << "Packets Received=" << packetsRcvd << std::endl;
+    std::cout << "Bytes Received=" << videoBuffer->bytesRcvd << std::endl;
+    std::cout << "Global Time=" << simTime() << std::endl;
 }

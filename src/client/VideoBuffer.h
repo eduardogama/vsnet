@@ -2,6 +2,7 @@
 #define VIDEOBUFFER_H_
 
 #include <vector>
+#include <list>
 
 #include "inet/common/INETDefs.h"
 
@@ -27,6 +28,8 @@ class VideoBuffer
 		int segmentframes; /**< Number of frames per Group of Picture */
 		vector<Segment> segmentBuffer; /**< video buffer that keeps some number of chunks*/
 
+		list<Segment> *videostream;
+
 	    int playbbackPtr;
 	    int minPlayBack;
 	    int maxBuffer;
@@ -47,7 +50,37 @@ class VideoBuffer
         /**
          * Add segment in buffer
          */
+        bool isReady();
+
+        /**
+         * Check buffer size, if buffer is empty then true otherwise false
+         */
+        bool isEmpty();
+
+        /**
+         * Check buffer size, if buffer is empty then true otherwise false
+         */
+        Segment &playingBackSeg();
+
+        /**
+         * Add segment in buffer
+         */
         void addSegment(Segment &s);
+
+        /**
+         * Remove segment in buffer
+         */
+        void removeSegment(Segment &s);
+
+        /**
+         * Remove first segment in buffer
+         */
+        void removeFirstSegment();
+
+        /**
+         * Add last segment in buffer
+         */
+        void removeLastSegment();
 };
 
 #endif /* VIDEOBUFFER_H_ */

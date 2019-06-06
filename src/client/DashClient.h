@@ -64,7 +64,7 @@ class DashClient : public TcpBasicClientApp
 		/**
 		 * initializes config in MPD file
 		 */
-		void ReadMPD();
+		void printPacket(Packet *msg);
 		
 	/*    virtual void finishApp();*/
 	/*    virtual void handleTimerEvent(cMessage* msg);*/
@@ -142,6 +142,8 @@ class DashClient : public TcpBasicClientApp
 //        simsignal_t DASH_playback_pointer;
 
         simsignal_t DASH_seg_cmplt;
+        simsignal_t DASH_video_is_playing;
+        simsignal_t DASH_buffer_length;
 
 //		std::vector <int> requestedChunks;
 

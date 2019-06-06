@@ -28,11 +28,14 @@
 Segment::Segment() {
     segmentNumber = -1;
 }
+
 Segment::~Segment() {
 }
+
 int Segment::getSegmentSize() {
     return segmentSize;
 }
+
 void Segment::setValues(int SegmentSize, int frameRate, int width, int height) {
     this->segmentSize = SegmentSize;
     this->frameRate = frameRate;
@@ -96,4 +99,12 @@ int Segment::getLateArrivalLossSize(int playBackPoint) {
         if (segment[i].getFrameNumber() > playBackPoint)
             totalSize += segment[i].getFrameLength();
     return totalSize;
+}
+
+const simtime_t& Segment::getDuration() const {
+    return duration;
+}
+
+void Segment::setDuration(const simtime_t& duration) {
+    this->duration = duration;
 }

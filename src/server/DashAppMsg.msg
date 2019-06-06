@@ -6,7 +6,7 @@ import inet.common.packet.chunk.Chunk;
 
 namespace inet;
 
-message DashAppMsg extends FieldsChunk
+class DashAppMsg extends FieldsChunk
 {
     B expectedReplyLength;   // in bytes
     double replyDelay;       // reply after this many seconds

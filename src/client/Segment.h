@@ -39,6 +39,8 @@ class Segment
         simtime_t startTime;
         simtime_t endTime;
 
+        simtime_t duration;
+
         int frameRate;
         int width;
         int height;
@@ -69,6 +71,7 @@ class Segment
          * Base class distructor
          */
         ~Segment();
+
         /**
          * @return an integer, it contains segment size
          */
@@ -155,5 +158,10 @@ class Segment
          * @return integer size of late arrival frames
          */
         int getLateArrivalLossSize(int playBackPoint);
+
+        const simtime_t& getDuration() const;
+
+        void setDuration(const simtime_t& duration);
+
 };
 #endif /* CHUNK_H_ */
