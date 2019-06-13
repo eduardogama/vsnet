@@ -72,15 +72,15 @@ void DASHApp::prepareRequest()
     MPDSegment &segment = (!earlySend) ? mpd->getLowRepresentation()
             : mpd->getHighRepresentation();
 
-    currentSegment->setValues(segment.bandwidth/videoBuffer->numRequestsToSend, segment.frameRate, segment.width, segment.height);
+    currentSegment->setValues(segment.mediaRange, representation->frameRate, representation->width, representation->height);
     currentSegment->setSegmentNumber(this->videoBuffer->segIndex);
 
     videoBuffer->bytesRcvd = 0;
-    videoBuffer->segmentSize = segment.bandwidth / videoBuffer->numRequestsToSend;
-    videoBuffer->segmentframes = segment.frameRate;
+    videoBuffer->segmentSize = segment.mediaRange;
+    videoBuffer->segmentframes = representation->frameRate;
     videoBuffer->reqtime = simTime();
 
-    std::cout << "Bandwith=" << segment.bandwidth << std::endl;
+    std::cout << "Bandwith=" << segment.mediaRange << std::endl;
     std::cout << "Segment Size=" << videoBuffer->segmentSize << std::endl;
 }
 

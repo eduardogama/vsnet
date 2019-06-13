@@ -68,6 +68,10 @@ class Segment
          */
         Segment();
         /**
+         * Base class constructor
+         */
+        Segment(int frameRate, int width, int height, int segmentNumber, int segmentSize, simtime_t startTime=0, simtime_t endTime=0);
+        /**
          * Base class distructor
          */
         ~Segment();

@@ -71,7 +71,7 @@ class DASHApp: public HttpNodeBase, public TcpSocket::ICallback
         virtual void socketDeleted(TcpSocket *socket) override;
 
     protected:
-
+        Representation *representation;
         Segment *currentSegment;
         VideoBuffer *videoBuffer;
 

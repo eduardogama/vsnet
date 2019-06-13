@@ -9,10 +9,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <omnetpp/simtime_t.h>
 
-#include <omnetpp.h>
 #include <stdlib.h>
 
+#include "client/Segment.h"
 #include "parser/pugixml.hpp"
 
 
@@ -22,17 +24,24 @@ using namespace omnetpp;
 
 
 typedef struct MPDSegment_t{
-    string id;
-    string mimeType;
-    string codecs;
-	int frameRate;
-	int width;
-	int height;
-	int bandwidth;
+//    string id;
+//    string mimeType;
+//    string codecs;
+    string media;
+    int mediaRange;
+//	int frameRate;
+//	int width;
+//	int height;
+//	int bandwidth;
 } MPDSegment;
 
 typedef struct Representation_t {
 	int id;
+	std::string bandwidth;
+	int frameRate;
+    int width;
+    int height;
+    vector<MPDSegment> segments;
 } Representation;
 
 typedef struct AdaptationSet_t {
@@ -55,7 +64,6 @@ typedef struct MPDFile_t{
 	vector<MPDSegment> segments;
 } MPDFile;
 
-
 class MPDRequestHandler {
 
     public:
@@ -67,6 +75,10 @@ class MPDRequestHandler {
 
         void ReadMPD(std::string path_mpd);
 
+        void ReadSingleFile(std::string path_mpd);
+
+        void ReadMultipleFiles(std::string path_mpd);
+
         vector<MPDSegment> &getSegments();
 
         MPDSegment &getHighRepresentation();
@@ -75,13 +87,29 @@ class MPDRequestHandler {
 
         MPDSegment &getSegment(int value);
 
+        Segment *LowRepresentation();
+
         simtime_t getMediaPresentationDuration();
 
         simtime_t getMaxSegmentDuration();
 
+        simtime_t getMinBufferTime();
+
+        const vector<string> Split(const string& s, const char& c);
+
+        int NumSegments();
+    private:
+        simtime_t ParserTime(std::string str);
+
     protected:
         simtime_t mediaPresentationDuration;
         simtime_t maxSegmentDuration;
+        simtime_t minBufferTime;
+
+        map<std::string, Representation> representation;
+
+        vector<std::string> key;
+        int numSegments;
 
         MPDFile mpdhandler;
 };

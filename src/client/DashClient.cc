@@ -13,19 +13,16 @@
 #include <omnetpp/cpacket.h>
 #include <omnetpp/csimulation.h>
 #include <omnetpp/cwatch.h>
-#include <omnetpp/platdep/platdefs.h>
 #include <omnetpp/regmacros.h>
 #include <omnetpp/simtime.h>
-#include <omnetpp/simtime_t.h>
+#include <list>
 
 #include "../../../inet4/src/inet/common/InitStages.h"
 #include "../../../inet4/src/inet/common/packet/chunk/Chunk.h"
 #include "../../../inet4/src/inet/common/packet/chunk/FieldsChunk.h"
 #include "../../../inet4/src/inet/common/Ptr.h"
-#include "../../../inet4/src/inet/common/Simsignals.h"
 #include "../../../inet4/src/inet/common/TimeTag_m.h"
 #include "../../../inet4/src/inet/common/Units.h"
-#include "../parser/pugixml.hpp"
 #include "../server/DashAppMsg_m.h"
 
 #define MSGKIND_CONNECT     0
@@ -45,22 +42,27 @@ DashClient::~DashClient()
 
 void DashClient::initialize(int stage)
 {
-	TcpBasicClientApp::initialize(stage);
+    TcpBasicClientApp::initialize(stage);
 
-	if (stage != INITSTAGE_APPLICATION_LAYER)
-	    return;
+    if (stage != INITSTAGE_APPLICATION_LAYER)
+        return;
 
-    this->videoBuffer  = new VideoBuffer();
-    this->dashplayback = new DashPlayback();
-    this->mpd          = new MPDRequestHandler();
+    this->representation = new Representation();
+    this->videoBuffer    = new VideoBuffer();
+    this->dashplayback   = new DashPlayback();
+    this->mpd            = new MPDRequestHandler();
 
-    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/sample.mpd");
+    this->dashmanager = new DashManager();
+    this->dashmanager->setRepresentation(representation);
+    this->dashmanager->setMpd(mpd);
 
-    std::cout << "Video time=" << this->mpd->getMediaPresentationDuration() << " Segment=" << this->mpd->getMaxSegmentDuration() << std::endl;
+    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/bbb_30fps");
 
-    this->numRequestsToSend = this->mpd->getMediaPresentationDuration() / mpd->getMaxSegmentDuration();
+    std::cout << "Video time="    << this->mpd->getMediaPresentationDuration()
+              << " Segment time=" << this->mpd->getMinBufferTime() << std::endl;
 
-    this->videoBuffer->numRequestsToSend = numRequestsToSend;
+    this->numRequestsToSend              = this->mpd->NumSegments();
+    this->videoBuffer->numRequestsToSend = this->mpd->NumSegments();
 
     this->videoBuffer->segIndex     = 0;
     this->videoBuffer->playbbackPtr = 0;
@@ -128,32 +130,33 @@ void DashClient::handleTimer(cMessage *msg)
     }
 }
 
-void DashClient::decodePacket(Packet *vp)
-{
-
-}
-
 void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
     printPacket(msg);
     videoBuffer->bytesRcvd += msg->getByteLength();
+
+    queue.push(msg->peekData()); // get all data from the packet
+
     TcpAppBase::socketDataArrived(socket, msg, urgent);
 
+    if((this->videoBuffer->bytesRcvd >= videoBuffer->segmentSize)
+       && (numRequestsToSend > 0)) {
 
-    if(bytesRcvd >= videoBuffer->segmentSize && numRequestsToSend > 0){
-        std::cout << "Reply arrived" << std::endl;
+        const auto&  appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR);
+        std::cout << "appmsg=" << appmsg->getRedirectAddress() << std::endl;
 
-        currentSegment->endSegment(simTime());
+//        if(appmsg->getRedirectAddress() != nullptr || appmsg->getRedirectAddress() != "")
+//            std::cout << "Change socket connection" << std::endl;
 
-        this->videoBuffer->addSegment(*currentSegment);
+        c_segment->endSegment(simTime());
 
-        videoBuffer->bytesRcvd = 0;
+        this->videoBuffer->addSegment(*c_segment);
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
         rescheduleOrDeleteTimer(simTime(), MSGKIND_SEND);
     }
 
-    if(this->videoBuffer->isReady()){
+    if(this->videoBuffer->isReady()) {
         emit(DASH_video_is_playing, this->videoBuffer->isReady());
 
         cMessage *videoPlaybackMsg = new cMessage("playback");
@@ -170,7 +173,9 @@ void DashClient::socketEstablished(TcpSocket *socket)
     TcpAppBase::socketEstablished(socket);
 
     if (!earlySend){
-        prepareRequest();
+//        prepareRequest();
+        this->c_segment = this->dashmanager->LowRepresentation();
+
         sendRequest();
 
         earlySend = true;
@@ -208,21 +213,34 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 
 void DashClient::prepareRequest()
 {
-    currentSegment = new Segment();
 
-    MPDSegment &segment = (!earlySend) ? mpd->getLowRepresentation()
-            : mpd->getHighRepresentation();
+    this->c_segment = this->mpd->LowRepresentation();
 
-    currentSegment->setValues(segment.bandwidth/videoBuffer->numRequestsToSend, segment.frameRate, segment.width, segment.height);
-    currentSegment->setSegmentNumber(this->videoBuffer->segIndex);
 
-    videoBuffer->bytesRcvd = 0;
-    videoBuffer->segmentSize = segment.bandwidth / videoBuffer->numRequestsToSend;
-    videoBuffer->segmentframes = segment.frameRate;
-    videoBuffer->reqtime = simTime();
+    this->dashmanager->BitRateAssigment();
 
-    std::cout << "Bandwith=" << segment.bandwidth << std::endl;
-    std::cout << "Segment Size=" << videoBuffer->segmentSize << std::endl;
+
+//    MPDSegment &segment = (!earlySend) ? this->mpd->getLowRepresentation()
+//            : this->mpd->getHighRepresentation();
+
+
+//    int segmentSize = segment.mediaRange;
+//
+//    c_segment->setValues(segment.mediaRange,
+//                        this->representation->frameRate,
+//                        this->representation->width,
+//                        this->representation->height);
+
+    this->c_segment->setSegmentNumber(this->videoBuffer->segIndex);
+
+    this->videoBuffer->bytesRcvd     = 0;
+//    this->videoBuffer->segmentSize   = segment.mediaRange;
+    this->videoBuffer->reqtime       = simTime();
+    this->videoBuffer->segmentframes = this->representation->frameRate;
+
+//    std::cout << "Id=" << segment.media << std::endl;
+    std::cout << "Segment Size=" << this->videoBuffer->segmentSize << std::endl;
+    sleep(4);
 }
 
 void DashClient::sendRequest()
@@ -242,7 +260,6 @@ void DashClient::sendRequest()
     payload->setChunkLength(B(requestLength));
     payload->setExpectedReplyLength(B(replyLength));
     payload->setServerClose(false);
-    packet->insertAtBack(payload);
 
     EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
             << "remaining " << numRequestsToSend - 1 << " request\n";
@@ -250,6 +267,7 @@ void DashClient::sendRequest()
     std::cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
               << "remaining " << numRequestsToSend - 1 << " request\n";
 
+    packet->insertAtBack(payload);
     sendPacket(packet);
 
     this->videoBuffer->segIndex++;

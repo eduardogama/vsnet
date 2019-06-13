@@ -125,6 +125,7 @@ void DashServer::handleMessage(cMessage *msg)
                 payload->setChunkLength(requestedBytes);
                 payload->setExpectedReplyLength(B(0));
                 payload->setReplyDelay(0);
+                payload->setRedirectAddress("127.0.0.1");
 
                 outPacket->insertAtBack(payload);
 

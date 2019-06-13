@@ -29,6 +29,17 @@ Segment::Segment() {
     segmentNumber = -1;
 }
 
+Segment::Segment(int frameRate, int width, int height, int segmentNumber, int segmentSize, simtime_t startTime, simtime_t endTime)
+{
+    this->startTime     = startTime;
+    this->endTime       = endTime;
+    this->frameRate     = frameRate;
+    this->width         = width;
+    this->height        = height;
+    this->segmentNumber = segmentNumber;
+    this->segmentSize   = segmentSize;
+}
+
 Segment::~Segment() {
 }
 
