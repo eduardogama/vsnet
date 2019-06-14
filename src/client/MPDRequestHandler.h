@@ -108,7 +108,8 @@ class MPDRequestHandler {
 
         map<std::string, Representation> representation;
 
-        vector<std::string> key;
+        vector<std::string> quality;
+        int segIndex;
         int numSegments;
 
         MPDFile mpdhandler;

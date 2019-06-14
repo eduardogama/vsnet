@@ -70,9 +70,11 @@ void MPDRequestHandler::ReadMultipleFiles(std::string mpd_path)
 
     if (dir == NULL) return;
 
-    key.push_back(std::string("360"));
-    key.push_back(std::string("720"));
-    key.push_back(std::string("1080"));
+    quality.push_back(std::string("360"));
+    quality.push_back(std::string("720"));
+    quality.push_back(std::string("1080"));
+
+    this->segIndex = 0;
 
     while ((entry = readdir(dir)) != NULL) {
         if(std::string(entry->d_name) == "." || std::string(entry->d_name) == "..")
@@ -183,13 +185,26 @@ MPDSegment &MPDRequestHandler::getLowRepresentation()
     if(mpdhandler.segments.size() != 0){
         return mpdhandler.segments[0];
     } else {
-        return (representation[key[0]]).segments[0];
+        return (representation[quality[0]]).segments[0];
     }
 }
 
 Segment *MPDRequestHandler::LowRepresentation()
 {
-    return new Segment(0, 0, 0, 0, 0);
+    Segment *seg = new Segment();
+
+    simtime_t time = simTime();
+    int size = this->representation[quality[0]].segments[this->segIndex].mediaRange;
+    std::string q = quality[0];
+
+    seg->setStartTime(time);
+    seg->setSegmentSize(size);
+    seg->setQuality(q);
+    seg->setSegmentNumber(this->segIndex);
+
+    this->segIndex += 1;
+
+    return seg;
 }
 
 MPDSegment &MPDRequestHandler::getSegment(int value)

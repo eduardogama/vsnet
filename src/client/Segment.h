@@ -41,6 +41,8 @@ class Segment
 
         simtime_t duration;
 
+        std::string quality;
+
         int frameRate;
         int width;
         int height;
@@ -57,12 +59,6 @@ class Segment
          * @param SegmentSize number of frame available in this segment
          */
         void setValues(int SegmentSize, int frameRate, int width, int height);
-        /**
-         * This function is used when the transmission segment is completed
-         *
-         * @param endtime the end time of segment
-         */
-        void endSegment(simtime_t endtime);
         /**
          * Base class constructor
          */
@@ -162,10 +158,54 @@ class Segment
          * @return integer size of late arrival frames
          */
         int getLateArrivalLossSize(int playBackPoint);
-
+        /**
+         *
+         */
         const simtime_t& getDuration() const;
-
+        /**
+         *
+         */
         void setDuration(const simtime_t& duration);
 
+        /**
+         *
+         */
+        const simtime_t& getEndTime() const;
+
+        /**
+         * This function is used when the transmission segment is completed
+         *
+         * @param endtime the end time of segment
+         */
+        void setEndTime(const simtime_t& endTime);
+
+        /**
+         *
+         */
+        int getFrameRate() const;
+
+        /**
+         *
+         */
+        void setFrameRate(int frameRate);
+
+        /**
+         *
+         */
+        void setSegmentSize(int segmentSize);
+
+        /**
+         *
+         */
+        const simtime_t& getStartTime() const;
+
+        /**
+         *
+         */
+        void setStartTime(const simtime_t& startTime);
+
+        const std::string& getQuality() const;
+
+        void setQuality(const std::string& quality);
 };
 #endif /* CHUNK_H_ */

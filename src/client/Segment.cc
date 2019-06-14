@@ -56,11 +56,6 @@ void Segment::setValues(int SegmentSize, int frameRate, int width, int height) {
     this->startTime = simTime();
 }
 
-void Segment::endSegment(simtime_t endtime)
-{
-    this->endTime = endtime;
-}
-
 bool Segment::isComplete() {
     for (int i = 0; i < segmentSize; i++)
         if (!segment[i].isSet())
@@ -118,4 +113,40 @@ const simtime_t& Segment::getDuration() const {
 
 void Segment::setDuration(const simtime_t& duration) {
     this->duration = duration;
+}
+
+const simtime_t& Segment::getEndTime() const {
+    return this->endTime;
+}
+
+void Segment::setEndTime(const simtime_t& endTime) {
+    this->endTime = endTime;
+}
+
+int Segment::getFrameRate() const {
+    return frameRate;
+}
+
+void Segment::setFrameRate(int frameRate) {
+    this->frameRate = frameRate;
+}
+
+void Segment::setSegmentSize(int segmentSize) {
+    this->segmentSize = segmentSize;
+}
+
+const simtime_t& Segment::getStartTime() const {
+    return startTime;
+}
+
+void Segment::setStartTime(const simtime_t& startTime) {
+    this->startTime = startTime;
+}
+
+const std::string& Segment::getQuality() const {
+    return quality;
+}
+
+void Segment::setQuality(const std::string& quality) {
+    this->quality = quality;
 }

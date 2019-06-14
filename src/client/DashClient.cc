@@ -148,24 +148,23 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 //        if(appmsg->getRedirectAddress() != nullptr || appmsg->getRedirectAddress() != "")
 //            std::cout << "Change socket connection" << std::endl;
 
-        c_segment->endSegment(simTime());
-
+        this->c_segment->setEndTime(simTime());
         this->videoBuffer->addSegment(*c_segment);
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
         rescheduleOrDeleteTimer(simTime(), MSGKIND_SEND);
     }
 
-    if(this->videoBuffer->isReady()) {
-        emit(DASH_video_is_playing, this->videoBuffer->isReady());
-
-        cMessage *videoPlaybackMsg = new cMessage("playback");
-        videoPlaybackMsg->setKind(MSGKIND_VIDEO_PLAY);
-
-        simtime_t d = this->videoBuffer->playingBackSeg().getDuration();
-
-        scheduleAt(simTime() + d, videoPlaybackMsg); // Time for remove segmente from the Buffer
-    }
+//    if(this->videoBuffer->isReady()) {
+//        emit(DASH_video_is_playing, this->videoBuffer->isReady());
+//
+//        cMessage *videoPlaybackMsg = new cMessage("playback");
+//        videoPlaybackMsg->setKind(MSGKIND_VIDEO_PLAY);
+//
+//        simtime_t d = this->videoBuffer->playingBackSeg().getDuration();
+//
+//        scheduleAt(simTime() + d, videoPlaybackMsg); // Time for remove segmente from the Buffer
+//    }
 }
 
 void DashClient::socketEstablished(TcpSocket *socket)
@@ -173,8 +172,13 @@ void DashClient::socketEstablished(TcpSocket *socket)
     TcpAppBase::socketEstablished(socket);
 
     if (!earlySend){
-//        prepareRequest();
         this->c_segment = this->dashmanager->LowRepresentation();
+
+        this->videoBuffer->bytesRcvd     = 0;
+        this->videoBuffer->segmentSize   = this->c_segment->getSegmentSize();
+        this->videoBuffer->reqtime       = this->c_segment->getStartTime();
+
+        std::cout << "Segment Size=" << this->videoBuffer->segmentSize << std::endl;
 
         sendRequest();
 
@@ -214,24 +218,8 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 void DashClient::prepareRequest()
 {
 
-    this->c_segment = this->mpd->LowRepresentation();
+    this->c_segment = this->dashmanager->BitRateAssigment();
 
-
-    this->dashmanager->BitRateAssigment();
-
-
-//    MPDSegment &segment = (!earlySend) ? this->mpd->getLowRepresentation()
-//            : this->mpd->getHighRepresentation();
-
-
-//    int segmentSize = segment.mediaRange;
-//
-//    c_segment->setValues(segment.mediaRange,
-//                        this->representation->frameRate,
-//                        this->representation->width,
-//                        this->representation->height);
-
-    this->c_segment->setSegmentNumber(this->videoBuffer->segIndex);
 
     this->videoBuffer->bytesRcvd     = 0;
 //    this->videoBuffer->segmentSize   = segment.mediaRange;
@@ -246,7 +234,7 @@ void DashClient::prepareRequest()
 void DashClient::sendRequest()
 {
     long requestLength = par("requestLength");
-    long replyLength   = videoBuffer->segmentSize;// + 52; // Fix it later | 52 is header size
+    long replyLength   = this->c_segment->getSegmentSize() + 52; // Fix it later | 52 is header size
 
     if (requestLength < 1)
         requestLength = 1;
