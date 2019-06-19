@@ -211,7 +211,6 @@ Register_Class(DashAppMsg)
 
 DashAppMsg::DashAppMsg() : ::inet::FieldsChunk()
 {
-    this->enableImplicitChunkSerialization = false;
 }
 
 DashAppMsg::DashAppMsg(const DashAppMsg& other) : ::inet::FieldsChunk(other)
@@ -234,6 +233,7 @@ DashAppMsg& DashAppMsg::operator=(const DashAppMsg& other)
 void DashAppMsg::copy(const DashAppMsg& other)
 {
     this->expectedReplyLength = other.expectedReplyLength;
+    this->contentLength = other.contentLength;
     this->replyDelay = other.replyDelay;
     this->serverClose = other.serverClose;
     this->StartByte = other.StartByte;
@@ -245,6 +245,7 @@ void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::inet::FieldsChunk::parsimPack(b);
     doParsimPacking(b,this->expectedReplyLength);
+    doParsimPacking(b,this->contentLength);
     doParsimPacking(b,this->replyDelay);
     doParsimPacking(b,this->serverClose);
     doParsimPacking(b,this->StartByte);
@@ -256,6 +257,7 @@ void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::inet::FieldsChunk::parsimUnpack(b);
     doParsimUnpacking(b,this->expectedReplyLength);
+    doParsimUnpacking(b,this->contentLength);
     doParsimUnpacking(b,this->replyDelay);
     doParsimUnpacking(b,this->serverClose);
     doParsimUnpacking(b,this->StartByte);
@@ -272,6 +274,17 @@ void DashAppMsg::setExpectedReplyLength(B expectedReplyLength)
 {
     handleChange();
     this->expectedReplyLength = expectedReplyLength;
+}
+
+B DashAppMsg::getContentLength() const
+{
+    return this->contentLength;
+}
+
+void DashAppMsg::setContentLength(B contentLength)
+{
+    handleChange();
+    this->contentLength = contentLength;
 }
 
 double DashAppMsg::getReplyDelay() const
@@ -335,6 +348,7 @@ class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
     mutable const char **propertynames;
     enum FieldConstants {
         FIELD_expectedReplyLength,
+        FIELD_contentLength,
         FIELD_replyDelay,
         FIELD_serverClose,
         FIELD_StartByte,
@@ -402,7 +416,7 @@ const char *DashAppMsgDescriptor::getProperty(const char *propertyname) const
 int DashAppMsgDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 6+basedesc->getFieldCount() : 6;
+    return basedesc ? 7+basedesc->getFieldCount() : 7;
 }
 
 unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
@@ -415,13 +429,14 @@ unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_expectedReplyLength
+        FD_ISEDITABLE,    // FIELD_contentLength
         FD_ISEDITABLE,    // FIELD_replyDelay
         FD_ISEDITABLE,    // FIELD_serverClose
         FD_ISEDITABLE,    // FIELD_StartByte
         FD_ISEDITABLE,    // FIELD_EndByte
         FD_ISEDITABLE,    // FIELD_redirectAddress
     };
-    return (field >= 0 && field < 6) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DashAppMsgDescriptor::getFieldName(int field) const
@@ -434,13 +449,14 @@ const char *DashAppMsgDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "expectedReplyLength",
+        "contentLength",
         "replyDelay",
         "serverClose",
         "StartByte",
         "EndByte",
         "redirectAddress",
     };
-    return (field >= 0 && field < 6) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
 }
 
 int DashAppMsgDescriptor::findField(const char *fieldName) const
@@ -448,11 +464,12 @@ int DashAppMsgDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0] == 'e' && strcmp(fieldName, "expectedReplyLength") == 0) return base+0;
-    if (fieldName[0] == 'r' && strcmp(fieldName, "replyDelay") == 0) return base+1;
-    if (fieldName[0] == 's' && strcmp(fieldName, "serverClose") == 0) return base+2;
-    if (fieldName[0] == 'S' && strcmp(fieldName, "StartByte") == 0) return base+3;
-    if (fieldName[0] == 'E' && strcmp(fieldName, "EndByte") == 0) return base+4;
-    if (fieldName[0] == 'r' && strcmp(fieldName, "redirectAddress") == 0) return base+5;
+    if (fieldName[0] == 'c' && strcmp(fieldName, "contentLength") == 0) return base+1;
+    if (fieldName[0] == 'r' && strcmp(fieldName, "replyDelay") == 0) return base+2;
+    if (fieldName[0] == 's' && strcmp(fieldName, "serverClose") == 0) return base+3;
+    if (fieldName[0] == 'S' && strcmp(fieldName, "StartByte") == 0) return base+4;
+    if (fieldName[0] == 'E' && strcmp(fieldName, "EndByte") == 0) return base+5;
+    if (fieldName[0] == 'r' && strcmp(fieldName, "redirectAddress") == 0) return base+6;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -466,13 +483,14 @@ const char *DashAppMsgDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "inet::B",    // FIELD_expectedReplyLength
+        "inet::B",    // FIELD_contentLength
         "double",    // FIELD_replyDelay
         "bool",    // FIELD_serverClose
         "int",    // FIELD_StartByte
         "int",    // FIELD_EndByte
         "string",    // FIELD_redirectAddress
     };
-    return (field >= 0 && field < 6) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DashAppMsgDescriptor::getFieldPropertyNames(int field) const
@@ -540,6 +558,7 @@ std::string DashAppMsgDescriptor::getFieldValueAsString(void *object, int field,
     DashAppMsg *pp = (DashAppMsg *)object; (void)pp;
     switch (field) {
         case FIELD_expectedReplyLength: return unit2string(pp->getExpectedReplyLength());
+        case FIELD_contentLength: return unit2string(pp->getContentLength());
         case FIELD_replyDelay: return double2string(pp->getReplyDelay());
         case FIELD_serverClose: return bool2string(pp->getServerClose());
         case FIELD_StartByte: return long2string(pp->getStartByte());
@@ -560,6 +579,7 @@ bool DashAppMsgDescriptor::setFieldValueAsString(void *object, int field, int i,
     DashAppMsg *pp = (DashAppMsg *)object; (void)pp;
     switch (field) {
         case FIELD_expectedReplyLength: pp->setExpectedReplyLength(B(string2long(value))); return true;
+        case FIELD_contentLength: pp->setContentLength(B(string2long(value))); return true;
         case FIELD_replyDelay: pp->setReplyDelay(string2double(value)); return true;
         case FIELD_serverClose: pp->setServerClose(string2bool(value)); return true;
         case FIELD_StartByte: pp->setStartByte(string2long(value)); return true;

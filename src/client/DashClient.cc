@@ -5,30 +5,15 @@
 
 #include "DashClient.h"
 
-#include <omnetpp/ccomponent.h>
-#include <omnetpp/cexception.h>
-#include <omnetpp/clog.h>
-#include <omnetpp/cmessage.h>
-#include <omnetpp/cobjectfactory.h>
-#include <omnetpp/cpacket.h>
-#include <omnetpp/csimulation.h>
-#include <omnetpp/cwatch.h>
-#include <omnetpp/regmacros.h>
-#include <omnetpp/simtime.h>
-#include <list>
-
-#include "../../../inet4/src/inet/common/InitStages.h"
-#include "../../../inet4/src/inet/common/packet/chunk/Chunk.h"
-#include "../../../inet4/src/inet/common/packet/chunk/FieldsChunk.h"
-#include "../../../inet4/src/inet/common/Ptr.h"
-#include "../../../inet4/src/inet/common/TimeTag_m.h"
-#include "../../../inet4/src/inet/common/Units.h"
-#include "../server/DashAppMsg_m.h"
+#include "inet/common/TimeTag_m.h"
+#include "inet/networklayer/common/L3Address.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
+#include "server/DashAppMsg_m.h"
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
 #define MSGKIND_VIDEO_PLAY  2
-
+#define MSGKIND_CONNECT_FOG 3
 
 Define_Module(DashClient);
 
@@ -53,10 +38,12 @@ void DashClient::initialize(int stage)
     this->mpd            = new MPDRequestHandler();
 
     this->dashmanager = new DashManager();
-    this->dashmanager->setRepresentation(representation);
-    this->dashmanager->setMpd(mpd);
+    this->dashmanager->setMpd(this->mpd);
 
-    this->mpd->ReadMPD("/home/futebol/github/vsnet/input/bbb_30fps");
+    this->mpd->ReadMPD("/home/futebol/Dropbox/bbb_30fps");
+
+    this->dashmanager->setQualities(&(this->mpd->getQuality()));
+    this->dashmanager->setRepresentation(&(this->mpd->getRepresentation()));
 
     std::cout << "Video time="    << this->mpd->getMediaPresentationDuration()
               << " Segment time=" << this->mpd->getMinBufferTime() << std::endl;
@@ -84,6 +71,8 @@ void DashClient::initialize(int stage)
     this->DASH_buffer_length = registerSignal("DASH_buffer_length");
     emit(this->DASH_buffer_length,this->videoBuffer->videostream->size());
 
+    this->connectAddress = par("connectAddress").stringValue();
+
     getParentModule()->getParentModule()->setDisplayString("i=device/wifilaptop_vs;i2=block/circle_s");
 }
 
@@ -94,7 +83,7 @@ void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
     if(stopTime >= 0) {
         timeoutMsg->setKind(msgKind);
         scheduleAt(d, timeoutMsg);
-    } else{
+    } else {
         delete timeoutMsg;
         timeoutMsg = nullptr;
     }
@@ -114,6 +103,11 @@ void DashClient::handleTimer(cMessage *msg)
             // no scheduleAt(): next request will be sent when reply to this one
             // arrives (see socketDataArrived())
             break;
+        case MSGKIND_CONNECT_FOG:
+            close();
+
+            Connect();
+            break;
         case MSGKIND_VIDEO_PLAY:
             cancelAndDelete(msg);
 
@@ -127,6 +121,34 @@ void DashClient::handleTimer(cMessage *msg)
             break;
         default:
             throw cRuntimeError("Invalid timer msg: kind=%d", msg->getKind());
+    }
+}
+
+void DashClient::Connect()
+{
+    // we need a new connId if this is not the first connection
+    socket.renewSocket();
+
+    const char *localAddress = par("localAddress");
+    int localPort = par("localPort");
+    socket.bind(*localAddress ? L3AddressResolver().resolve(localAddress) : L3Address(), localPort);
+
+    // connect
+    const char *connectAddress = this->connectAddress.c_str();
+    int connectPort = par("connectPort");
+
+    L3Address destination;
+    L3AddressResolver().tryResolve(connectAddress, destination);
+    if (destination.isUnspecified()) {
+        EV_ERROR << "Connecting to " << connectAddress << " port=" << connectPort << ": cannot resolve destination address\n";
+    }
+    else {
+        EV_INFO << "Connecting to " << connectAddress << "(" << destination << ") port=" << connectPort << endl;
+
+        socket.connect(destination, connectPort);
+
+        numSessions++;
+        emit(connectSignal, 1L);
     }
 }
 
@@ -217,24 +239,20 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 
 void DashClient::prepareRequest()
 {
-
-    this->c_segment = this->dashmanager->BitRateAssigment();
-
+    this->c_segment = this->dashmanager->BitRateAssigment(this->videoBuffer);
 
     this->videoBuffer->bytesRcvd     = 0;
-//    this->videoBuffer->segmentSize   = segment.mediaRange;
-    this->videoBuffer->reqtime       = simTime();
-    this->videoBuffer->segmentframes = this->representation->frameRate;
+    this->videoBuffer->segmentSize   = this->c_segment->getSegmentSize();
+    this->videoBuffer->reqtime       = this->c_segment->getStartTime();
+    this->videoBuffer->res           = this->c_segment->getQuality();
 
-//    std::cout << "Id=" << segment.media << std::endl;
     std::cout << "Segment Size=" << this->videoBuffer->segmentSize << std::endl;
-    sleep(4);
 }
 
 void DashClient::sendRequest()
 {
     long requestLength = par("requestLength");
-    long replyLength   = this->c_segment->getSegmentSize() + 52; // Fix it later | 52 is header size
+    long replyLength   = this->c_segment->getSegmentSize();// + 52; // Fix it later | 52 is header size
 
     if (requestLength < 1)
         requestLength = 1;
@@ -264,12 +282,13 @@ void DashClient::sendRequest()
 
 void DashClient::printPacket(Packet *msg)
 {
-    std::cout << "========================================" << std::endl;
-    std::cout << "[socketDataArrived] Data Arrived Socket " << std::endl;
-    std::cout << "Request Number=" << numRequestsToSend << std::endl;
-    std::cout << "Total Length=" << msg->getTotalLength() << std::endl;
-    std::cout << "Data Length=" << msg->getDataLength() << std::endl;
-    std::cout << "Packets Received=" << packetsRcvd << std::endl;
-    std::cout << "Bytes Received=" << videoBuffer->bytesRcvd << std::endl;
-    std::cout << "Global Time=" << simTime() << std::endl;
+    std::cout << "========================================"    << std::endl;
+    std::cout << "[socketDataArrived] Data Arrived Socket "    << std::endl;
+    std::cout << "Resolution="       << this->videoBuffer->res << std::endl;
+    std::cout << "Request Number="   << numRequestsToSend      << std::endl;
+    std::cout << "Total Length="     << msg->getTotalLength()  << std::endl;
+    std::cout << "Data Length="      << msg->getDataLength()   << std::endl;
+    std::cout << "Packets Received=" << packetsRcvd            << std::endl;
+    std::cout << "Bytes Received="   << videoBuffer->bytesRcvd << std::endl;
+    std::cout << "Global Time="      << simTime()              << std::endl;
 }

@@ -194,7 +194,7 @@ Segment *MPDRequestHandler::LowRepresentation()
     Segment *seg = new Segment();
 
     simtime_t time = simTime();
-    int size = this->representation[quality[0]].segments[this->segIndex].mediaRange;
+    int size = this->representation[quality[0]].segments[0].mediaRange;
     std::string q = quality[0];
 
     seg->setStartTime(time);
@@ -242,4 +242,20 @@ void MPDRequestHandler::printSegments()
 //                  << "bandwidth=" << (*it).bandwidth  << endl;
         std::cout << "===================================================" << std::endl;
     }
+}
+
+vector<std::string>& MPDRequestHandler::getQuality() {
+    return quality;
+}
+
+void MPDRequestHandler::setQuality(const vector<std::string>& quality) {
+    this->quality = quality;
+}
+
+map<std::string, Representation>& MPDRequestHandler::getRepresentation() {
+    return representation;
+}
+
+void MPDRequestHandler::setRepresentation(map<std::string, Representation>& representation) {
+    this->representation = representation;
 }

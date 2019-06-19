@@ -98,6 +98,15 @@ class MPDRequestHandler {
         const vector<string> Split(const string& s, const char& c);
 
         int NumSegments();
+
+        vector<std::string>& getQuality();
+
+        void setQuality(const vector<std::string>& quality);
+
+        map<std::string, Representation>& getRepresentation();
+
+        void setRepresentation(map<std::string, Representation>& representation);
+
     private:
         simtime_t ParserTime(std::string str);
 

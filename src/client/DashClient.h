@@ -105,6 +105,8 @@ class DashClient : public TcpBasicClientApp
 
         virtual void handleTimer(cMessage *msg) override;
 
+        void Connect();
+
         /** Redefined. **/
         virtual void socketEstablished(TcpSocket *socket) override;
 
@@ -141,8 +143,9 @@ class DashClient : public TcpBasicClientApp
 
         ChunkQueue queue;
 
-
         ReassemblyBuffer buffer; // stores received data
+
+        std::string connectAddress;
 
 //        int video_buffer_max_length;
 //        int video_duration;

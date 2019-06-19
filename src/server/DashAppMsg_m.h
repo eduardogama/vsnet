@@ -37,6 +37,7 @@ namespace inet {
  * class DashAppMsg extends FieldsChunk
  * {
  *     B expectedReplyLength;   // in bytes
+ *     B contentLength;
  *     double replyDelay;       // reply after this many seconds
  *     bool serverClose;        // with TCP: if true, server should close the
  *                              // connection after sending the reply
@@ -50,6 +51,7 @@ class DashAppMsg : public ::inet::FieldsChunk
 {
   protected:
     B expectedReplyLength = B(-1);
+    B contentLength = B(-1);
     double replyDelay = 0;
     bool serverClose = false;
     int StartByte = 0;
@@ -75,6 +77,8 @@ class DashAppMsg : public ::inet::FieldsChunk
     // field getter/setter methods
     virtual B getExpectedReplyLength() const;
     virtual void setExpectedReplyLength(B expectedReplyLength);
+    virtual B getContentLength() const;
+    virtual void setContentLength(B contentLength);
     virtual double getReplyDelay() const;
     virtual void setReplyDelay(double replyDelay);
     virtual bool getServerClose() const;

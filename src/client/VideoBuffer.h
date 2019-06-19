@@ -35,6 +35,7 @@ class VideoBuffer
 	    int maxBuffer;
 	    bool isPlaying;
 
+	    std::string res;
 	public:
 
 	    VideoBuffer();

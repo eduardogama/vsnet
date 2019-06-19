@@ -17,18 +17,19 @@
 #define MGMT_DASHMANAGER_H_
 
 #include "../client/MPDRequestHandler.h"
+#include "client/VideoBuffer.h"
 
 class DashManager {
     public:
 
-        DashManager(Representation *representation, Segment *segment, MPDRequestHandler *mpd);
+        DashManager(Segment *segment, MPDRequestHandler *mpd);
 
         DashManager();
         virtual ~DashManager();
         /*
          *
          */
-        Segment *BitRateAssigment();
+        Segment *BitRateAssigment(VideoBuffer *video);
         /*
          *
          */
@@ -44,11 +45,11 @@ class DashManager {
         /*
          *
          */
-        Representation* getRepresentation();
+//        Representation* getRepresentation();
         /*
          *
          */
-        void setRepresentation(Representation* representation);
+//        void setRepresentation(Representation* representation);
         /*
          *
          */
@@ -57,13 +58,37 @@ class DashManager {
          *
          */
         void setSegment(Segment* segment);
+        /*
+         *
+         */
+        vector<std::string>*& getQualities();
+        /*
+         *
+         */
+        void setQualities(vector<std::string>* qualities);
+
+        /*
+         *
+         */
+        map<std::string, Representation>*& getRepresentation();
+        /*
+         *
+         */
+        void setRepresentation(map<std::string, Representation>* representation);
 
     protected:
-        Representation *representation;
+        map<std::string, Representation> *representation;
+
+
+//        Representation *representation;
         Segment *segment;
         MPDRequestHandler *mpd;
 
+        vector<std::string> *qualities;
+
         bool firstReq;
+
+        int segIndex;
 };
 
 #endif /* MGMT_DASHMANAGER_H_ */

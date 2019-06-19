@@ -15,30 +15,11 @@
 
 #include "DashServer.h"
 
-#include <omnetpp/cenum.h>
-#include <omnetpp/checkandcast.h>
-#include <omnetpp/clog.h>
-#include <omnetpp/cmessage.h>
-#include <omnetpp/cnamedobject.h>
-#include <omnetpp/cobjectfactory.h>
-#include <omnetpp/csimulation.h>
-#include <omnetpp/cstlwatch.h>
-#include <omnetpp/regmacros.h>
-#include <omnetpp/simtime.h>
-#include <omnetpp/simtime_t.h>
-#include <iostream>
 
-#include "../../../inet4/src/inet/applications/common/SocketTag_m.h"
-#include "../../../inet4/src/inet/common/InitStages.h"
-#include "../../../inet4/src/inet/common/packet/chunk/Chunk.h"
-#include "../../../inet4/src/inet/common/packet/chunk/FieldsChunk.h"
-#include "../../../inet4/src/inet/common/packet/ChunkQueue.h"
-#include "../../../inet4/src/inet/common/packet/Message.h"
-#include "../../../inet4/src/inet/common/packet/Packet.h"
-#include "../../../inet4/src/inet/common/Ptr.h"
-#include "../../../inet4/src/inet/common/Simsignals.h"
-#include "../../../inet4/src/inet/common/Units.h"
-#include "../../../inet4/src/inet/transportlayer/contract/tcp/TcpCommand_m.h"
+#include "inet/applications/common/SocketTag_m.h"
+#include "inet/common/packet/Packet.h"
+#include "inet/common/Simsignals.h"
+
 #include "DashAppMsg_m.h"
 
 Define_Module(DashServer);
@@ -106,7 +87,11 @@ void DashServer::handleMessage(cMessage *msg)
 //                  << "Chunk Serialization="<< Chunk::enableImplicitChunkSerialization
 //                  << std::endl;
 
+        if(!queue.has<DashAppMsg>())
+            return;
+
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
+
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
             B requestedBytes = appmsg->getExpectedReplyLength();

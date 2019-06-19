@@ -16,18 +16,11 @@
 #ifndef DASH_DASHSERVER_H_
 #define DASH_DASHSERVER_H_
 
-#include <omnetpp/clistener.h>
-#include <omnetpp/platdep/platdefs.h>
-#include <map>
-
-#include "../../../inet4/src/inet/applications/tcpapp/TcpGenericServerApp.h"
-#include "../../../inet4/src/inet/networklayer/common/L3Address.h"
-#include "../services/CacheService.h"
+#include "services/CacheService.h"
 
 #include "inet/transportlayer/contract/tcp/TcpSocket.h"
 
 #include "inet/common/TimeTag_m.h"
-#include "inet/common/packet/chunk/ByteCountChunk.h"
 #include "inet/networklayer/common/L3AddressTag_m.h"
 #include "inet/transportlayer/common/L4PortTag_m.h"
 
@@ -35,17 +28,6 @@
 
 using namespace inet;
 
-struct VideoStreamDash
-{
-    cMessage *timer = nullptr;    // self timer msg
-    L3Address clientAddr;    // client address
-    int clientPort = -1;    // client TCP port
-    long videoSize = 0;    // total size of video
-    long bytesLeft = 0;    // bytes left to transmit
-    long numPkSent = 0;    // number of packets sent
-};
-
-typedef std::map<long int, VideoStreamDash> VideoStreamMap;
 typedef std::map<long int, CacheService> FogMap;
 
 class DashServer :  public  TcpGenericServerApp {
