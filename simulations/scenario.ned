@@ -15,7 +15,7 @@ network scenario
     types:
         channel C extends DatarateChannel
         {
-            datarate = 10Mbps;//0.8Mbps
+            datarate = 25Mbps;//0.8Mbps
             delay = 121ms; //0.565us
             per = per;
         }
