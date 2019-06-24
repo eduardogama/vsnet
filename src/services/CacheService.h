@@ -15,6 +15,7 @@
 
 #include "inet/applications/tcpapp/TcpGenericServerApp.h"
 #include "inet/common/packet/ChunkQueue.h"
+#include "inet/common/socket/SocketMap.h"
 #include "inet/transportlayer/contract/tcp/TcpSocket.h"
 #include "client/Segment.h"
 
@@ -34,11 +35,12 @@ struct VideoStreamDash
 
 typedef std::map<long int, VideoStreamDash> VideoStreamMap;
 
+class CacheServiceBase;
 
 class CacheService: public TcpGenericServerApp {
     public:
         CacheService();
-        virtual ~CacheService();
+        ~CacheService();
 
         virtual void initialize(int stage) override;
 
@@ -49,7 +51,12 @@ class CacheService: public TcpGenericServerApp {
         Packet *PrepareRequest(TcpSocket *socket, Packet *msg);
 
     protected:
-        TcpSocket socket;
+        TcpSocket serverSocket;
+        SocketMap socketMap;
+        typedef std::set<CacheServiceBase *> ThreadSet;
+
+        ThreadSet threadSet;
+
         simtime_t delay;
         simtime_t maxMsgDelay;
 
@@ -63,8 +70,14 @@ class CacheService: public TcpGenericServerApp {
         map<string, list<Segment>> videoCache;
 
         VideoStreamMap streams;
-//        std::vector<Segment> segmentCache;
+        //vector<Segment> segmentCache;
 
 };
+
+class INET_API CacheServiceBase
+{
+
+};
+
 
 #endif /* SERVICES_CACHESERVICE_H_ */

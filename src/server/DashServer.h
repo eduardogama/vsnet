@@ -16,14 +16,12 @@
 #ifndef DASH_DASHSERVER_H_
 #define DASH_DASHSERVER_H_
 
+#include <omnetpp/clistener.h>
+#include <omnetpp/platdep/platdefs.h>
+#include <map>
+
+#include "inet/applications/tcpapp/TcpGenericServerApp.h"
 #include "services/CacheService.h"
-
-#include "inet/transportlayer/contract/tcp/TcpSocket.h"
-
-#include "inet/common/TimeTag_m.h"
-#include "inet/networklayer/common/L3AddressTag_m.h"
-#include "inet/transportlayer/common/L4PortTag_m.h"
-
 
 
 using namespace inet;
@@ -31,39 +29,39 @@ using namespace inet;
 typedef std::map<long int, CacheService> FogMap;
 
 class DashServer :  public  TcpGenericServerApp {
-public:
-    DashServer();
-    virtual ~DashServer();
+    public:
+        DashServer();
+        virtual ~DashServer();
 
-protected:
-    virtual void initialize(int stage) override;
+    protected:
+        virtual void initialize(int stage) override;
 
-    virtual void handleMessage(cMessage *msg) override;
+        virtual void handleMessage(cMessage *msg) override;
 
-    virtual void clearStreams();
+        virtual void clearStreams();
 
-    virtual void processStreamRequest(Packet *msg);
-    virtual void sendStreamData(cMessage *timer);
+        virtual void processStreamRequest(Packet *msg);
+        virtual void sendStreamData(cMessage *timer);
 
-protected:
+    protected:
 
-    int localPort = -1;
+        int localPort = -1;
 
-    // State
-    VideoStreamMap streams;
+        // State
+        VideoStreamMap streams;
 
-    // Network State
-    FogMap fognodes;
+        // Network State
+        FogMap fognodes;
 
-    // Parameters
-    cPar *sendInterval = nullptr;
-    cPar *packetLen = nullptr;
-    cPar *videoSize = nullptr;
+        // Parameters
+        cPar *sendInterval = nullptr;
+        cPar *packetLen = nullptr;
+        cPar *videoSize = nullptr;
 
-    // Statistics
-    unsigned int numStreams = 0;             // Number of video streams served
-    unsigned long numPkSent = 0;             // Total number of packets sent
-    static simsignal_t reqStreamBytesSignal; // Length of video streams served
+        // Statistics
+        unsigned int numStreams = 0;             // Number of video streams served
+        unsigned long numPkSent = 0;             // Total number of packets sent
+        static simsignal_t reqStreamBytesSignal; // Length of video streams served
 };
 
 #endif /* DASH_DASHSERVER_H_ */
