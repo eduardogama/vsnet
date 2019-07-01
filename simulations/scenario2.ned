@@ -7,6 +7,9 @@ import ned.DatarateChannel;
 import inet.node.inet.Router;
 import inet.common.misc.NetAnimTrace;
 import inet.applications.httptools.configurator.HttpController;
+import inet.node.ethernet.EtherSwitch;
+import inet.node.internetcloud.InternetCloud;
+
 
 network scenario2
 {
@@ -52,18 +55,26 @@ network scenario2
             per = C3_per;
             ber = C3_ber;
         }
+        channel ethline extends DatarateChannel
+        {
+            delay = 50ns;
+            datarate = 100Mbps;
+        }
     submodules:
-        client1: StandardHost {
+        client: StandardHost {
             parameters:
-                @display("p=50,80");
+                @display("p=65,202");
         }
-        server1: StandardHost {
+        server: StandardHost {
             parameters:
-                @display("p=400,120;i=device/server");
+                @display("p=471,120;i=device/server");
         }
-        server2: StandardHost {
+        cache: StandardHost {
             parameters:
-                @display("p=50,176;i=device/server");
+                @display("p=65,120;i=device/server");
+        }
+        switch: EtherSwitch {
+            @display("p=180,201");
         }
         router1: Router {
             parameters:
@@ -71,15 +82,25 @@ network scenario2
         }
         router2: Router {
             parameters:
-                @display("p=300,120");
+                @display("p=406,120");
         }
+//        internet: InternetCloud {
+//            @display("p=300,119;is=vl");
+//        }
         configurator: Ipv4NetworkConfigurator {
             parameters:
-                @display("p=154,34");
+                @display("p=149,34;is=s");
         }
+    //        netAnimTrace: NetAnimTrace {
+    //            parameters:
+    //                @display("p=253,34;is=s");
+    //        }
     connections:
-        client1.pppg++ <--> C1 <--> router1.pppg++;
-        server2.pppg++ <--> C1 <--> router1.pppg++;
-        router1.pppg++ <--> C2 <--> router2.pppg++;
-        router2.pppg++ <--> C3 <--> server1.pppg++;
+        client.ethg++ <--> ethline <--> switch.ethg++;
+        switch.ethg++ <--> ethline <--> router1.ethg++;
+        cache.ethg++ <--> ethline <--> router1.ethg++;
+//        router1.pppg++ <--> C2 <--> internet.pppg++;
+//        router2.pppg++ <--> C2 <--> internet.pppg++;
+        router1.ethg++ <--> ethline <--> router2.ethg++;
+        router2.ethg++ <--> ethline <--> server.ethg++;
 }

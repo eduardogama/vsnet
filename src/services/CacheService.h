@@ -8,8 +8,6 @@
 #ifndef SERVICES_CACHESERVICE_H_
 #define SERVICES_CACHESERVICE_H_
 
-#include <omnetpp/platdep/platdefs.h>
-#include <omnetpp/simtime_t.h>
 #include <map>
 #include <list>
 
@@ -18,6 +16,7 @@
 #include "inet/common/socket/SocketMap.h"
 #include "inet/transportlayer/contract/tcp/TcpSocket.h"
 #include "client/Segment.h"
+
 
 
 using namespace std;
@@ -44,13 +43,13 @@ class CacheService: public TcpGenericServerApp {
 
         virtual void initialize(int stage) override;
 
-        virtual int numInitStages() const override { return NUM_INIT_STAGES; }
-
         virtual void handleMessage(cMessage *msg) override;
 
         Packet *PrepareRequest(TcpSocket *socket, Packet *msg);
 
     protected:
+        TcpSocket socket;
+
         TcpSocket serverSocket;
         SocketMap socketMap;
         typedef std::set<CacheServiceBase *> ThreadSet;
@@ -67,15 +66,17 @@ class CacheService: public TcpGenericServerApp {
 
         map<int, ChunkQueue> socketQueue;
 
-        map<string, list<Segment>> videoCache;
-
         VideoStreamMap streams;
         //vector<Segment> segmentCache;
-
 };
 
-class INET_API CacheServiceBase
+class CacheServiceBase
 {
+    public:
+        void insertSegment(std::string path_seg);
+
+    protected:
+        map<string, list<Segment>> videoCache;
 
 };
 

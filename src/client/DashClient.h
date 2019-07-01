@@ -124,7 +124,6 @@ class DashClient : public TcpBasicClientApp
         virtual void handleCrashOperation(LifecycleOperation *operation) override;
 
     protected:
-
         DashManager       *dashmanager;
 
         Representation    *representation;
@@ -143,7 +142,7 @@ class DashClient : public TcpBasicClientApp
 
         ChunkQueue queue;
 
-        ReassemblyBuffer buffer; // stores received data
+//        ReassemblyBuffer buffer; // stores received data
 
         std::string connectAddress;
 

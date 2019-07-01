@@ -41,6 +41,9 @@
 #include "server/DashAppMsg_m.h"
 
 
+Define_Module(CacheService);
+
+
 CacheService::CacheService() {
     // TODO Auto-generated constructor stub
 }
@@ -65,8 +68,10 @@ void CacheService::initialize(int stage)
         WATCH(bytesRcvd);
         WATCH(bytesSent);
     } else if (stage == INITSTAGE_APPLICATION_LAYER) {
+
         const char *localAddress = par("localAddress");
-        int localPort = par("localPort");
+        int localPort            = par("localPort");
+
         socket.setOutputGate(gate("socketOut"));
         socket.bind(localAddress[0] ? L3AddressResolver().resolve(localAddress) : L3Address(), localPort);
         socket.listen();
@@ -74,6 +79,7 @@ void CacheService::initialize(int stage)
         cModule *node = findContainingNode(this);
         NodeStatus *nodeStatus = node ? check_and_cast_nullable<NodeStatus *>(node->getSubmodule("status")) : nullptr;
         bool isOperational = (!nodeStatus) || nodeStatus->getState() == NodeStatus::UP;
+
         if (!isOperational)
             throw cRuntimeError("This module doesn't support starting in node DOWN state");
     }
@@ -81,19 +87,18 @@ void CacheService::initialize(int stage)
 
 void CacheService::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage()) {
-        sendBack(msg);
-    }
-    else if (msg->getKind() == TCP_I_PEER_CLOSED) {
+    if (msg->getKind() == TCP_I_PEER_CLOSED) {
         // we'll close too, but only after there's surely no message
         // pending to be sent back in this connection
         int connId = check_and_cast<Indication *>(msg)->getTag<SocketInd>()->getSocketId();
         delete msg;
         auto request = new Request("close", TCP_C_CLOSE);
         request->addTagIfAbsent<SocketReq>()->setSocketId(connId);
-        sendOrSchedule(request, delay + maxMsgDelay);
+//        sendOrSchedule(request, delay + maxMsgDelay);
     }
     else if (msg->getKind() == TCP_I_DATA || msg->getKind() == TCP_I_URGENT_DATA) {
+
+
         Packet *packet = check_and_cast<Packet *>(msg);
         int connId = packet->getTag<SocketInd>()->getSocketId();
         ChunkQueue &queue = socketQueue[connId];
@@ -125,7 +130,7 @@ void CacheService::handleMessage(cMessage *msg)
                 payload->setExpectedReplyLength(B(0));
                 payload->setReplyDelay(0);
                 outPacket->insertAtBack(payload);
-                sendOrSchedule(outPacket, delay + msgDelay);
+//                sendOrSchedule(outPacket, delay + msgDelay);
             }
             if (appmsg->getServerClose()) {
                 doClose = true;
@@ -139,7 +144,7 @@ void CacheService::handleMessage(cMessage *msg)
             TcpCommand *cmd = new TcpCommand();
             request->addTagIfAbsent<SocketReq>()->setSocketId(connId);
             request->setControlInfo(cmd);
-            sendOrSchedule(request, delay + maxMsgDelay);
+//            sendOrSchedule(request, delay + maxMsgDelay);
         }
     }
     else if (msg->getKind() == TCP_I_AVAILABLE)
@@ -170,4 +175,8 @@ Packet *CacheService::PrepareRequest(TcpSocket *socket, Packet *msg)
     std::string request = req.str();
 
     return new Packet();
+}
+
+void CacheServiceBase::insertSegment(std::string path_seg) {
+
 }

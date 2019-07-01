@@ -8,7 +8,10 @@
 #include "inet/common/TimeTag_m.h"
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
+
 #include "server/DashAppMsg_m.h"
+#include "inet/applications/tcpapp/GenericAppMsg_m.h"
+
 
 #define MSGKIND_CONNECT     0
 #define MSGKIND_SEND        1
@@ -92,12 +95,14 @@ void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
 void DashClient::handleTimer(cMessage *msg)
 {
     std::cout <<  "DashClient Handle Timer=" << msg->getKind() << std::endl;
+
     switch (msg->getKind()) {
         case MSGKIND_CONNECT:
             connect();    // active OPEN
 
             break;
         case MSGKIND_SEND:
+
             prepareRequest();
             sendRequest();
             // no scheduleAt(): next request will be sent when reply to this one
@@ -157,15 +162,15 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
     printPacket(msg);
     videoBuffer->bytesRcvd += msg->getByteLength();
 
-    queue.push(msg->peekData()); // get all data from the packet
+//    queue.push(msg->peekData()); // get all data from the packet
 
     TcpAppBase::socketDataArrived(socket, msg, urgent);
 
     if((this->videoBuffer->bytesRcvd >= videoBuffer->segmentSize)
        && (numRequestsToSend > 0)) {
 
-        const auto&  appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR);
-        std::cout << "appmsg=" << appmsg->getRedirectAddress() << std::endl;
+//        const auto&  appmsg = queue.pop<GenericAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR);
+//        std::cout << "appmsg=" << appmsg->getRedirectAddress() << std::endl;
 
 //        if(appmsg->getRedirectAddress() != nullptr || appmsg->getRedirectAddress() != "")
 //            std::cout << "Change socket connection" << std::endl;
@@ -174,8 +179,26 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
         this->videoBuffer->addSegment(*c_segment);
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
-        rescheduleOrDeleteTimer(simTime(), MSGKIND_SEND);
+
+        std::cout << "entrou\n";
+        this->timeoutMsg->setKind(MSGKIND_SEND);
+        scheduleAt(simTime(), this->timeoutMsg);
     }
+
+//    TcpAppBase::socketDataArrived(socket, msg, urgent);
+//
+//    if (numRequestsToSend > 0) {
+//        EV_INFO << "reply arrived\n";
+//
+//        if (timeoutMsg) {
+//            simtime_t d = simTime() + par("thinkTime");
+//            rescheduleOrDeleteTimer(d, MSGKIND_SEND);
+//        }
+//    }
+//    else if (socket->getState() != TcpSocket::LOCALLY_CLOSED) {
+//        EV_INFO << "reply to last request arrived, closing session\n";
+//        close();
+//    }
 
 //    if(this->videoBuffer->isReady()) {
 //        emit(DASH_video_is_playing, this->videoBuffer->isReady());
@@ -223,6 +246,8 @@ void DashClient::handleStartOperation(LifecycleOperation *operation)
 {
     // TODO
     TcpBasicClientApp::handleStartOperation(operation);
+    cout << "[1] entrou" << endl;
+    EV_INFO << "[1] entrou" << endl;
 }
 
 void DashClient::handleStopOperation(LifecycleOperation *operation)
@@ -239,6 +264,7 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 
 void DashClient::prepareRequest()
 {
+    std::cout << "entrou [1]\n";
     this->c_segment = this->dashmanager->BitRateAssigment(this->videoBuffer);
 
     this->videoBuffer->bytesRcvd     = 0;
@@ -251,6 +277,7 @@ void DashClient::prepareRequest()
 
 void DashClient::sendRequest()
 {
+    std::cout << "entrou [1]\n";
     long requestLength = par("requestLength");
     long replyLength   = this->c_segment->getSegmentSize();// + 52; // Fix it later | 52 is header size
 
@@ -282,13 +309,13 @@ void DashClient::sendRequest()
 
 void DashClient::printPacket(Packet *msg)
 {
-    std::cout << "========================================"    << std::endl;
-    std::cout << "[socketDataArrived] Data Arrived Socket "    << std::endl;
-    std::cout << "Resolution="       << this->videoBuffer->res << std::endl;
-    std::cout << "Request Number="   << numRequestsToSend      << std::endl;
-    std::cout << "Total Length="     << msg->getTotalLength()  << std::endl;
-    std::cout << "Data Length="      << msg->getDataLength()   << std::endl;
-    std::cout << "Packets Received=" << packetsRcvd            << std::endl;
-    std::cout << "Bytes Received="   << videoBuffer->bytesRcvd << std::endl;
-    std::cout << "Global Time="      << simTime()              << std::endl;
+    std::cout << "========================================"          << std::endl;
+    std::cout << "[socketDataArrived] Data Arrived Socket "          << std::endl;
+    std::cout << "Request Number="   << numRequestsToSend            << std::endl;
+    std::cout << "Total Length="     << msg->getTotalLength()        << std::endl;
+    std::cout << "Data Length="      << msg->getDataLength()         << std::endl;
+    std::cout << "Packets Received=" << packetsRcvd                  << std::endl;
+    std::cout << "Bytes Received="   << this->videoBuffer->bytesRcvd << std::endl;
+    std::cout << "Resolution="       << this->videoBuffer->res       << std::endl;
+    std::cout << "Global Time="      << simTime()                    << std::endl;
 }

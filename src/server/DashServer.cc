@@ -15,15 +15,15 @@
 
 #include "DashServer.h"
 
+#include "inet/networklayer/common/L3AddressResolver.h"
 
 #include "inet/applications/common/SocketTag_m.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Simsignals.h"
 #include "inet/common/TimeTag_m.h"
 
-
-
 #include "DashAppMsg_m.h"
+
 
 Define_Module(DashServer);
 
@@ -118,6 +118,8 @@ void DashServer::handleMessage(cMessage *msg)
                 outPacket->insertAtBack(payload);
 
                 sendOrSchedule(outPacket, delay + msgDelay);
+
+                ConnectFog(connId);
             }
             if (appmsg->getServerClose()) {
                 doClose = true;
@@ -134,13 +136,42 @@ void DashServer::handleMessage(cMessage *msg)
             sendOrSchedule(request, delay + maxMsgDelay);
         }
     }
-    else if (msg->getKind() == TCP_I_AVAILABLE)
+    else if (msg->getKind() == TCP_I_AVAILABLE){
         socket.processMessage(msg);
+    }
     else {
         // some indication -- ignore
         EV_WARN << "drop msg: " << msg->getName() << ", kind:" << msg->getKind() << "(" << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind()) << ")\n";
         delete msg;
     }
+}
+
+void DashServer::ConnectFog(int socketId)
+{
+    TcpSocket fogsocket;
+    // we need a new connId if this is not the first connection
+    fogsocket.renewSocket();
+
+    const char *localAddress = par("localAddress");
+    int localPort            = -1;
+    fogsocket.bind(*localAddress ? L3AddressResolver().resolve(localAddress) : L3Address(), localPort);
+
+    // connect
+    int connectPort = par("connectPort");
+
+    L3Address destination;
+    L3AddressResolver().tryResolve(connectAddress.c_str(), destination);
+    if (destination.isUnspecified()) {
+        EV_ERROR << "Connecting to " << connectAddress << " port=" << connectPort << ": cannot resolve destination address\n";
+    }
+    else {
+        EV_INFO << "Connecting to " << connectAddress << "(" << destination << ") port=" << connectPort << endl;
+
+        fogsocket.connect(destination, connectPort);
+    }
+    VideoStreamDash vsm;
+
+    this->streams.insert(std::pair<long int, VideoStreamDash>(socketId,vsm));
 }
 
 void DashServer::processStreamRequest(Packet *msg)

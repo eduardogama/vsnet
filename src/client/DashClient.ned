@@ -58,7 +58,6 @@ simple DashClient like IApp
         int    video_duration 				@units(s)    = default(30); 							  // video length in seconds
         int    manifest_size                @units(byte) = default(100000);
         
-        
         @signal[packetSent](type=inet::Packet);
         @signal[packetReceived](type=inet::Packet);
 
