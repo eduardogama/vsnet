@@ -67,8 +67,8 @@ typedef struct MPDFile_t{
 class MPDRequestHandler {
 
     public:
-    
-        MPDRequestHandler();
+        static MPDRequestHandler* getInstance();
+
         ~MPDRequestHandler();
 
         void printSegments();
@@ -108,9 +108,14 @@ class MPDRequestHandler {
         void setRepresentation(map<std::string, Representation>& representation);
 
     private:
+
+        MPDRequestHandler();
+
         simtime_t ParserTime(std::string str);
 
     protected:
+        static MPDRequestHandler* instance;
+
         simtime_t mediaPresentationDuration;
         simtime_t maxSegmentDuration;
         simtime_t minBufferTime;

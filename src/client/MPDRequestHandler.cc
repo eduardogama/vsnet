@@ -9,12 +9,21 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+MPDRequestHandler *MPDRequestHandler::instance = 0;
 
 MPDRequestHandler::MPDRequestHandler()
 {}
 
 MPDRequestHandler::~MPDRequestHandler()
 {}
+
+MPDRequestHandler* MPDRequestHandler::getInstance()
+{
+    if (instance == 0) {
+        instance = new MPDRequestHandler();
+    }
+    return instance;
+}
 
 
 void MPDRequestHandler::ReadMPD(std::string path_mpd)

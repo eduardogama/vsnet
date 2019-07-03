@@ -21,9 +21,13 @@
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Simsignals.h"
 #include "inet/common/TimeTag_m.h"
+#include "inet/common/ModuleAccess.h"
+#include "inet/common/lifecycle/ModuleOperations.h"
 
 #include "DashAppMsg_m.h"
 
+#define MSGKIND_CONNECT    13
+#define MSGKIND_SEND       14
 
 Define_Module(DashServer);
 
@@ -139,6 +143,9 @@ void DashServer::handleMessage(cMessage *msg)
     else if (msg->getKind() == TCP_I_AVAILABLE){
         socket.processMessage(msg);
     }
+    else if (msg->getKind() == TCP_I_ESTABLISHED) {
+
+    }
     else {
         // some indication -- ignore
         EV_WARN << "drop msg: " << msg->getName() << ", kind:" << msg->getKind() << "(" << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind()) << ")\n";
@@ -152,12 +159,16 @@ void DashServer::ConnectFog(int socketId)
     // we need a new connId if this is not the first connection
     fogsocket.renewSocket();
 
-    const char *localAddress = par("localAddress");
+    const char *localAddress = "server";
     int localPort            = -1;
     fogsocket.bind(*localAddress ? L3AddressResolver().resolve(localAddress) : L3Address(), localPort);
 
+    fogsocket.setCallback(this);
+    fogsocket.setOutputGate(gate("socketOut"));
+
     // connect
-    int connectPort = par("connectPort");
+    int connectPort = 1000;
+    connectAddress = "cache";
 
     L3Address destination;
     L3AddressResolver().tryResolve(connectAddress.c_str(), destination);
@@ -236,6 +247,36 @@ void DashServer::clearStreams()
 //    streams.clear();
 }
 
+void DashServer::socketEstablished(TcpSocket* socket) {
+}
+
+void DashServer::socketDataArrived(TcpSocket* socket, Packet* msg,
+        bool urgent) {
+}
+
+void DashServer::socketClosed(TcpSocket* socket) {
+}
+
+void DashServer::socketFailure(TcpSocket* socket, int code) {
+}
+
+void DashServer::handleStartOperation(LifecycleOperation* operation) {
+    simtime_t now = simTime();
+    simtime_t start = std::max(startTime, now);
+    if (timeoutMsg && ((stopTime < SIMTIME_ZERO) || (start < stopTime) || (start == stopTime && startTime == stopTime))) {
+        timeoutMsg->setKind(MSGKIND_CONNECT);
+        scheduleAt(start, timeoutMsg);
+    }
+}
+
+void DashServer::handleStopOperation(LifecycleOperation* operation) {
+}
+
+void DashServer::socketPeerClosed(TcpSocket* socket) {
+}
+
+void DashServer::handleCrashOperation(LifecycleOperation* operation) {
+}
 //void DashServer::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 //{
 ////    TcpAppBase::socketDataArrived(socket, msg, urgent);

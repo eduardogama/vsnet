@@ -38,7 +38,7 @@ void DashClient::initialize(int stage)
     this->representation = new Representation();
     this->videoBuffer    = new VideoBuffer();
     this->dashplayback   = new DashPlayback();
-    this->mpd            = new MPDRequestHandler();
+    this->mpd            = MPDRequestHandler::getInstance();
 
     this->dashmanager = new DashManager();
     this->dashmanager->setMpd(this->mpd);

@@ -37,7 +37,7 @@ void DASHApp::initialize(int stage) {
     if (stage != 3) return;
 
     this->videoBuffer  = new VideoBuffer();
-    this->mpd          = new MPDRequestHandler();
+    this->mpd          = MPDRequestHandler::getInstance();
 
     this->mpd->ReadMPD("/home/eduardo/github/vsnet/input/sample.mpd");
 

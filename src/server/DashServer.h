@@ -20,6 +20,9 @@
 
 //#include "services/CacheService.h"
 #include "inet/applications/tcpapp/TcpGenericServerApp.h"
+#include "inet/common/lifecycle/ILifecycle.h"
+
+#include "client/MPDRequestHandler.h"
 
 
 using namespace inet;
@@ -34,12 +37,13 @@ struct VideoStreamDash
     long videoSize = 0;    // total size of video
     long bytesLeft = 0;    // bytes left to transmit
     long numPkSent = 0;    // number of packets sent
+    vector<char> video_seg;
 };
 
 typedef std::map<long int, VideoStreamDash> VideoStreamMap;
 //typedef std::map<long int, CacheService> FogMap;
 
-class DashServer : public TcpGenericServerApp {
+class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
     public:
         DashServer();
         virtual ~DashServer();
@@ -56,7 +60,22 @@ class DashServer : public TcpGenericServerApp {
 
         void ConnectFog(int socketId);
 
+        virtual void socketEstablished(TcpSocket *socket) override;
+        virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
+        virtual void socketAvailable(TcpSocket *socket, TcpAvailableInfo *availableInfo) override { socket->accept(availableInfo->getNewSocketId()); }
+        virtual void socketClosed(TcpSocket *socket) override;
+        virtual void socketFailure(TcpSocket *socket, int code) override;
+        virtual void socketStatusArrived(TcpSocket *socket, TcpStatusInfo *status) override { }
+        virtual void socketDeleted(TcpSocket *socket) override {}
+        virtual void socketPeerClosed(TcpSocket *socket) override;
+
+        virtual void handleStartOperation(LifecycleOperation *operation);
+        virtual void handleStopOperation(LifecycleOperation *operation);
+        virtual void handleCrashOperation(LifecycleOperation *operation);
+
     protected:
+
+        MPDRequestHandler *mpd;
 
         std::string connectAddress;
         int localPort = -1;
@@ -76,6 +95,15 @@ class DashServer : public TcpGenericServerApp {
         unsigned int numStreams = 0;             // Number of video streams served
         unsigned long numPkSent = 0;             // Total number of packets sent
         static simsignal_t reqStreamBytesSignal; // Length of video streams served
+
+
+        // AppClient
+        cMessage *timeoutMsg = nullptr;
+        bool earlySend = false;    // if true, don't wait with sendRequest() until established()
+        int numRequestsToSend = 0;    // requests to send in this session
+
+        simtime_t startTime;
+        simtime_t stopTime;
 };
 
 #endif /* DASH_DASHSERVER_H_ */
