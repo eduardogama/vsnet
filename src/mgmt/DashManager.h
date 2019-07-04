@@ -37,6 +37,10 @@ class DashManager {
         /*
          *
          */
+        Segment *HighRepresentation(int segIndex);
+        /*
+         *
+         */
         MPDRequestHandler* getMpd();
         /*
          *

@@ -89,6 +89,8 @@ class MPDRequestHandler {
 
         Segment *LowRepresentation();
 
+        Segment *HighRepresentation(int segIndex);
+
         simtime_t getMediaPresentationDuration();
 
         simtime_t getMaxSegmentDuration();

@@ -90,6 +90,11 @@ Segment *DashManager::LowRepresentation()
     return this->mpd->LowRepresentation();
 }
 
+Segment *DashManager::HighRepresentation(int segIndex)
+{
+    return this->mpd->HighRepresentation(segIndex);
+}
+
 MPDRequestHandler* DashManager::getMpd() {
     return this->mpd;
 }

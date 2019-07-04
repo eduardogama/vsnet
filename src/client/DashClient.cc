@@ -180,7 +180,6 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 
         emit(this->DASH_seg_cmplt, this->videoBuffer->segIndex);
 
-        std::cout << "entrou\n";
         this->timeoutMsg->setKind(MSGKIND_SEND);
         scheduleAt(simTime(), this->timeoutMsg);
     }
@@ -246,8 +245,6 @@ void DashClient::handleStartOperation(LifecycleOperation *operation)
 {
     // TODO
     TcpBasicClientApp::handleStartOperation(operation);
-    cout << "[1] entrou" << endl;
-    EV_INFO << "[1] entrou" << endl;
 }
 
 void DashClient::handleStopOperation(LifecycleOperation *operation)
@@ -264,7 +261,6 @@ void DashClient::handleCrashOperation(LifecycleOperation *operation)
 
 void DashClient::prepareRequest()
 {
-    std::cout << "entrou [1]\n";
     this->c_segment = this->dashmanager->BitRateAssigment(this->videoBuffer);
 
     this->videoBuffer->bytesRcvd     = 0;
@@ -277,7 +273,6 @@ void DashClient::prepareRequest()
 
 void DashClient::sendRequest()
 {
-    std::cout << "entrou [1]\n";
     long requestLength = par("requestLength");
     long replyLength   = this->c_segment->getSegmentSize();// + 52; // Fix it later | 52 is header size
 

@@ -32,7 +32,7 @@
 Define_Module(DashServer);
 
 
-inline std::ostream& operator<<(std::ostream& out, const VideoStreamDash& d)
+inline ostream& operator<<(ostream& out, const VideoStreamDash& d)
 {
     out << "client=" << d.clientAddr << ":" << d.clientPort
         << "  size=" << d.videoSize << "  pksent=" << d.numPkSent << "  bytesleft=" << d.bytesLeft;
@@ -53,16 +53,14 @@ void DashServer::initialize(int stage)
 
     if (stage != 3) return;
 
-    if (stage == INITSTAGE_LOCAL) {
-        WATCH_MAP(streams);
-    }
+    this->mpd = MPDRequestHandler::getInstance();
 }
 
 void DashServer::handleMessage(cMessage *msg)
 {
-    std::cout << "DashServer handleMessage="
-              << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
-              << std::endl;
+    cout << "DashServer handleMessage="
+         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
+         << endl;
 
     if (msg->isSelfMessage()) {
         sendBack(msg);
@@ -98,14 +96,21 @@ void DashServer::handleMessage(cMessage *msg)
             return;
 
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
-
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
             B requestedBytes = appmsg->getExpectedReplyLength();
 
             simtime_t msgDelay = appmsg->getReplyDelay();
+
             if (msgDelay > maxMsgDelay)
                 maxMsgDelay = msgDelay;
+
+            if(this->streams.find(connId) == this->streams.end()){
+                TcpSocket fog = ConnectFog(connId);
+                initVideoStream(fog.getSocketId());
+
+                this->streams[fog.getSocketId()].fogsocket = fog;
+            }
 
             if (requestedBytes > B(0)) {
                 Packet *outPacket = new Packet(msg->getName());
@@ -122,8 +127,6 @@ void DashServer::handleMessage(cMessage *msg)
                 outPacket->insertAtBack(payload);
 
                 sendOrSchedule(outPacket, delay + msgDelay);
-
-                ConnectFog(connId);
             }
             if (appmsg->getServerClose()) {
                 doClose = true;
@@ -144,7 +147,12 @@ void DashServer::handleMessage(cMessage *msg)
         socket.processMessage(msg);
     }
     else if (msg->getKind() == TCP_I_ESTABLISHED) {
+        int connId = check_and_cast<Indication *>(msg)->getTag<SocketInd>()->getSocketId();
 
+        cout << "Socket ID=" << connId << endl;
+
+
+        handleConnection(connId);
     }
     else {
         // some indication -- ignore
@@ -153,7 +161,7 @@ void DashServer::handleMessage(cMessage *msg)
     }
 }
 
-void DashServer::ConnectFog(int socketId)
+TcpSocket DashServer::ConnectFog(int socketId)
 {
     TcpSocket fogsocket;
     // we need a new connId if this is not the first connection
@@ -180,9 +188,10 @@ void DashServer::ConnectFog(int socketId)
 
         fogsocket.connect(destination, connectPort);
     }
-    VideoStreamDash vsm;
 
-    this->streams.insert(std::pair<long int, VideoStreamDash>(socketId,vsm));
+    cout << "Fog Socket ID=" << fogsocket.getSocketId() << endl;
+
+    return fogsocket;
 }
 
 void DashServer::processStreamRequest(Packet *msg)
@@ -250,8 +259,21 @@ void DashServer::clearStreams()
 void DashServer::socketEstablished(TcpSocket* socket) {
 }
 
-void DashServer::socketDataArrived(TcpSocket* socket, Packet* msg,
-        bool urgent) {
+void DashServer::socketDataArrived(TcpSocket* socket, Packet* msg, bool urgent)
+{
+    // *redefine* to perform or schedule next sending
+    packetsRcvd++;
+    bytesRcvd += msg->getByteLength();
+
+    if (socket->getState() != TcpSocket::LOCALLY_CLOSED) {
+        EV_INFO << "reply to last request arrived, closing session\n";
+        socket->close();
+    }
+
+    cout << "entrou" << endl;
+
+    emit(packetReceivedSignal, msg);
+    delete msg;
 }
 
 void DashServer::socketClosed(TcpSocket* socket) {
@@ -262,7 +284,7 @@ void DashServer::socketFailure(TcpSocket* socket, int code) {
 
 void DashServer::handleStartOperation(LifecycleOperation* operation) {
     simtime_t now = simTime();
-    simtime_t start = std::max(startTime, now);
+    simtime_t start = max(startTime, now);
     if (timeoutMsg && ((stopTime < SIMTIME_ZERO) || (start < stopTime) || (start == stopTime && startTime == stopTime))) {
         timeoutMsg->setKind(MSGKIND_CONNECT);
         scheduleAt(start, timeoutMsg);
@@ -270,12 +292,46 @@ void DashServer::handleStartOperation(LifecycleOperation* operation) {
 }
 
 void DashServer::handleStopOperation(LifecycleOperation* operation) {
+    cancelEvent(timeoutMsg);
+    for (VideoStreamMap::iterator it=streams.begin(); it!=streams.end(); ++it){
+        VideoStreamDash& vsm = it->second;
+
+        vsm.fogsocket.close();
+    }
 }
 
 void DashServer::socketPeerClosed(TcpSocket* socket) {
 }
 
+void DashServer::initVideoStream(int socketId) {
+    VideoStreamDash vsm;
+
+    vsm.video_seg = vector<short int>(this->mpd->NumSegments(), 0);
+
+    this->streams.insert(pair<long int, VideoStreamDash>(socketId,vsm));
+
+    cout << "[Cloud] Segment Size=" << vsm.video_seg.size() << endl;
+    for_each(vsm.video_seg.begin(), vsm.video_seg.end(), [](const short int& n){
+        cout << n << " ";
+    });
+    cout << "Video Stream created ."<< endl;
+}
+
+void DashServer::handleConnection(int socketId) {
+    VideoStreamDash& vsm = this->streams[socketId];
+
+    vsm.video_seg[vsm.segIndex];
+
+
+
+    vsm.segIndex++;
+}
+
 void DashServer::handleCrashOperation(LifecycleOperation* operation) {
+    cout << "entrou []" << endl;
+    cancelEvent(timeoutMsg);
+    if (operation->getRootModule() != getContainingNode(this))
+        socket.destroy();
 }
 //void DashServer::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 //{

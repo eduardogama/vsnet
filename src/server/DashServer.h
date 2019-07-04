@@ -17,6 +17,7 @@
 #define DASH_DASHSERVER_H_
 
 #include <map>
+#include <algorithm>
 
 //#include "services/CacheService.h"
 #include "inet/applications/tcpapp/TcpGenericServerApp.h"
@@ -30,14 +31,15 @@ using namespace inet;
 
 struct VideoStreamDash
 {
-    TcpSocket socket;
+    TcpSocket fogsocket;
     cMessage *timer = nullptr;    // self timer msg
     L3Address clientAddr;    // client address
     int clientPort = -1;    // client TCP port
     long videoSize = 0;    // total size of video
     long bytesLeft = 0;    // bytes left to transmit
     long numPkSent = 0;    // number of packets sent
-    vector<char> video_seg;
+    int segIndex = 0;
+    vector<short int> video_seg;
 };
 
 typedef std::map<long int, VideoStreamDash> VideoStreamMap;
@@ -58,7 +60,10 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
         virtual void processStreamRequest(Packet *msg);
         virtual void sendStreamData(cMessage *timer);
 
-        void ConnectFog(int socketId);
+        TcpSocket ConnectFog(int socketId);
+
+        void initVideoStream(int socketId);
+        void handleConnection(int socketId);
 
         virtual void socketEstablished(TcpSocket *socket) override;
         virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
@@ -77,7 +82,7 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
 
         MPDRequestHandler *mpd;
 
-        std::string connectAddress;
+        string connectAddress;
         int localPort = -1;
 
         // State
@@ -96,6 +101,13 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
         unsigned long numPkSent = 0;             // Total number of packets sent
         static simsignal_t reqStreamBytesSignal; // Length of video streams served
 
+        // statistics
+        int numSessions;
+        int numBroken;
+        int packetsSent;
+        int packetsRcvd;
+        int bytesSent;
+        int bytesRcvd;
 
         // AppClient
         cMessage *timeoutMsg = nullptr;
