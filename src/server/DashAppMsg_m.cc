@@ -239,6 +239,7 @@ void DashAppMsg::copy(const DashAppMsg& other)
     this->StartByte = other.StartByte;
     this->EndByte = other.EndByte;
     this->redirectAddress = other.redirectAddress;
+    this->segment = other.segment;
 }
 
 void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
@@ -251,6 +252,7 @@ void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->StartByte);
     doParsimPacking(b,this->EndByte);
     doParsimPacking(b,this->redirectAddress);
+    doParsimPacking(b,this->segment);
 }
 
 void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -263,6 +265,7 @@ void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->StartByte);
     doParsimUnpacking(b,this->EndByte);
     doParsimUnpacking(b,this->redirectAddress);
+    doParsimUnpacking(b,this->segment);
 }
 
 B DashAppMsg::getExpectedReplyLength() const
@@ -342,6 +345,17 @@ void DashAppMsg::setRedirectAddress(const char * redirectAddress)
     this->redirectAddress = redirectAddress;
 }
 
+const char * DashAppMsg::getSegment() const
+{
+    return this->segment.c_str();
+}
+
+void DashAppMsg::setSegment(const char * segment)
+{
+    handleChange();
+    this->segment = segment;
+}
+
 class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -354,6 +368,7 @@ class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
         FIELD_StartByte,
         FIELD_EndByte,
         FIELD_redirectAddress,
+        FIELD_segment,
     };
   public:
     DashAppMsgDescriptor();
@@ -416,7 +431,7 @@ const char *DashAppMsgDescriptor::getProperty(const char *propertyname) const
 int DashAppMsgDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 7+basedesc->getFieldCount() : 7;
+    return basedesc ? 8+basedesc->getFieldCount() : 8;
 }
 
 unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
@@ -435,8 +450,9 @@ unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_StartByte
         FD_ISEDITABLE,    // FIELD_EndByte
         FD_ISEDITABLE,    // FIELD_redirectAddress
+        FD_ISEDITABLE,    // FIELD_segment
     };
-    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 8) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DashAppMsgDescriptor::getFieldName(int field) const
@@ -455,8 +471,9 @@ const char *DashAppMsgDescriptor::getFieldName(int field) const
         "StartByte",
         "EndByte",
         "redirectAddress",
+        "segment",
     };
-    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 8) ? fieldNames[field] : nullptr;
 }
 
 int DashAppMsgDescriptor::findField(const char *fieldName) const
@@ -470,6 +487,7 @@ int DashAppMsgDescriptor::findField(const char *fieldName) const
     if (fieldName[0] == 'S' && strcmp(fieldName, "StartByte") == 0) return base+4;
     if (fieldName[0] == 'E' && strcmp(fieldName, "EndByte") == 0) return base+5;
     if (fieldName[0] == 'r' && strcmp(fieldName, "redirectAddress") == 0) return base+6;
+    if (fieldName[0] == 's' && strcmp(fieldName, "segment") == 0) return base+7;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -489,8 +507,9 @@ const char *DashAppMsgDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_StartByte
         "int",    // FIELD_EndByte
         "string",    // FIELD_redirectAddress
+        "string",    // FIELD_segment
     };
-    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 8) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DashAppMsgDescriptor::getFieldPropertyNames(int field) const
@@ -564,6 +583,7 @@ std::string DashAppMsgDescriptor::getFieldValueAsString(void *object, int field,
         case FIELD_StartByte: return long2string(pp->getStartByte());
         case FIELD_EndByte: return long2string(pp->getEndByte());
         case FIELD_redirectAddress: return oppstring2string(pp->getRedirectAddress());
+        case FIELD_segment: return oppstring2string(pp->getSegment());
         default: return "";
     }
 }
@@ -585,6 +605,7 @@ bool DashAppMsgDescriptor::setFieldValueAsString(void *object, int field, int i,
         case FIELD_StartByte: pp->setStartByte(string2long(value)); return true;
         case FIELD_EndByte: pp->setEndByte(string2long(value)); return true;
         case FIELD_redirectAddress: pp->setRedirectAddress((value)); return true;
+        case FIELD_segment: pp->setSegment((value)); return true;
         default: return false;
     }
 }

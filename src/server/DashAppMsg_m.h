@@ -44,6 +44,7 @@ namespace inet {
  *     int StartByte;
  *     int EndByte;
  *     string redirectAddress;
+ *     string segment;
  * }
  * </pre>
  */
@@ -57,6 +58,7 @@ class DashAppMsg : public ::inet::FieldsChunk
     int StartByte = 0;
     int EndByte = 0;
     omnetpp::opp_string redirectAddress;
+    omnetpp::opp_string segment;
 
   private:
     void copy(const DashAppMsg& other);
@@ -89,6 +91,8 @@ class DashAppMsg : public ::inet::FieldsChunk
     virtual void setEndByte(int EndByte);
     virtual const char * getRedirectAddress() const;
     virtual void setRedirectAddress(const char * redirectAddress);
+    virtual const char * getSegment() const;
+    virtual void setSegment(const char * segment);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const DashAppMsg& obj) {obj.parsimPack(b);}

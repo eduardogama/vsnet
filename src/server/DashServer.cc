@@ -151,8 +151,9 @@ void DashServer::handleMessage(cMessage *msg)
 
         cout << "Socket ID=" << connId << endl;
 
-
-        handleConnection(connId);
+        if(this->streams.find(connId) != this->streams.end()) {
+            handleConnection(connId);
+        }
     }
     else {
         // some indication -- ignore
@@ -301,6 +302,17 @@ void DashServer::handleStopOperation(LifecycleOperation* operation) {
 }
 
 void DashServer::socketPeerClosed(TcpSocket* socket) {
+
+}
+
+void DashServer::sendPacket(Packet *msg)
+{
+    int numBytes = msg->getByteLength();
+    emit(packetSentSignal, msg);
+    socket.send(msg);
+
+    packetsSent++;
+    bytesSent += numBytes;
 }
 
 void DashServer::initVideoStream(int socketId) {
@@ -318,13 +330,83 @@ void DashServer::initVideoStream(int socketId) {
 }
 
 void DashServer::handleConnection(int socketId) {
+    cout << "Sending Segment to fog ... " << endl;
+
     VideoStreamDash& vsm = this->streams[socketId];
 
     vsm.video_seg[vsm.segIndex];
 
+//    Segmentseg *seg = this->prepareRequest(vsm);
+    Segment *seg = this->mpd->HighRepresentation(vsm.segIndex);
+    sendRequest(seg);
 
+    Packet* packet = preparePacket(vsm, seg);
+
+    int numBytes = packet->getByteLength();
+    emit(packetSentSignal, packet);
+    socket.send(packet);
+
+    packetsSent++;
+    bytesSent += numBytes;
 
     vsm.segIndex++;
+}
+
+void DashServer::prepareRequest(VideoStreamDash& vsm) {
+    Segment *seg = this->mpd->HighRepresentation(vsm.segIndex);
+    cout << "Segment Size=" << seg->getSegmentSize() << endl;
+}
+
+Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
+    long requestLength = par("requestLength");
+    long replyLength   = seg->getSegmentSize();// + 52; // Fix it later | 52 is header size
+
+    if (requestLength < 1)
+        requestLength = 1;
+
+    if (replyLength < 1)
+        replyLength = 1;
+
+    const auto& payload = makeShared<DashAppMsg>();
+    Packet *packet = new Packet("data");
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+    payload->setChunkLength(B(requestLength));
+    payload->setExpectedReplyLength(B(0));
+    payload->setServerClose(false);
+
+    cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+         << "remaining " << numRequestsToSend - 1 << " request" << endl;
+
+    packet->insertAtBack(payload);
+
+    return packet;
+}
+
+void DashServer::sendRequest(Segment *seg) {
+    long requestLength = par("requestLength");
+    long replyLength   = seg->getSegmentSize();// + 52; // Fix it later | 52 is header size
+
+    if (requestLength < 1)
+        requestLength = 1;
+
+    if (replyLength < 1)
+        replyLength = 1;
+
+    const auto& payload = makeShared<DashAppMsg>();
+    Packet *packet = new Packet("data");
+    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+    payload->setChunkLength(B(requestLength));
+    payload->setExpectedReplyLength(B(replyLength));
+    payload->setServerClose(false);
+
+    EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+            << "remaining " << numRequestsToSend - 1 << " request\n";
+
+    std::cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+              << "remaining " << numRequestsToSend - 1 << " request\n";
+
+    packet->insertAtBack(payload);
+    sendPacket(packet);
 }
 
 void DashServer::handleCrashOperation(LifecycleOperation* operation) {

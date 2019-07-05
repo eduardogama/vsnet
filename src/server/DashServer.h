@@ -24,7 +24,7 @@
 #include "inet/common/lifecycle/ILifecycle.h"
 
 #include "client/MPDRequestHandler.h"
-
+#include "mgmt/DashManager.h"
 
 using namespace inet;
 
@@ -38,7 +38,7 @@ struct VideoStreamDash
     long videoSize = 0;    // total size of video
     long bytesLeft = 0;    // bytes left to transmit
     long numPkSent = 0;    // number of packets sent
-    int segIndex = 0;
+    int segIndex = 20;
     vector<short int> video_seg;
 };
 
@@ -64,6 +64,11 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
 
         void initVideoStream(int socketId);
         void handleConnection(int socketId);
+
+        void prepareRequest(VideoStreamDash& vsm);
+        Packet* preparePacket(VideoStreamDash&vsm, Segment* seg);
+        void sendRequest(Segment* seg);
+        void sendPacket(Packet* msg);
 
         virtual void socketEstablished(TcpSocket *socket) override;
         virtual void socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent) override;
