@@ -343,7 +343,8 @@ void DashServer::handleConnection(int socketId) {
     Packet* packet = preparePacket(vsm, seg);
 
     int numBytes = packet->getByteLength();
-    emit(packetSentSignal, packet);
+
+
     socket.send(packet);
 
     packetsSent++;
@@ -373,6 +374,10 @@ Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
     payload->setChunkLength(B(requestLength));
     payload->setExpectedReplyLength(B(0));
     payload->setServerClose(false);
+
+    payload->setNum_segment(vsm.segIndex);
+    payload->setBitrate(seg->getBitrate());
+    payload->setResolution(seg->getQuality().c_str());
 
     cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
          << "remaining " << numRequestsToSend - 1 << " request" << endl;

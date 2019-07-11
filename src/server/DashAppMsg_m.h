@@ -44,9 +44,10 @@ namespace inet {
  *     int StartByte;
  *     int EndByte;
  *     string redirectAddress;
- *     string num_segment;
+ * 
+ *     int num_segment;
+ *     int bitrate;
  *     string resolution;
- *     string bitrate;
  * }
  * </pre>
  */
@@ -60,9 +61,9 @@ class DashAppMsg : public ::inet::FieldsChunk
     int StartByte = 0;
     int EndByte = 0;
     omnetpp::opp_string redirectAddress;
-    omnetpp::opp_string num_segment;
+    int num_segment = 0;
+    int bitrate = 0;
     omnetpp::opp_string resolution;
-    omnetpp::opp_string bitrate;
 
   private:
     void copy(const DashAppMsg& other);
@@ -95,12 +96,12 @@ class DashAppMsg : public ::inet::FieldsChunk
     virtual void setEndByte(int EndByte);
     virtual const char * getRedirectAddress() const;
     virtual void setRedirectAddress(const char * redirectAddress);
-    virtual const char * getNum_segment() const;
-    virtual void setNum_segment(const char * num_segment);
+    virtual int getNum_segment() const;
+    virtual void setNum_segment(int num_segment);
+    virtual int getBitrate() const;
+    virtual void setBitrate(int bitrate);
     virtual const char * getResolution() const;
     virtual void setResolution(const char * resolution);
-    virtual const char * getBitrate() const;
-    virtual void setBitrate(const char * bitrate);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const DashAppMsg& obj) {obj.parsimPack(b);}

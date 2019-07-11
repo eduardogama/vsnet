@@ -16,7 +16,8 @@ class DashAppMsg extends FieldsChunk
 	int StartByte;
     int EndByte;
     string redirectAddress;
-    string num_segment;
+    
+    int num_segment;
+    int bitrate;
     string resolution;
-    string bitrate;
 }

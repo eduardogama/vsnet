@@ -150,3 +150,11 @@ const std::string& Segment::getQuality() const {
 void Segment::setQuality(const std::string& quality) {
     this->quality = quality;
 }
+
+int Segment::getBitrate() const {
+    return bitrate;
+}
+
+void Segment::setBitrate(int bitrate) {
+    this->bitrate = bitrate;
+}

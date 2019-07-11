@@ -240,8 +240,8 @@ void DashAppMsg::copy(const DashAppMsg& other)
     this->EndByte = other.EndByte;
     this->redirectAddress = other.redirectAddress;
     this->num_segment = other.num_segment;
-    this->resolution = other.resolution;
     this->bitrate = other.bitrate;
+    this->resolution = other.resolution;
 }
 
 void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
@@ -255,8 +255,8 @@ void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->EndByte);
     doParsimPacking(b,this->redirectAddress);
     doParsimPacking(b,this->num_segment);
-    doParsimPacking(b,this->resolution);
     doParsimPacking(b,this->bitrate);
+    doParsimPacking(b,this->resolution);
 }
 
 void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -270,8 +270,8 @@ void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->EndByte);
     doParsimUnpacking(b,this->redirectAddress);
     doParsimUnpacking(b,this->num_segment);
-    doParsimUnpacking(b,this->resolution);
     doParsimUnpacking(b,this->bitrate);
+    doParsimUnpacking(b,this->resolution);
 }
 
 B DashAppMsg::getExpectedReplyLength() const
@@ -351,15 +351,26 @@ void DashAppMsg::setRedirectAddress(const char * redirectAddress)
     this->redirectAddress = redirectAddress;
 }
 
-const char * DashAppMsg::getNum_segment() const
+int DashAppMsg::getNum_segment() const
 {
-    return this->num_segment.c_str();
+    return this->num_segment;
 }
 
-void DashAppMsg::setNum_segment(const char * num_segment)
+void DashAppMsg::setNum_segment(int num_segment)
 {
     handleChange();
     this->num_segment = num_segment;
+}
+
+int DashAppMsg::getBitrate() const
+{
+    return this->bitrate;
+}
+
+void DashAppMsg::setBitrate(int bitrate)
+{
+    handleChange();
+    this->bitrate = bitrate;
 }
 
 const char * DashAppMsg::getResolution() const
@@ -371,17 +382,6 @@ void DashAppMsg::setResolution(const char * resolution)
 {
     handleChange();
     this->resolution = resolution;
-}
-
-const char * DashAppMsg::getBitrate() const
-{
-    return this->bitrate.c_str();
-}
-
-void DashAppMsg::setBitrate(const char * bitrate)
-{
-    handleChange();
-    this->bitrate = bitrate;
 }
 
 class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
@@ -397,8 +397,8 @@ class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
         FIELD_EndByte,
         FIELD_redirectAddress,
         FIELD_num_segment,
-        FIELD_resolution,
         FIELD_bitrate,
+        FIELD_resolution,
     };
   public:
     DashAppMsgDescriptor();
@@ -481,8 +481,8 @@ unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_EndByte
         FD_ISEDITABLE,    // FIELD_redirectAddress
         FD_ISEDITABLE,    // FIELD_num_segment
-        FD_ISEDITABLE,    // FIELD_resolution
         FD_ISEDITABLE,    // FIELD_bitrate
+        FD_ISEDITABLE,    // FIELD_resolution
     };
     return (field >= 0 && field < 10) ? fieldTypeFlags[field] : 0;
 }
@@ -504,8 +504,8 @@ const char *DashAppMsgDescriptor::getFieldName(int field) const
         "EndByte",
         "redirectAddress",
         "num_segment",
-        "resolution",
         "bitrate",
+        "resolution",
     };
     return (field >= 0 && field < 10) ? fieldNames[field] : nullptr;
 }
@@ -522,8 +522,8 @@ int DashAppMsgDescriptor::findField(const char *fieldName) const
     if (fieldName[0] == 'E' && strcmp(fieldName, "EndByte") == 0) return base+5;
     if (fieldName[0] == 'r' && strcmp(fieldName, "redirectAddress") == 0) return base+6;
     if (fieldName[0] == 'n' && strcmp(fieldName, "num_segment") == 0) return base+7;
-    if (fieldName[0] == 'r' && strcmp(fieldName, "resolution") == 0) return base+8;
-    if (fieldName[0] == 'b' && strcmp(fieldName, "bitrate") == 0) return base+9;
+    if (fieldName[0] == 'b' && strcmp(fieldName, "bitrate") == 0) return base+8;
+    if (fieldName[0] == 'r' && strcmp(fieldName, "resolution") == 0) return base+9;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -543,9 +543,9 @@ const char *DashAppMsgDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_StartByte
         "int",    // FIELD_EndByte
         "string",    // FIELD_redirectAddress
-        "string",    // FIELD_num_segment
+        "int",    // FIELD_num_segment
+        "int",    // FIELD_bitrate
         "string",    // FIELD_resolution
-        "string",    // FIELD_bitrate
     };
     return (field >= 0 && field < 10) ? fieldTypeStrings[field] : nullptr;
 }
@@ -621,9 +621,9 @@ std::string DashAppMsgDescriptor::getFieldValueAsString(void *object, int field,
         case FIELD_StartByte: return long2string(pp->getStartByte());
         case FIELD_EndByte: return long2string(pp->getEndByte());
         case FIELD_redirectAddress: return oppstring2string(pp->getRedirectAddress());
-        case FIELD_num_segment: return oppstring2string(pp->getNum_segment());
+        case FIELD_num_segment: return long2string(pp->getNum_segment());
+        case FIELD_bitrate: return long2string(pp->getBitrate());
         case FIELD_resolution: return oppstring2string(pp->getResolution());
-        case FIELD_bitrate: return oppstring2string(pp->getBitrate());
         default: return "";
     }
 }
@@ -645,9 +645,9 @@ bool DashAppMsgDescriptor::setFieldValueAsString(void *object, int field, int i,
         case FIELD_StartByte: pp->setStartByte(string2long(value)); return true;
         case FIELD_EndByte: pp->setEndByte(string2long(value)); return true;
         case FIELD_redirectAddress: pp->setRedirectAddress((value)); return true;
-        case FIELD_num_segment: pp->setNum_segment((value)); return true;
+        case FIELD_num_segment: pp->setNum_segment(string2long(value)); return true;
+        case FIELD_bitrate: pp->setBitrate(string2long(value)); return true;
         case FIELD_resolution: pp->setResolution((value)); return true;
-        case FIELD_bitrate: pp->setBitrate((value)); return true;
         default: return false;
     }
 }

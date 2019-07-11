@@ -43,6 +43,7 @@ class Segment
 
         std::string quality;
 
+        int bitrate;
         int frameRate;
         int width;
         int height;
@@ -204,8 +205,24 @@ class Segment
          */
         void setStartTime(const simtime_t& startTime);
 
+        /**
+         *
+         */
         const std::string& getQuality() const;
 
+        /**
+         *
+         */
         void setQuality(const std::string& quality);
+
+        /**
+         *
+         */
+        int getBitrate() const;
+
+        /**
+         *
+         */
+        void setBitrate(int bitrate);
 };
 #endif /* CHUNK_H_ */
