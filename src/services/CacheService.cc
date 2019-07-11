@@ -106,15 +106,19 @@ void CacheService::handleMessage(cMessage *msg)
         queue.push(chunk);
         emit(packetReceivedSignal, packet);
 
+
+        if(!queue.has<DashAppMsg>())
+            return;
+
         bool doClose = false;
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
 
-            std::cout << "Chunk Length=" << B(appmsg->getChunkLength()).get()
-                    << " Expected Length=" << packet->getTotalLength()
-                    <<" Expected Reply Length=" << appmsg->getExpectedReplyLength() << std::endl;
-            sleep(10);
+            cout << "[Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
+                 << " Expected Length=" << packet->getTotalLength()
+                 <<" Expected Reply Length=" << appmsg->getExpectedReplyLength() << std::endl;
+
             B requestedBytes = appmsg->getExpectedReplyLength();
             simtime_t msgDelay = appmsg->getReplyDelay();
             if (msgDelay > maxMsgDelay)
@@ -129,8 +133,10 @@ void CacheService::handleMessage(cMessage *msg)
                 payload->setChunkLength(requestedBytes);
                 payload->setExpectedReplyLength(B(0));
                 payload->setReplyDelay(0);
+
+                payload->setRedirectAddress("Segment Send");
                 outPacket->insertAtBack(payload);
-//                sendOrSchedule(outPacket, delay + msgDelay);
+                sendOrSchedule(outPacket, delay + msgDelay);
             }
             if (appmsg->getServerClose()) {
                 doClose = true;
@@ -144,7 +150,7 @@ void CacheService::handleMessage(cMessage *msg)
             TcpCommand *cmd = new TcpCommand();
             request->addTagIfAbsent<SocketReq>()->setSocketId(connId);
             request->setControlInfo(cmd);
-//            sendOrSchedule(request, delay + maxMsgDelay);
+            sendOrSchedule(request, delay + maxMsgDelay);
         }
     }
     else if (msg->getKind() == TCP_I_AVAILABLE)

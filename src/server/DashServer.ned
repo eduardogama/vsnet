@@ -20,9 +20,12 @@ import inet.applications.contract.IApp;
 simple DashServer like IApp
 {
     parameters:
-        string localAddress = default(""); // local address; may be left empty ("")
-        int localPort = default(1000);     // localPort number to listen on
+        string localAddress        = default(""); // local address; may be left empty ("")
+        int    localPort 		   = default(1000);     // localPort number to listen on
         double replyDelay @unit(s) = default(0s);
+        
+        volatile int requestLength @unit(B) = default(200B); 	// length of a request
+        
         @display("i=block/app");
         @lifecycleSupport;
         double stopOperationExtraTime @unit(s) = default(-1s);    // extra time after lifecycle stop operation finished

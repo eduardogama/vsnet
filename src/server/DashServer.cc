@@ -149,9 +149,10 @@ void DashServer::handleMessage(cMessage *msg)
     else if (msg->getKind() == TCP_I_ESTABLISHED) {
         int connId = check_and_cast<Indication *>(msg)->getTag<SocketInd>()->getSocketId();
 
-        cout << "Socket ID=" << connId << endl;
 
         if(this->streams.find(connId) != this->streams.end()) {
+            cout << "Socket ID=" << connId << endl;
+
             handleConnection(connId);
         }
     }
@@ -338,14 +339,13 @@ void DashServer::handleConnection(int socketId) {
 
 //    Segmentseg *seg = this->prepareRequest(vsm);
     Segment *seg = this->mpd->HighRepresentation(vsm.segIndex);
-    sendRequest(seg);
+//    sendRequest(seg);
 
     Packet* packet = preparePacket(vsm, seg);
 
     int numBytes = packet->getByteLength();
 
-
-    socket.send(packet);
+    vsm.fogsocket.send(packet);
 
     packetsSent++;
     bytesSent += numBytes;
@@ -359,8 +359,8 @@ void DashServer::prepareRequest(VideoStreamDash& vsm) {
 }
 
 Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
-    long requestLength = par("requestLength");
-    long replyLength   = seg->getSegmentSize();// + 52; // Fix it later | 52 is header size
+    long requestLength = seg->getSegmentSize();
+    long replyLength   = par("requestLength");// + 52; // Fix it later | 52 is header size
 
     if (requestLength < 1)
         requestLength = 1;
@@ -379,8 +379,8 @@ Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
     payload->setBitrate(seg->getBitrate());
     payload->setResolution(seg->getQuality().c_str());
 
-    cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
-         << "remaining " << numRequestsToSend - 1 << " request" << endl;
+    cout << "[Cloud Node] Sending request with " << requestLength << " bytes, expected reply length " << replyLength
+         << " bytes" << endl;
 
     packet->insertAtBack(payload);
 
