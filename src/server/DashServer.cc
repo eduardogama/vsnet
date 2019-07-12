@@ -112,6 +112,10 @@ void DashServer::handleMessage(cMessage *msg)
                 this->streams[fog.getSocketId()].fogsocket = fog;
             }
 
+            if(appmsg->getRedirectAddress() == "Segment Send"){
+                cout << "entrou !!!!" << endl;
+            }
+
             if (requestedBytes > B(0)) {
                 Packet *outPacket = new Packet(msg->getName());
                 outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
@@ -324,14 +328,14 @@ void DashServer::initVideoStream(int socketId) {
     this->streams.insert(pair<long int, VideoStreamDash>(socketId,vsm));
 
     cout << "[Cloud] Segment Size=" << vsm.video_seg.size() << endl;
-    for_each(vsm.video_seg.begin(), vsm.video_seg.end(), [](const short int& n){
-        cout << n << " ";
-    });
+//    for_each(vsm.video_seg.begin(), vsm.video_seg.end(), [](const short int& n){
+//        cout << n << " ";
+//    });
     cout << "Video Stream created ."<< endl;
 }
 
 void DashServer::handleConnection(int socketId) {
-    cout << "Sending Segment to fog ... " << endl;
+    cout << "[Cloud Node] Sending Segment to fog ... " << endl;
 
     VideoStreamDash& vsm = this->streams[socketId];
 
@@ -407,8 +411,10 @@ void DashServer::sendRequest(Segment *seg) {
     EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
             << "remaining " << numRequestsToSend - 1 << " request\n";
 
-    std::cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
-              << "remaining " << numRequestsToSend - 1 << " request\n";
+    cout << "[Cloud Node] Sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
+              << "remaining " << numRequestsToSend - 1 << " request, ";
+
+    cout << "Segment Number=" << seg->getSegmentNumber() << endl;
 
     packet->insertAtBack(payload);
     sendPacket(packet);

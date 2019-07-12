@@ -43,7 +43,7 @@ void DashClient::initialize(int stage)
     this->dashmanager = new DashManager();
     this->dashmanager->setMpd(this->mpd);
 
-    this->mpd->ReadMPD("/home/eduardogama/Dropbox/bbb_30fps");
+    this->mpd->ReadMPD("/home/futebol/Dropbox/bbb_30fps");
 
     this->dashmanager->setQualities(&(this->mpd->getQuality()));
     this->dashmanager->setRepresentation(&(this->mpd->getRepresentation()));
@@ -159,7 +159,7 @@ void DashClient::Connect()
 
 void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 {
-    printPacket(msg);
+//    printPacket(msg);
     videoBuffer->bytesRcvd += msg->getByteLength();
 
 //    queue.push(msg->peekData()); // get all data from the packet
