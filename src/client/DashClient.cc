@@ -48,8 +48,8 @@ void DashClient::initialize(int stage)
     this->dashmanager->setQualities(&(this->mpd->getQuality()));
     this->dashmanager->setRepresentation(&(this->mpd->getRepresentation()));
 
-    std::cout << "Video time="    << this->mpd->getMediaPresentationDuration()
-              << " Segment time=" << this->mpd->getMinBufferTime() << std::endl;
+    cout << "Video time="    << this->mpd->getMediaPresentationDuration()
+              << " Segment time=" << this->mpd->getMinBufferTime() << endl;
 
     this->numRequestsToSend              = this->mpd->NumSegments();
     this->videoBuffer->numRequestsToSend = this->mpd->NumSegments();
@@ -94,8 +94,6 @@ void DashClient::rescheduleOrDeleteTimer(simtime_t d, short int msgKind) {
 
 void DashClient::handleTimer(cMessage *msg)
 {
-    std::cout <<  "DashClient Handle Timer=" << msg->getKind() << std::endl;
-
     switch (msg->getKind()) {
         case MSGKIND_CONNECT:
             connect();    // active OPEN
@@ -162,18 +160,22 @@ void DashClient::socketDataArrived(TcpSocket *socket, Packet *msg, bool urgent)
 //    printPacket(msg);
     videoBuffer->bytesRcvd += msg->getByteLength();
 
-//    queue.push(msg->peekData()); // get all data from the packet
+    queue.push(msg->peekData()); // get all data from the packet
 
     TcpAppBase::socketDataArrived(socket, msg, urgent);
 
     if((this->videoBuffer->bytesRcvd >= videoBuffer->segmentSize)
        && (numRequestsToSend > 0)) {
 
-//        const auto&  appmsg = queue.pop<GenericAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR);
+        const auto&  appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_SERIALIZATION);
 //        std::cout << "appmsg=" << appmsg->getRedirectAddress() << std::endl;
 
 //        if(appmsg->getRedirectAddress() != nullptr || appmsg->getRedirectAddress() != "")
 //            std::cout << "Change socket connection" << std::endl;
+
+//        cout << simTime()
+//             << " [Client Node] Segment Length=" << this->videoBuffer->bytesRcvd
+//             << endl;
 
         this->c_segment->setEndTime(simTime());
         this->videoBuffer->addSegment(*c_segment);
@@ -218,11 +220,12 @@ void DashClient::socketEstablished(TcpSocket *socket)
     if (!earlySend){
         this->c_segment = this->dashmanager->LowRepresentation();
 
+        this->videoBuffer->res           = "720p";
         this->videoBuffer->bytesRcvd     = 0;
         this->videoBuffer->segmentSize   = this->c_segment->getSegmentSize();
         this->videoBuffer->reqtime       = this->c_segment->getStartTime();
 
-        std::cout << "Segment Size=" << this->videoBuffer->segmentSize << std::endl;
+//        cout << "Segment Size=" << this->videoBuffer->segmentSize << endl;
 
         sendRequest();
 
@@ -268,7 +271,7 @@ void DashClient::prepareRequest()
     this->videoBuffer->reqtime       = this->c_segment->getStartTime();
     this->videoBuffer->res           = this->c_segment->getQuality();
 
-    std::cout << "Segment Size=" << this->videoBuffer->segmentSize << std::endl;
+//    cout << "Segment Size=" << this->videoBuffer->segmentSize << endl;
 }
 
 void DashClient::sendRequest()
@@ -292,8 +295,9 @@ void DashClient::sendRequest()
     EV_INFO << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
             << "remaining " << numRequestsToSend - 1 << " request\n";
 
-    std::cout << "sending request with " << requestLength << " bytes, expected reply length " << replyLength << " bytes,"
-              << "remaining " << numRequestsToSend - 1 << " request\n";
+    cout << simTime() << " [Client Node] Sending request with " << requestLength << " bytes and  " << this->videoBuffer->res
+            << " resolution, expected reply length " << replyLength << " bytes,"
+            << "remaining " << numRequestsToSend - 1 << " request\n";
 
     packet->insertAtBack(payload);
     sendPacket(packet);
@@ -304,13 +308,13 @@ void DashClient::sendRequest()
 
 void DashClient::printPacket(Packet *msg)
 {
-    std::cout << "========================================"          << std::endl;
-    std::cout << "[socketDataArrived] Data Arrived Socket "          << std::endl;
-    std::cout << "Request Number="   << numRequestsToSend            << std::endl;
-    std::cout << "Total Length="     << msg->getTotalLength()        << std::endl;
-    std::cout << "Data Length="      << msg->getDataLength()         << std::endl;
-    std::cout << "Packets Received=" << packetsRcvd                  << std::endl;
-    std::cout << "Bytes Received="   << this->videoBuffer->bytesRcvd << std::endl;
-    std::cout << "Resolution="       << this->videoBuffer->res       << std::endl;
-    std::cout << "Global Time="      << simTime()                    << std::endl;
+    cout << "========================================"          << endl;
+    cout << "[socketDataArrived] Data Arrived Socket "          << endl;
+    cout << "Request Number="   << numRequestsToSend            << endl;
+    cout << "Total Length="     << msg->getTotalLength()        << endl;
+    cout << "Data Length="      << msg->getDataLength()         << endl;
+    cout << "Packets Received=" << packetsRcvd                  << endl;
+    cout << "Bytes Received="   << this->videoBuffer->bytesRcvd << endl;
+    cout << "Resolution="       << this->videoBuffer->res       << endl;
+    cout << "Global Time="      << simTime()                    << endl;
 }

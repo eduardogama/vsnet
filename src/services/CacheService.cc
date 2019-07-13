@@ -97,8 +97,6 @@ void CacheService::handleMessage(cMessage *msg)
 //        sendOrSchedule(request, delay + maxMsgDelay);
     }
     else if (msg->getKind() == TCP_I_DATA || msg->getKind() == TCP_I_URGENT_DATA) {
-
-
         Packet *packet = check_and_cast<Packet *>(msg);
         int connId = packet->getTag<SocketInd>()->getSocketId();
         ChunkQueue &queue = socketQueue[connId];
@@ -107,17 +105,20 @@ void CacheService::handleMessage(cMessage *msg)
         emit(packetReceivedSignal, packet);
 
 
-        if(!queue.has<DashAppMsg>())
+        if(!queue.has<DashAppMsg>()){
+            delete msg;
             return;
-
+        }
         bool doClose = false;
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
 
-            cout << "[Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
+            cout << simTime()
+                 << " [Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
                  << " Expected Length=" << packet->getTotalLength()
-                 <<" Expected Reply Length=" << appmsg->getExpectedReplyLength() << std::endl;
+                 << " Expected Reply Length=" << appmsg->getExpectedReplyLength()
+                 << endl;
 
             B requestedBytes = appmsg->getExpectedReplyLength();
             simtime_t msgDelay = appmsg->getReplyDelay();

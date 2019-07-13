@@ -58,9 +58,9 @@ void DashServer::initialize(int stage)
 
 void DashServer::handleMessage(cMessage *msg)
 {
-    cout << "DashServer handleMessage="
-         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
-         << endl;
+//    cout << "DashServer handleMessage="
+//         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
+//         << endl;
 
     if (msg->isSelfMessage()) {
         sendBack(msg);
@@ -84,57 +84,50 @@ void DashServer::handleMessage(cMessage *msg)
 
         bool doClose = false;
 
-//        std::cout << "========================================" << std::endl;
-//        std::cout << "DashServer "
-//                  << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind()) << std::endl
-//                  << "Socket ID=" << connId << std::endl
-//                  << "Total Length=" << packet->getTotalLength()
-//                  << "Chunk Serialization="<< Chunk::enableImplicitChunkSerialization
-//                  << std::endl;
+//        cout << "========================================" << endl;
+//        cout << "DashServer "
+//             << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind()) << endl
+//             << "Socket ID=" << connId << std::endl
+//             << "Total Length=" << packet->getTotalLength()
+//             << "Chunk Serialization="<< Chunk::enableImplicitChunkSerialization
+//             << endl;
 
         if(!queue.has<DashAppMsg>())
             return;
 
-        while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
-            msgsRcvd++;
-            bytesRcvd += B(appmsg->getChunkLength()).get();
-            B requestedBytes = appmsg->getExpectedReplyLength();
+        if(this->nodeMap[connId] == NodeType::Fog){
 
-            simtime_t msgDelay = appmsg->getReplyDelay();
+        } else {
+            while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
+                msgsRcvd++;
+                bytesRcvd += B(appmsg->getChunkLength()).get();
+                B requestedBytes = appmsg->getExpectedReplyLength();
 
-            if (msgDelay > maxMsgDelay)
-                maxMsgDelay = msgDelay;
+                simtime_t msgDelay = appmsg->getReplyDelay();
 
-            if(this->streams.find(connId) == this->streams.end()){
-                TcpSocket fog = ConnectFog(connId);
-                initVideoStream(fog.getSocketId());
+                if (msgDelay > maxMsgDelay)
+                    maxMsgDelay = msgDelay;
 
-                this->streams[fog.getSocketId()].fogsocket = fog;
-            }
+                if (requestedBytes > B(0)) {
+                    Packet *outPacket = new Packet(msg->getName());
+                    outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
+                    outPacket->setKind(TCP_C_SEND);
 
-            if(appmsg->getRedirectAddress() == "Segment Send"){
-                cout << "entrou !!!!" << endl;
-            }
+                    const auto& payload = makeShared<DashAppMsg>();
+                    payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
+                    payload->setChunkLength(requestedBytes);
+                    payload->setExpectedReplyLength(B(0));
+                    payload->setReplyDelay(0);
+                    payload->setRedirectAddress("127.0.0.1");
 
-            if (requestedBytes > B(0)) {
-                Packet *outPacket = new Packet(msg->getName());
-                outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
-                outPacket->setKind(TCP_C_SEND);
+                    outPacket->insertAtBack(payload);
 
-                const auto& payload = makeShared<DashAppMsg>();
-                payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
-                payload->setChunkLength(requestedBytes);
-                payload->setExpectedReplyLength(B(0));
-                payload->setReplyDelay(0);
-                payload->setRedirectAddress("127.0.0.1");
-
-                outPacket->insertAtBack(payload);
-
-                sendOrSchedule(outPacket, delay + msgDelay);
-            }
-            if (appmsg->getServerClose()) {
-                doClose = true;
-                break;
+                    sendOrSchedule(outPacket, delay + msgDelay);
+                }
+                if (appmsg->getServerClose()) {
+                    doClose = true;
+                    break;
+                }
             }
         }
         delete msg;
@@ -153,12 +146,26 @@ void DashServer::handleMessage(cMessage *msg)
     else if (msg->getKind() == TCP_I_ESTABLISHED) {
         int connId = check_and_cast<Indication *>(msg)->getTag<SocketInd>()->getSocketId();
 
+        if(this->nodeMap.find(connId) == this->nodeMap.end()){
+            this->nodeMap[connId] = NodeType::User;
 
-        if(this->streams.find(connId) != this->streams.end()) {
-            cout << "Socket ID=" << connId << endl;
+            if(this->streams.find(connId) == this->streams.end()){
+                TcpSocket fog = ConnectFog(connId);
+                initVideoStream(fog.getSocketId());
 
+                this->streams[fog.getSocketId()].fogsocket = fog;
+
+                this->nodeMap[fog.getSocketId()] = NodeType::Fog;
+
+                cout << "VIDEO STREAM CREATED | USER=" << connId << ", FOG=" << fog.getSocketId() << endl;
+            }
+        }
+        else if(this->streams.find(connId) != this->streams.end()) {
+            cout << "Fog Socket Id=" << connId << endl;
             handleConnection(connId);
         }
+
+        delete msg;
     }
     else {
         // some indication -- ignore
@@ -194,8 +201,6 @@ TcpSocket DashServer::ConnectFog(int socketId)
 
         fogsocket.connect(destination, connectPort);
     }
-
-    cout << "Fog Socket ID=" << fogsocket.getSocketId() << endl;
 
     return fogsocket;
 }
@@ -276,8 +281,6 @@ void DashServer::socketDataArrived(TcpSocket* socket, Packet* msg, bool urgent)
         socket->close();
     }
 
-    cout << "entrou" << endl;
-
     emit(packetReceivedSignal, msg);
     delete msg;
 }
@@ -332,6 +335,7 @@ void DashServer::initVideoStream(int socketId) {
 //        cout << n << " ";
 //    });
     cout << "Video Stream created ."<< endl;
+    cout << "============================================" << endl;
 }
 
 void DashServer::handleConnection(int socketId) {
@@ -421,7 +425,6 @@ void DashServer::sendRequest(Segment *seg) {
 }
 
 void DashServer::handleCrashOperation(LifecycleOperation* operation) {
-    cout << "entrou []" << endl;
     cancelEvent(timeoutMsg);
     if (operation->getRootModule() != getContainingNode(this))
         socket.destroy();

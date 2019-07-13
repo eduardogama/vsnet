@@ -42,7 +42,12 @@ struct VideoStreamDash
     vector<short int> video_seg;
 };
 
+enum NodeType {
+    User, Fog, Hybrid
+};
+
 typedef std::map<long int, VideoStreamDash> VideoStreamMap;
+
 //typedef std::map<long int, CacheService> FogMap;
 
 class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
@@ -95,6 +100,8 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
 
         // Network State
 //        FogMap fognodes;
+
+        map<int, NodeType> nodeMap;
 
         // Parameters
         cPar *sendInterval = nullptr;
