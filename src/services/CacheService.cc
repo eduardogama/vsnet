@@ -100,43 +100,58 @@ void CacheService::handleMessage(cMessage *msg)
         Packet *packet = check_and_cast<Packet *>(msg);
         int connId = packet->getTag<SocketInd>()->getSocketId();
         ChunkQueue &queue = socketQueue[connId];
-        auto chunk = packet->peekDataAt(B(0), packet->getTotalLength());
-        queue.push(chunk);
-        emit(packetReceivedSignal, packet);
+//        auto chunk = packet->peekDataAt(B(0), packet->getTotalLength());
 
-        if(!queue.has<DashAppMsg>()){
+        queue.push(packet->peekData());
+
+//        emit(packetReceivedSignal, packet);
+
+        if(!queue.has<DashAppMsg>()) {
             delete msg;
             return;
         }
 
         bool doClose = false;
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
-
-            if(strcmp(appmsg->getSender(), "server")){
+            if(!strcmp(appmsg->getSender(), "server")) {
                 cout << simTime()
-                     << " [Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
+                     << " [Fog Node] Segment Length=" << B(appmsg->getChunkLength()).get()
                      << " Expected Length=" << packet->getTotalLength()
                      << " Expected Reply Length=" << appmsg->getExpectedReplyLength()
+                     << " Segment Number=" << appmsg->getNum_segment()
                      << endl;
 
                 Segment *seg = new Segment();
+
+                cout << "entrou\n";
 
                 seg->setQuality(appmsg->getResolution());
                 seg->setBitrate(appmsg->getBitrate());
                 seg->setSegmentNumber(appmsg->getNum_segment());
 
+                cout << "entrou\n";
+
                 storeSegmentVideo(appmsg->getMedia(), seg);
+
+                cout << "entrou\n";
             }
 
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
 
+
+            cout << "entrouiojq jio\n";
+
             B requestedBytes = appmsg->getExpectedReplyLength();
             simtime_t msgDelay = appmsg->getReplyDelay();
+
             if (msgDelay > maxMsgDelay)
                 maxMsgDelay = msgDelay;
 
+            cout << "requestedBytes=" << requestedBytes << endl;
+
             if (requestedBytes > B(0)) {
+
                 Packet *outPacket = new Packet(msg->getName());
                 outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
                 outPacket->setKind(TCP_C_SEND);

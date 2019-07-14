@@ -105,7 +105,7 @@ void DashServer::handleMessage(cMessage *msg)
             if (msgDelay > maxMsgDelay)
                 maxMsgDelay = msgDelay;
 
-            if (requestedBytes > B(0)) {
+            if (requestedBytes > B(0) || !strcmp(appmsg->getSender(), "fog")) {
                 Packet *outPacket = new Packet(msg->getName());
                 outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
                 outPacket->setKind(TCP_C_SEND);
@@ -113,7 +113,12 @@ void DashServer::handleMessage(cMessage *msg)
                 const auto& payload = makeShared<DashAppMsg>();
 
                 if(this->nodeMap[connId] == NodeType::Fog) {
-                    handleFogConnection(connId);
+                    cout << "[cloud node] entrou socket id=" << connId << endl;
+
+                    bool flagReply = handleFogConnection(connId);
+
+                    if(!flagReply)
+                        break;
                 } else {
                     payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
                     payload->setChunkLength(requestedBytes);
@@ -339,10 +344,14 @@ void DashServer::initVideoStream(int socketId) {
     cout << "============================================" << endl;
 }
 
-void DashServer::handleFogConnection(int socketId) {
-    cout << "[Cloud Node] Sending Segment to fog ... " << endl;
+bool DashServer::handleFogConnection(int socketId) {
+//    cout << "[Cloud Node] Sending Segment to fog ... " << endl;
 
     VideoStreamDash& vsm = this->streams[socketId];
+
+    if(vsm.segIndexFog >= this->mpd->NumSegments()){
+        return false;
+    }
 
     vsm.video_seg[vsm.segIndexFog];
 
@@ -360,6 +369,8 @@ void DashServer::handleFogConnection(int socketId) {
     bytesSent += numBytes;
 
     vsm.segIndexFog++;
+
+    return true;
 }
 
 Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
@@ -376,13 +387,14 @@ Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
     Packet *packet = new Packet("data");
     payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
     payload->setChunkLength(B(requestLength));
-    payload->setExpectedReplyLength(B(0));
+    payload->setExpectedReplyLength(B(replyLength));
     payload->setServerClose(false);
 
     payload->setNum_segment(vsm.segIndexFog);
     payload->setBitrate(seg->getBitrate());
     payload->setResolution(seg->getQuality().c_str());
     payload->setSender("server");
+    payload->setMedia("teste");
 
     cout << "[Cloud Node] Sending request to fog with " << requestLength << " bytes, expected reply length " << replyLength
          << " bytes" << endl;

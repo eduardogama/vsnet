@@ -65,7 +65,7 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
         TcpSocket ConnectFog(int socketId);
 
         void initVideoStream(int socketId);
-        void handleFogConnection(int socketId);
+        bool handleFogConnection(int socketId);
 
         void prepareRequest(VideoStreamDash& vsm);
         Packet* preparePacket(VideoStreamDash&vsm, Segment* seg);
