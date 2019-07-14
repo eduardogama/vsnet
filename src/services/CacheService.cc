@@ -104,21 +104,32 @@ void CacheService::handleMessage(cMessage *msg)
         queue.push(chunk);
         emit(packetReceivedSignal, packet);
 
-
         if(!queue.has<DashAppMsg>()){
             delete msg;
             return;
         }
+
         bool doClose = false;
         while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
+
+            if(strcmp(appmsg->getSender(), "server")){
+                cout << simTime()
+                     << " [Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
+                     << " Expected Length=" << packet->getTotalLength()
+                     << " Expected Reply Length=" << appmsg->getExpectedReplyLength()
+                     << endl;
+
+                Segment *seg = new Segment();
+
+                seg->setQuality(appmsg->getResolution());
+                seg->setBitrate(appmsg->getBitrate());
+                seg->setSegmentNumber(appmsg->getNum_segment());
+
+                storeSegmentVideo(appmsg->getMedia(), seg);
+            }
+
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
-
-            cout << simTime()
-                 << " [Fog Node] Chunk Length=" << B(appmsg->getChunkLength()).get()
-                 << " Expected Length=" << packet->getTotalLength()
-                 << " Expected Reply Length=" << appmsg->getExpectedReplyLength()
-                 << endl;
 
             B requestedBytes = appmsg->getExpectedReplyLength();
             simtime_t msgDelay = appmsg->getReplyDelay();
@@ -135,7 +146,7 @@ void CacheService::handleMessage(cMessage *msg)
                 payload->setExpectedReplyLength(B(0));
                 payload->setReplyDelay(0);
 
-                payload->setRedirectAddress("Segment Send");
+                payload->setSender("fog");
                 outPacket->insertAtBack(payload);
                 sendOrSchedule(outPacket, delay + msgDelay);
             }
@@ -184,6 +195,16 @@ Packet *CacheService::PrepareRequest(TcpSocket *socket, Packet *msg)
     return new Packet();
 }
 
-void CacheServiceBase::insertSegment(std::string path_seg) {
+void CacheServiceBase::insertSegment(std::string path_seg)
+{
+    // TODO
+}
 
+void CacheService::storeSegmentVideo(const char* movie, Segment *seg)
+{
+    if(this->streams.find(movie) == this->streams.end()) {
+        this->streams.insert(make_pair(movie, VideoSegments()));
+    }
+
+    this->streams[movie][seg->getSegmentNumber()] = *seg;
 }

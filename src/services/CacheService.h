@@ -17,6 +17,7 @@
 #include "inet/transportlayer/contract/tcp/TcpSocket.h"
 #include "client/Segment.h"
 
+#include "mgmt/DashManager.h"
 
 
 using namespace std;
@@ -25,14 +26,13 @@ using namespace inet;
 struct VideoStreamDash
 {
     cMessage *timer = nullptr;    // self timer msg
-    L3Address clientAddr;    // client address
-    int clientPort = -1;    // client TCP port
     long videoSize = 0;    // total size of video
-    long bytesLeft = 0;    // bytes left to transmit
     long numPkSent = 0;    // number of packets sent
+    map<int, Segment> videos;
 };
 
-typedef std::map<long int, VideoStreamDash> VideoStreamMap;
+typedef map<unsigned int, Segment> VideoSegments;
+typedef map<const char*, VideoSegments> VideoStreamMap;
 
 class CacheServiceBase;
 
@@ -47,6 +47,8 @@ class CacheService: public TcpGenericServerApp {
 
         Packet *PrepareRequest(TcpSocket *socket, Packet *msg);
 
+    private:
+        void storeSegmentVideo(const char* movie, Segment *seg);
     protected:
         TcpSocket socket;
 
@@ -68,6 +70,8 @@ class CacheService: public TcpGenericServerApp {
 
         VideoStreamMap streams;
         //vector<Segment> segmentCache;
+
+        map<int, NodeType> nodeMap;
 };
 
 class CacheServiceBase

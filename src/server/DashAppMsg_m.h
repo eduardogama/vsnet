@@ -48,6 +48,9 @@ namespace inet {
  *     int num_segment;
  *     int bitrate;
  *     string resolution;
+ *     string media;
+ * 
+ *     string sender;
  * }
  * </pre>
  */
@@ -64,6 +67,8 @@ class DashAppMsg : public ::inet::FieldsChunk
     int num_segment = 0;
     int bitrate = 0;
     omnetpp::opp_string resolution;
+    omnetpp::opp_string media;
+    omnetpp::opp_string sender;
 
   private:
     void copy(const DashAppMsg& other);
@@ -102,6 +107,10 @@ class DashAppMsg : public ::inet::FieldsChunk
     virtual void setBitrate(int bitrate);
     virtual const char * getResolution() const;
     virtual void setResolution(const char * resolution);
+    virtual const char * getMedia() const;
+    virtual void setMedia(const char * media);
+    virtual const char * getSender() const;
+    virtual void setSender(const char * sender);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const DashAppMsg& obj) {obj.parsimPack(b);}

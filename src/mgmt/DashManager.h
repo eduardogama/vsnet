@@ -19,6 +19,10 @@
 #include "../client/MPDRequestHandler.h"
 #include "client/VideoBuffer.h"
 
+enum NodeType {
+    User, Fog, Hybrid
+};
+
 class DashManager {
     public:
 

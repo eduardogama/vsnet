@@ -220,7 +220,7 @@ void DashClient::socketEstablished(TcpSocket *socket)
     if (!earlySend){
         this->c_segment = this->dashmanager->LowRepresentation();
 
-        this->videoBuffer->res           = "720p";
+        this->videoBuffer->res           = "360p";
         this->videoBuffer->bytesRcvd     = 0;
         this->videoBuffer->segmentSize   = this->c_segment->getSegmentSize();
         this->videoBuffer->reqtime       = this->c_segment->getStartTime();

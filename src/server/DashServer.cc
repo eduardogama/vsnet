@@ -95,41 +95,42 @@ void DashServer::handleMessage(cMessage *msg)
         if(!queue.has<DashAppMsg>())
             return;
 
-        if(this->nodeMap[connId] == NodeType::Fog){
+        while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
+            msgsRcvd++;
+            bytesRcvd += B(appmsg->getChunkLength()).get();
+            B requestedBytes = appmsg->getExpectedReplyLength();
 
-        } else {
-            while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
-                msgsRcvd++;
-                bytesRcvd += B(appmsg->getChunkLength()).get();
-                B requestedBytes = appmsg->getExpectedReplyLength();
+            simtime_t msgDelay = appmsg->getReplyDelay();
 
-                simtime_t msgDelay = appmsg->getReplyDelay();
+            if (msgDelay > maxMsgDelay)
+                maxMsgDelay = msgDelay;
 
-                if (msgDelay > maxMsgDelay)
-                    maxMsgDelay = msgDelay;
+            if (requestedBytes > B(0)) {
+                Packet *outPacket = new Packet(msg->getName());
+                outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
+                outPacket->setKind(TCP_C_SEND);
 
-                if (requestedBytes > B(0)) {
-                    Packet *outPacket = new Packet(msg->getName());
-                    outPacket->addTagIfAbsent<SocketReq>()->setSocketId(connId);
-                    outPacket->setKind(TCP_C_SEND);
+                const auto& payload = makeShared<DashAppMsg>();
 
-                    const auto& payload = makeShared<DashAppMsg>();
+                if(this->nodeMap[connId] == NodeType::Fog) {
+                    handleFogConnection(connId);
+                } else {
                     payload->addTag<CreationTimeTag>()->setCreationTime(simTime());
                     payload->setChunkLength(requestedBytes);
                     payload->setExpectedReplyLength(B(0));
                     payload->setReplyDelay(0);
                     payload->setRedirectAddress("127.0.0.1");
-
-                    outPacket->insertAtBack(payload);
-
-                    sendOrSchedule(outPacket, delay + msgDelay);
                 }
-                if (appmsg->getServerClose()) {
-                    doClose = true;
-                    break;
-                }
+                outPacket->insertAtBack(payload);
+
+                sendOrSchedule(outPacket, delay + msgDelay);
+            }
+            if (appmsg->getServerClose()) {
+                doClose = true;
+                break;
             }
         }
+
         delete msg;
 
         if (doClose) {
@@ -161,8 +162,8 @@ void DashServer::handleMessage(cMessage *msg)
             }
         }
         else if(this->streams.find(connId) != this->streams.end()) {
-            cout << "Fog Socket Id=" << connId << endl;
-            handleConnection(connId);
+            cout << "[Cloud Node] Fog Socket Id=" << connId << endl;
+            handleFogConnection(connId);
         }
 
         delete msg;
@@ -338,15 +339,15 @@ void DashServer::initVideoStream(int socketId) {
     cout << "============================================" << endl;
 }
 
-void DashServer::handleConnection(int socketId) {
+void DashServer::handleFogConnection(int socketId) {
     cout << "[Cloud Node] Sending Segment to fog ... " << endl;
 
     VideoStreamDash& vsm = this->streams[socketId];
 
-    vsm.video_seg[vsm.segIndex];
+    vsm.video_seg[vsm.segIndexFog];
 
 //    Segmentseg *seg = this->prepareRequest(vsm);
-    Segment *seg = this->mpd->HighRepresentation(vsm.segIndex);
+    Segment *seg = this->mpd->HighRepresentation(vsm.segIndexFog);
 //    sendRequest(seg);
 
     Packet* packet = preparePacket(vsm, seg);
@@ -358,12 +359,7 @@ void DashServer::handleConnection(int socketId) {
     packetsSent++;
     bytesSent += numBytes;
 
-    vsm.segIndex++;
-}
-
-void DashServer::prepareRequest(VideoStreamDash& vsm) {
-    Segment *seg = this->mpd->HighRepresentation(vsm.segIndex);
-    cout << "Segment Size=" << seg->getSegmentSize() << endl;
+    vsm.segIndexFog++;
 }
 
 Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
@@ -383,16 +379,22 @@ Packet* DashServer::preparePacket(VideoStreamDash&vsm, Segment* seg) {
     payload->setExpectedReplyLength(B(0));
     payload->setServerClose(false);
 
-    payload->setNum_segment(vsm.segIndex);
+    payload->setNum_segment(vsm.segIndexFog);
     payload->setBitrate(seg->getBitrate());
     payload->setResolution(seg->getQuality().c_str());
+    payload->setSender("server");
 
-    cout << "[Cloud Node] Sending request with " << requestLength << " bytes, expected reply length " << replyLength
+    cout << "[Cloud Node] Sending request to fog with " << requestLength << " bytes, expected reply length " << replyLength
          << " bytes" << endl;
 
     packet->insertAtBack(payload);
 
     return packet;
+}
+
+void DashServer::prepareRequest(VideoStreamDash& vsm) {
+    Segment *seg = this->mpd->HighRepresentation(vsm.segIndexFog);
+    cout << "Segment Size=" << seg->getSegmentSize() << endl;
 }
 
 void DashServer::sendRequest(Segment *seg) {

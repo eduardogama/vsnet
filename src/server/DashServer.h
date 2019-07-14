@@ -36,14 +36,11 @@ struct VideoStreamDash
     L3Address clientAddr;    // client address
     int clientPort = -1;    // client TCP port
     long videoSize = 0;    // total size of video
+
     long bytesLeft = 0;    // bytes left to transmit
     long numPkSent = 0;    // number of packets sent
-    int segIndex = 20;
+    int segIndexFog = 20;
     vector<short int> video_seg;
-};
-
-enum NodeType {
-    User, Fog, Hybrid
 };
 
 typedef std::map<long int, VideoStreamDash> VideoStreamMap;
@@ -68,7 +65,7 @@ class DashServer : public TcpGenericServerApp, public TcpSocket::ICallback {
         TcpSocket ConnectFog(int socketId);
 
         void initVideoStream(int socketId);
-        void handleConnection(int socketId);
+        void handleFogConnection(int socketId);
 
         void prepareRequest(VideoStreamDash& vsm);
         Packet* preparePacket(VideoStreamDash&vsm, Segment* seg);

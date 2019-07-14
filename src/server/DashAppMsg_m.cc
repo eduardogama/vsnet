@@ -242,6 +242,8 @@ void DashAppMsg::copy(const DashAppMsg& other)
     this->num_segment = other.num_segment;
     this->bitrate = other.bitrate;
     this->resolution = other.resolution;
+    this->media = other.media;
+    this->sender = other.sender;
 }
 
 void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
@@ -257,6 +259,8 @@ void DashAppMsg::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->num_segment);
     doParsimPacking(b,this->bitrate);
     doParsimPacking(b,this->resolution);
+    doParsimPacking(b,this->media);
+    doParsimPacking(b,this->sender);
 }
 
 void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -272,6 +276,8 @@ void DashAppMsg::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->num_segment);
     doParsimUnpacking(b,this->bitrate);
     doParsimUnpacking(b,this->resolution);
+    doParsimUnpacking(b,this->media);
+    doParsimUnpacking(b,this->sender);
 }
 
 B DashAppMsg::getExpectedReplyLength() const
@@ -384,6 +390,28 @@ void DashAppMsg::setResolution(const char * resolution)
     this->resolution = resolution;
 }
 
+const char * DashAppMsg::getMedia() const
+{
+    return this->media.c_str();
+}
+
+void DashAppMsg::setMedia(const char * media)
+{
+    handleChange();
+    this->media = media;
+}
+
+const char * DashAppMsg::getSender() const
+{
+    return this->sender.c_str();
+}
+
+void DashAppMsg::setSender(const char * sender)
+{
+    handleChange();
+    this->sender = sender;
+}
+
 class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -399,6 +427,8 @@ class DashAppMsgDescriptor : public omnetpp::cClassDescriptor
         FIELD_num_segment,
         FIELD_bitrate,
         FIELD_resolution,
+        FIELD_media,
+        FIELD_sender,
     };
   public:
     DashAppMsgDescriptor();
@@ -461,7 +491,7 @@ const char *DashAppMsgDescriptor::getProperty(const char *propertyname) const
 int DashAppMsgDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 10+basedesc->getFieldCount() : 10;
+    return basedesc ? 12+basedesc->getFieldCount() : 12;
 }
 
 unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
@@ -483,8 +513,10 @@ unsigned int DashAppMsgDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_num_segment
         FD_ISEDITABLE,    // FIELD_bitrate
         FD_ISEDITABLE,    // FIELD_resolution
+        FD_ISEDITABLE,    // FIELD_media
+        FD_ISEDITABLE,    // FIELD_sender
     };
-    return (field >= 0 && field < 10) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 12) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DashAppMsgDescriptor::getFieldName(int field) const
@@ -506,8 +538,10 @@ const char *DashAppMsgDescriptor::getFieldName(int field) const
         "num_segment",
         "bitrate",
         "resolution",
+        "media",
+        "sender",
     };
-    return (field >= 0 && field < 10) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 12) ? fieldNames[field] : nullptr;
 }
 
 int DashAppMsgDescriptor::findField(const char *fieldName) const
@@ -524,6 +558,8 @@ int DashAppMsgDescriptor::findField(const char *fieldName) const
     if (fieldName[0] == 'n' && strcmp(fieldName, "num_segment") == 0) return base+7;
     if (fieldName[0] == 'b' && strcmp(fieldName, "bitrate") == 0) return base+8;
     if (fieldName[0] == 'r' && strcmp(fieldName, "resolution") == 0) return base+9;
+    if (fieldName[0] == 'm' && strcmp(fieldName, "media") == 0) return base+10;
+    if (fieldName[0] == 's' && strcmp(fieldName, "sender") == 0) return base+11;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -546,8 +582,10 @@ const char *DashAppMsgDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_num_segment
         "int",    // FIELD_bitrate
         "string",    // FIELD_resolution
+        "string",    // FIELD_media
+        "string",    // FIELD_sender
     };
-    return (field >= 0 && field < 10) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 12) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DashAppMsgDescriptor::getFieldPropertyNames(int field) const
@@ -624,6 +662,8 @@ std::string DashAppMsgDescriptor::getFieldValueAsString(void *object, int field,
         case FIELD_num_segment: return long2string(pp->getNum_segment());
         case FIELD_bitrate: return long2string(pp->getBitrate());
         case FIELD_resolution: return oppstring2string(pp->getResolution());
+        case FIELD_media: return oppstring2string(pp->getMedia());
+        case FIELD_sender: return oppstring2string(pp->getSender());
         default: return "";
     }
 }
@@ -648,6 +688,8 @@ bool DashAppMsgDescriptor::setFieldValueAsString(void *object, int field, int i,
         case FIELD_num_segment: pp->setNum_segment(string2long(value)); return true;
         case FIELD_bitrate: pp->setBitrate(string2long(value)); return true;
         case FIELD_resolution: pp->setResolution((value)); return true;
+        case FIELD_media: pp->setMedia((value)); return true;
+        case FIELD_sender: pp->setSender((value)); return true;
         default: return false;
     }
 }

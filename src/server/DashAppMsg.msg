@@ -20,4 +20,7 @@ class DashAppMsg extends FieldsChunk
     int num_segment;
     int bitrate;
     string resolution;
+    string media;
+    
+    string sender;
 }
