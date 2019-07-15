@@ -18,7 +18,7 @@
 package vsnet.services;
 
 import inet.applications.contract.IApp;
-//import inet.applications.tcpapp.TcpServerHostApp;
+import inet.applications.tcpapp.TcpServerHostApp;
 
 //
 // This module hosts TCP-based server applications. It dynamically creates
@@ -40,24 +40,19 @@ import inet.applications.contract.IApp;
 //
 // Compatible with both ~Ipv4 and ~Ipv6.
 //
-simple ServerCacheApp like IApp
+simple ServerCacheApp extends TcpServerHostApp
 {
     parameters:
         @class(ServerCacheApp);
-        string localAddress = default(""); // may be left empty ("")
-        int localPort = default(1000); // port number to listen on
-        string serverThreadModuleType = default("vsnet.services.ServerCacheThread"); // module type of "thread" module to launch on incoming connections
+//        string localAddress = default(""); // may be left empty ("")
+//        int localPort = default(1000); // port number to listen on
+        serverThreadModuleType = default("vsnet.services.ServerCacheThread"); // module type of "thread" module to launch on incoming connections
         
         @signal[packetSent](type=inet::Packet);
         @signal[packetReceived](type=inet::Packet);
         
         @display("i=block/app");
         @lifecycleSupport;
-        double stopOperationExtraTime @unit(s) = default(-1s);    // extra time after lifecycle stop operation finished
-        double stopOperationTimeout @unit(s) = default(2s);    // timeout value for lifecycle stop operation
-    gates:
-        input socketIn @labels(TcpCommand/up);
-        output socketOut @labels(TcpCommand/down);
 }
 
 simple ServerCacheThread

@@ -54,14 +54,18 @@ class ServerCacheApp : public TcpServerHostApp
         virtual void initialize(int stage) override;
         virtual int numInitStages() const override { return NUM_INIT_STAGES; }
         virtual void finish() override;
+        virtual void handleMessageWhenUp(cMessage *msg) override;
         virtual void refreshDisplay() const override;
 
+        virtual void socketAvailable(TcpSocket *socket, TcpAvailableInfo *availableInfo) override;
+
+        virtual void handleStartOperation(LifecycleOperation *operation) override;
     public:
         ServerCacheApp();
         ~ServerCacheApp();
 
     private:
-            void storeSegmentVideo(const char* movie, Segment *seg);
+        void storeSegmentVideo(const char* movie, Segment *seg);
 
     friend class ServerCacheThread;
 };

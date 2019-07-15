@@ -87,6 +87,10 @@ void CacheService::initialize(int stage)
 
 void CacheService::handleMessage(cMessage *msg)
 {
+    cout << simTime() << " [Fog Node] handleMessage="
+         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
+         << endl;
+
     if (msg->getKind() == TCP_I_PEER_CLOSED) {
         // we'll close too, but only after there's surely no message
         // pending to be sent back in this connection
@@ -112,7 +116,7 @@ void CacheService::handleMessage(cMessage *msg)
         }
 
         bool doClose = false;
-        while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_NULLPTR)) {
+        while (const auto& appmsg = queue.pop<DashAppMsg>(b(-1), Chunk::PF_ALLOW_SERIALIZATION)) {
             if(!strcmp(appmsg->getSender(), "server")) {
                 cout << simTime()
                      << " [Fog Node] Segment Length=" << B(appmsg->getChunkLength()).get()
@@ -139,9 +143,6 @@ void CacheService::handleMessage(cMessage *msg)
             msgsRcvd++;
             bytesRcvd += B(appmsg->getChunkLength()).get();
 
-
-            cout << "entrouiojq jio\n";
-
             B requestedBytes = appmsg->getExpectedReplyLength();
             simtime_t msgDelay = appmsg->getReplyDelay();
 
@@ -164,6 +165,8 @@ void CacheService::handleMessage(cMessage *msg)
                 payload->setSender("fog");
                 outPacket->insertAtBack(payload);
                 sendOrSchedule(outPacket, delay + msgDelay);
+
+                cout << "entrouiojq jio\n";
             }
             if (appmsg->getServerClose()) {
                 doClose = true;

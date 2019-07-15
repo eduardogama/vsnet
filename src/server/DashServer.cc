@@ -58,9 +58,9 @@ void DashServer::initialize(int stage)
 
 void DashServer::handleMessage(cMessage *msg)
 {
-//    cout << "DashServer handleMessage="
-//         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
-//         << endl;
+    cout << "DashServer handleMessage="
+         << cEnum::get("inet::TcpStatusInd")->getStringFor(msg->getKind())
+         << endl;
 
     if (msg->isSelfMessage()) {
         sendBack(msg);
